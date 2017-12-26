@@ -24,9 +24,14 @@ import android.view.ViewGroup
 import android.widget.LinearLayout
 import com.google.api.services.sheets.v4.SheetsScopes
 import android.app.Activity
+import android.app.ProgressDialog.show
 import android.content.Context
+import android.databinding.DataBindingUtil
+import android.view.LayoutInflater
 import android.view.View
 import android.widget.Button
+import com.bugtsa.casher.data.dto.PurchaseDto
+import com.bugtsa.casher.databinding.ActivityMainBinding
 import com.bugtsa.casher.utls.GoogleSheetManager.Companion.OWN_GOOGLE_SHEET_ID
 import com.google.api.services.sheets.v4.model.BatchUpdateValuesRequest
 import com.google.api.services.sheets.v4.model.ValueRange
@@ -35,33 +40,14 @@ import java.util.*
 
 
 class MainActivity : Activity(), EasyPermissions.PermissionCallbacks {
-    internal lateinit var mCredential: GoogleAccountCredential
-    private var mOutputText: TextView? = null
-    private var mCallApiButton: Button? = null
-    internal lateinit var mProgress: ProgressDialog
+    private lateinit var mCredential: GoogleAccountCredential
+    private lateinit var binding: ActivityMainBinding
 
-    /**
-     * Checks whether the device currently has a network connection.
-     * @return true if the device has a network connection, false otherwise.
-     */
-    private val isDeviceOnline: Boolean
-        get() {
-            val connMgr = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-            val networkInfo = connMgr.activeNetworkInfo
-            return networkInfo != null && networkInfo.isConnected
-        }
+//    private var mOutputText: TextView? = null
+//    private var mCallApiButton: Button? = null
+//    internal lateinit var mProgress: ProgressDialog
 
-    /**
-     * Check that Google Play services APK is installed and up to date.
-     * @return true if Google Play Services is available and up to
-     * date on this device; false otherwise.
-     */
-    private val isGooglePlayServicesAvailable: Boolean
-        get() {
-            val apiAvailability = GoogleApiAvailability.getInstance()
-            val connectionStatusCode = apiAvailability.isGooglePlayServicesAvailable(this)
-            return connectionStatusCode == ConnectionResult.SUCCESS
-        }
+    //region ================= Implements Methods =================
 
     /**
      * Create the main activity.
@@ -69,42 +55,9 @@ class MainActivity : Activity(), EasyPermissions.PermissionCallbacks {
      */
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val activityLayout = LinearLayout(this)
-        val lp = LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.MATCH_PARENT,
-                LinearLayout.LayoutParams.MATCH_PARENT)
-        activityLayout.layoutParams = lp
-        activityLayout.orientation = LinearLayout.VERTICAL
-        activityLayout.setPadding(16, 16, 16, 16)
+        binding = DataBindingUtil.setContentView(this, R.layout.activity_main)
 
-        val tlp = ViewGroup.LayoutParams(
-                ViewGroup.LayoutParams.WRAP_CONTENT,
-                ViewGroup.LayoutParams.WRAP_CONTENT)
-
-        mCallApiButton = Button(this)
-        mCallApiButton!!.setText(BUTTON_TEXT)
-        mCallApiButton!!.setOnClickListener(object : View.OnClickListener {
-            override fun onClick(v: View) {
-                mCallApiButton!!.setEnabled(false)
-                mOutputText!!.text = ""
-                getResultsFromApi()
-                mCallApiButton!!.setEnabled(true)
-            }
-        })
-        activityLayout.addView(mCallApiButton)
-
-        mOutputText = TextView(this)
-        mOutputText!!.layoutParams = tlp
-        mOutputText!!.setPadding(16, 16, 16, 16)
-        mOutputText!!.isVerticalScrollBarEnabled = true
-        mOutputText!!.movementMethod = ScrollingMovementMethod()
-        mOutputText!!.text = "Click the \'$BUTTON_TEXT\' button to test the API."
-        activityLayout.addView(mOutputText)
-
-        mProgress = ProgressDialog(this)
-        mProgress.setMessage("Calling Google Sheets API ...")
-
-        setContentView(activityLayout)
+        getResultsFromApi()
 
         // Initialize credentials and service object.
         mCredential = GoogleAccountCredential.usingOAuth2(
@@ -112,6 +65,7 @@ class MainActivity : Activity(), EasyPermissions.PermissionCallbacks {
                 .setBackOff(ExponentialBackOff())
     }
 
+    //endregion
 
     /**
      * Attempt to call the API, after verifying that all the preconditions are
@@ -126,7 +80,7 @@ class MainActivity : Activity(), EasyPermissions.PermissionCallbacks {
         } else if (mCredential.selectedAccountName == null) {
             chooseAccount()
         } else if (!isDeviceOnline) {
-            mOutputText!!.text = "No network connection available."
+            binding.statusTv!!.text = "No network connection available."
         } else {
             MakeRequestTask(mCredential).execute()
         }
@@ -182,7 +136,7 @@ class MainActivity : Activity(), EasyPermissions.PermissionCallbacks {
         super.onActivityResult(requestCode, resultCode, data)
         when (requestCode) {
             REQUEST_GOOGLE_PLAY_SERVICES -> if (resultCode != RESULT_OK) {
-                mOutputText!!.text = "This app requires Google Play Services. Please install " + "Google Play Services on your device and relaunch this app."
+                binding.statusTv!!.text = "This app requires Google Play Services. Please install " + "Google Play Services on your device and relaunch this app."
             } else {
                 getResultsFromApi()
             }
@@ -287,17 +241,19 @@ class MainActivity : Activity(), EasyPermissions.PermissionCallbacks {
         private val dataFromApi: List<String>
             @Throws(IOException::class)
             get() {
-                writePurchase()
+//                writePurchase(PurchaseDto("34", "25.12.17", "транспорт. электричка"))
                 val range = "Vova!A2:C"
                 val results = ArrayList<String>()
                 val response = this.mService!!.spreadsheets().values()
                         .get(OWN_GOOGLE_SHEET_ID, range)
                         .execute()
                 val values = response.getValues()
+                val purchasesList: MutableList<PurchaseDto> = MutableList( PurchaseDto("Сумма", "Дата", "На что"))
                 if (values != null) {
-                    results.add("Сумма, Дата, На что")
                     for (row in values) {
-                        results.add(row[0].toString() + ", " + row[1] + ", " + row[2])
+                        var purchase: PurchaseDto = PurchaseDto(row[0].toString(), row[1].toString(), row[2].toString())
+                        results.add(purchase.price + ", " + purchase.date + ", " + purchase.category)
+                        purchasesList.add(purchase)
                     }
                 }
                 return results
@@ -312,9 +268,9 @@ class MainActivity : Activity(), EasyPermissions.PermissionCallbacks {
                     .build()
         }
 
-        private fun writePurchase() {
+        private fun writePurchase(purchase: PurchaseDto) {
             val range = "Vova!A85:C"
-            val data: MutableList<Any> = mutableListOf("34", "25.12.17", "транспорт. электричка")
+            val data: MutableList<Any> = mutableListOf(purchase.price, purchase.date, purchase.category)
             val arrayData = mutableListOf(data)
 
             val valueData : ValueRange = ValueRange()
@@ -350,22 +306,22 @@ class MainActivity : Activity(), EasyPermissions.PermissionCallbacks {
 
 
         override fun onPreExecute() {
-            mOutputText!!.text = ""
-            mProgress.show()
+            binding.statusTv!!.text = ""
+            binding.progressPurchase.show()
         }
 
         override fun onPostExecute(output: List<String>?) {
-            mProgress.hide()
+            binding.progressPurchase.hide()
             if (output == null || output.size == 0) {
-                mOutputText!!.text = "No results returned."
+                binding.statusTv!!.text = "No results returned."
             } else {
                 output.toMutableList().add(0, "Data retrieved using the Google Sheets API:")
-                mOutputText!!.text = TextUtils.join("\n", output)
+                binding.statusTv!!.text = TextUtils.join("\n", output)
             }
         }
 
         override fun onCancelled() {
-            mProgress.hide()
+            binding.progressPurchase.hide()
             if (mLastError != null) {
                 if (mLastError is GooglePlayServicesAvailabilityIOException) {
                     showGooglePlayServicesAvailabilityErrorDialog(
@@ -376,10 +332,10 @@ class MainActivity : Activity(), EasyPermissions.PermissionCallbacks {
                             (mLastError as UserRecoverableAuthIOException).intent,
                             MainActivity.REQUEST_AUTHORIZATION)
                 } else {
-                    mOutputText!!.text = "The following error occurred:\n" + mLastError!!.message
+                    binding.statusTv!!.text = "The following error occurred:\n" + mLastError!!.message
                 }
             } else {
-                mOutputText!!.text = "Request cancelled."
+                binding.statusTv!!.text = "Request cancelled."
             }
         }
     }
@@ -394,6 +350,33 @@ class MainActivity : Activity(), EasyPermissions.PermissionCallbacks {
         private val BUTTON_TEXT = "Call Google Sheets API"
         private val PREF_ACCOUNT_NAME = "accountName"
         private val SCOPES = mutableListOf(SheetsScopes.DRIVE)
-//        private val SCOPES = mutableListOf(SheetsScopes.SPREADSHEETS_READONLY)
     }
+
+    //region ================= Utils Methods =================
+
+    /**
+     * Checks whether the device currently has a network connection.
+     * @return true if the device has a network connection, false otherwise.
+     */
+    private val isDeviceOnline: Boolean
+        get() {
+            val connMgr = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+            val networkInfo = connMgr.activeNetworkInfo
+            return networkInfo != null && networkInfo.isConnected
+        }
+
+    /**
+     * Check that Google Play services APK is installed and up to date.
+     * @return true if Google Play Services is available and up to
+     * date on this device; false otherwise.
+     */
+    private val isGooglePlayServicesAvailable: Boolean
+        get() {
+            val apiAvailability = GoogleApiAvailability.getInstance()
+            val connectionStatusCode = apiAvailability.isGooglePlayServicesAvailable(this)
+            return connectionStatusCode == ConnectionResult.SUCCESS
+        }
+
+    //endregion
+
 }
