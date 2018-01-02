@@ -1,4 +1,4 @@
-package com.bugtsa.casher.ui.views.purchases
+package com.bugtsa.casher.ui.screens.purchases
 
 import weather.ekamp.com.weatherappkotlin.model.location.LocationUpdateListener
 import weather.ekamp.com.weatherappkotlin.model.parsers.WeatherDescription

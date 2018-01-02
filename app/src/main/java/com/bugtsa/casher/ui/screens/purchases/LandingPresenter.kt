@@ -1,4 +1,4 @@
-package com.bugtsa.casher.ui.views.purchases
+package com.bugtsa.casher.ui.screens.purchases
 
 import android.location.Address
 import android.location.Location
