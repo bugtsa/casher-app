@@ -232,7 +232,7 @@ class RootActivity : Activity(), EasyPermissions.PermissionCallbacks, RootView {
         mCredential = credential
         if (!isGooglePlayServicesAvailable) {
             acquireGooglePlayServices()
-        } else if (credential == null) {
+        } else if (mCredential.selectedAccountName == null) {
             chooseAccount(credential)
         } else if (!isDeviceOnline) {
             showText("No network connection available.")
@@ -244,7 +244,6 @@ class RootActivity : Activity(), EasyPermissions.PermissionCallbacks, RootView {
     }
 
     //endregion
-
 
     companion object {
 
