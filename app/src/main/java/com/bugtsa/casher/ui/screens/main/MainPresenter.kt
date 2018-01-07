@@ -15,21 +15,25 @@ import io.reactivex.disposables.CompositeDisposable
 import java.io.IOException
 import javax.inject.Inject
 
-class MainPresenter @Inject constructor() {
+class MainPresenter @Inject constructor(googleSheetService : GoogleSheetService) {
 
-    @Inject lateinit var googleSheetService: GoogleSheetService
+    private var credential: GoogleAccountCredential
+
     lateinit var mainView: MainView
     val disposableSubscriptions: CompositeDisposable = CompositeDisposable()
 
     private var sizePurchaseList: Int = 0
+
+    init {
+        this.credential = googleSheetService.mCredential
+    }
 
     fun onAttachView(landingView: MainView) {
         this.mainView = landingView
     }
 
     fun processData() {
-        MakeRequestTask(googleSheetService.mCredential).execute()
-
+        MakeRequestTask(credential).execute()
     }
 
     //region ================= Request Tasks =================
@@ -58,7 +62,6 @@ class MainPresenter @Inject constructor() {
                 val values = response.getValues()
                 val purchasesList = mutableListOf<PurchaseDto>()
                 sizePurchaseList = purchasesList.size
-                purchasesList.add(PurchaseDto("Сумма", "Дата", "На что"))
                 if (values != null) {
                     for (row in values) {
                         var purchase = PurchaseDto(row[0].toString(), row[1].toString(), row[2].toString())

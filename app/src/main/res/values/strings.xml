@@ -1,3 +1,12 @@
 <resources>
     <string name="app_name">Casher</string>
+    <string name="price_caption">Сумма</string>
+    <string name="time_caption">Дата</string>
+    <string name="category_caption">На что</string>
+
+    <string name="price_purchase">Цена траты</string>
+    <string name="category_purchase">На что потрачено</string>
+    <string name="cancel_caption">Отмена</string>
+    <string name="add_caption">Добавить</string>
+
 </resources>

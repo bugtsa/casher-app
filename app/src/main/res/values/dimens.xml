@@ -1,4 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <dimen name="fab_margin">16dp</dimen>
+
+    <!--Fonts size-->
+    <dimen name="font_x_small_8">8sp</dimen>
+    <dimen name="font_small_10">10sp</dimen>
+    <dimen name="font_normal_12">12sp</dimen>
+    <dimen name="font_medium_14">14sp</dimen>
+    <dimen name="font_x_medium_16">16sp</dimen>
+    <dimen name="font_xx_medium_18">18sp</dimen>
+    <dimen name="font_xxx_medium_24">24sp</dimen>
+    <dimen name="font_bigger_40">40sp</dimen>
+    <!--Spacing-->
+    <dimen name="spacing_small_2">2dp</dimen>
+    <dimen name="spacing_x_small_4">4dp</dimen>
+    <dimen name="spacing_xx_small_8">8dp</dimen>
+    <dimen name="spacing_xxx_small_12">12dp</dimen>
+    <dimen name="spacing_normal_16">16dp</dimen>
+    <dimen name="spacing_x_normal_20">20dp</dimen>
+    <dimen name="spacing_medium_24">24dp</dimen>
+    <dimen name="spacing_xxx_medium_32">32dp</dimen>
+    <dimen name="spacing_lager_36">36dp</dimen>
+    <dimen name="spacing_xxx_lager_48">48dp</dimen>
+    <dimen name="spacing_bigger_56">56dp</dimen>
+    <dimen name="spacing_big_bigger_x_96">96dp</dimen>
+    <dimen name="spacing_big_bigger_100">100dp</dimen>
 </resources>

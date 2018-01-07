@@ -70,19 +70,18 @@ class RootActivity : Activity(), EasyPermissions.PermissionCallbacks, RootView {
      * is granted.
      */
     @AfterPermissionGranted(REQUEST_PERMISSION_GET_ACCOUNTS)
-    private fun chooseAccount(credential : GoogleAccountCredential) {
+    private fun chooseAccount() {
         if (EasyPermissions.hasPermissions(
                 this, Manifest.permission.GET_ACCOUNTS)) {
             val accountName = getPreferences(Context.MODE_PRIVATE)
                     .getString(PREF_ACCOUNT_NAME, null)
             if (accountName != null) {
-                credential.selectedAccountName = accountName
-                mCredential = credential
+                mCredential.selectedAccountName = accountName
                 getResultsFromApi()
             } else {
                 // Start a dialog from which the user can choose an account
                 startActivityForResult(
-                        credential.newChooseAccountIntent(),
+                        mCredential.newChooseAccountIntent(),
                         REQUEST_ACCOUNT_PICKER)
             }
         } else {
@@ -233,7 +232,7 @@ class RootActivity : Activity(), EasyPermissions.PermissionCallbacks, RootView {
         if (!isGooglePlayServicesAvailable) {
             acquireGooglePlayServices()
         } else if (mCredential.selectedAccountName == null) {
-            chooseAccount(credential)
+            chooseAccount()
         } else if (!isDeviceOnline) {
             showText("No network connection available.")
         } else {

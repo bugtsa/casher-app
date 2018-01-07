@@ -1,11 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout>
+<layout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
 
-    <data />
+    <data>
 
-    <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
-        xmlns:tools="http://schemas.android.com/tools"
+        <variable
+            name="foo"
+            type="int" />
+    </data>
+
+    <android.support.constraint.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
@@ -14,51 +20,51 @@
         <TextView
             android:id="@+id/time_purchase"
             android:layout_width="0dp"
-            app:layout_constraintHorizontal_weight="1"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="8dp"
-            android:layout_marginStart="8dp"
-            tools:text="Time"
-            app:layout_constraintRight_toLeftOf="@+id/price_purchase"
+            android:padding="4dp"
+            android:paddingStart="8dp"
+            android:text="@string/time_caption"
+            app:layout_constraintHorizontal_weight="1"
             app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/date_purchase"
-            />
+            app:layout_constraintRight_toLeftOf="@+id/price_purchase"
+            app:layout_constraintTop_toBottomOf="@id/date_purchase" />
 
         <TextView
             android:id="@+id/price_purchase"
             android:layout_width="0dp"
-            app:layout_constraintHorizontal_weight="1"
             android:layout_height="wrap_content"
-            app:layout_constraintTop_toBottomOf="@id/date_purchase"
+            android:text="@string/price_caption"
+            app:layout_constraintHorizontal_weight="1"
+            android:padding="4dp"
             app:layout_constraintLeft_toRightOf="@+id/time_purchase"
             app:layout_constraintRight_toLeftOf="@+id/category_purchase"
-            tools:text="Price" />
+            app:layout_constraintTop_toBottomOf="@id/date_purchase" />
 
         <TextView
             android:id="@+id/category_purchase"
             android:layout_width="0dp"
-            app:layout_constraintHorizontal_weight="2"
             android:layout_height="wrap_content"
-            tools:text="Category"
-            app:layout_constraintRight_toRightOf="parent"
+            android:text="@string/category_caption"
+            android:padding="4dp"
+            app:layout_constraintHorizontal_weight="2"
             app:layout_constraintLeft_toRightOf="@+id/price_purchase"
-            app:layout_constraintTop_toBottomOf="@id/date_purchase"
-            />
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/date_purchase" />
 
         <TextView
             android:id="@+id/date_purchase"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingBottom="18dp"
             android:layout_marginTop="8dp"
-            tools:text="Day"
+            android:gravity="center_horizontal"
+            android:padding="4dp"
+            android:visibility="gone"
             app:layout_constraintBottom_toTopOf="@+id/price_purchase"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            android:gravity="center_horizontal"
-            android:visibility="gone"
-            tools:visibility="visible"/>
+            tools:text="Day"
+            tools:visibility="visible" />
     </android.support.constraint.ConstraintLayout>
 
 </layout>

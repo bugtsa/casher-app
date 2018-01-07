@@ -8,11 +8,13 @@ import android.view.View.GONE
 import android.view.View.VISIBLE
 import android.view.ViewGroup
 import com.bluelinelabs.conductor.Controller
+import com.bluelinelabs.conductor.RouterTransaction
 import com.bugtsa.casher.R
 import com.bugtsa.casher.data.dto.PurchaseDto
 import com.bugtsa.casher.databinding.ControllerMainBinding
 import com.bugtsa.casher.ui.activities.RootActivity.Companion.REQUEST_AUTHORIZATION
 import com.bugtsa.casher.ui.adapters.PurchaseAdapter
+import com.bugtsa.casher.ui.screens.purchases.add_purchase.AddPurchaseController
 import com.google.api.client.googleapis.extensions.android.gms.auth.UserRecoverableAuthIOException
 import toothpick.Scope
 import toothpick.Toothpick
@@ -21,9 +23,9 @@ import javax.inject.Inject
 class MainController : Controller(), MainView {
 
     private lateinit var binding: ControllerMainBinding
-    @Inject lateinit var presenter : MainPresenter
+    @Inject lateinit var presenter: MainPresenter
 
-    lateinit private var activityScope : Scope
+    lateinit private var activityScope: Scope
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup): View {
         var view: View = inflater.inflate(R.layout.controller_main, container, false)
@@ -32,6 +34,7 @@ class MainController : Controller(), MainView {
 
         var linearLayoutManager = LinearLayoutManager(activity)
         binding.purchases.layoutManager = linearLayoutManager
+        binding.addPurchase.setOnClickListener(showAddPurchaseController())
 
         activityScope = Toothpick.openScopes(activity, this)
         Toothpick.inject(this, activityScope)
@@ -41,8 +44,13 @@ class MainController : Controller(), MainView {
         return view
     }
 
-    //region ================= Setup Ui =================
+    private fun showAddPurchaseController(): View.OnClickListener? {
+        return View.OnClickListener {
+            router.pushController(RouterTransaction.with(AddPurchaseController()))
+        }
+    }
 
+    //region ================= Setup Ui =================
 
 
     //endregion
