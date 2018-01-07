@@ -25,7 +25,7 @@ class MainController : Controller(), MainView {
     private lateinit var binding: ControllerMainBinding
     @Inject lateinit var presenter: MainPresenter
 
-    lateinit private var activityScope: Scope
+    lateinit private var mainControllerScope: Scope
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup): View {
         var view: View = inflater.inflate(R.layout.controller_main, container, false)
@@ -36,8 +36,8 @@ class MainController : Controller(), MainView {
         binding.purchases.layoutManager = linearLayoutManager
         binding.addPurchase.setOnClickListener(showAddPurchaseController())
 
-        activityScope = Toothpick.openScopes(activity, this)
-        Toothpick.inject(this, activityScope)
+        mainControllerScope = Toothpick.openScopes(activity, this)
+        Toothpick.inject(this, mainControllerScope)
         presenter.onAttachView(this)
 
         presenter.processData()

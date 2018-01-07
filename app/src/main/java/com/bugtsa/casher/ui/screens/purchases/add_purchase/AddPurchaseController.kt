@@ -7,6 +7,8 @@ import android.view.ViewGroup
 import com.bluelinelabs.conductor.Controller
 import com.bugtsa.casher.R
 import com.bugtsa.casher.databinding.ControllerAddPurchaseBinding
+import toothpick.Scope
+import toothpick.Toothpick
 import javax.inject.Inject
 
 class AddPurchaseController : Controller(), AddPurchaseView {
@@ -15,10 +17,14 @@ class AddPurchaseController : Controller(), AddPurchaseView {
 
     @Inject lateinit var presenter : AddPurchasePresenter
 
+    lateinit private var  addPurchaseScope : Scope
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup): View {
         var view: View = inflater.inflate(R.layout.controller_add_purchase, container, false)
         binding = DataBindingUtil.bind(view)
 
+        addPurchaseScope = Toothpick.openScopes(activity, this)
+        Toothpick.inject(this, addPurchaseScope)
         presenter.onAttachView(this)
 
         return view

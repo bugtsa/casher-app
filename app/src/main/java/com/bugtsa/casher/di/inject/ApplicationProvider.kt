@@ -1,4 +1,4 @@
-package com.bugtsa.casher.model.inject
+package com.bugtsa.casher.di.inject
 
 import android.app.Application
 import javax.inject.Provider
