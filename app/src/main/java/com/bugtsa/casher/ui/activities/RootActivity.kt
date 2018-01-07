@@ -55,6 +55,12 @@ class RootActivity : Activity(), EasyPermissions.PermissionCallbacks, RootView {
         getResultsFromApi()
     }
 
+    override fun onBackPressed() {
+        if (!router.handleBack()) {
+            super.onBackPressed()
+        }
+    }
+
     //endregion
 
     //region ================= Request Get Account =================

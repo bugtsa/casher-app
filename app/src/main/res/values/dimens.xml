@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <!--Fonts size-->
+    <!--FolastNotEmptyRowsize-->
     <dimen name="font_x_small_8">8sp</dimen>
     <dimen name="font_small_10">10sp</dimen>
     <dimen name="font_normal_12">12sp</dimen>
@@ -24,4 +24,5 @@
     <dimen name="spacing_bigger_56">56dp</dimen>
     <dimen name="spacing_big_bigger_x_96">96dp</dimen>
     <dimen name="spacing_big_bigger_100">100dp</dimen>
+    <dimen name="zeros">0dp</dimen>
 </resources>

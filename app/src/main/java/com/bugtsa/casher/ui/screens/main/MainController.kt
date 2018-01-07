@@ -27,6 +27,8 @@ class MainController : Controller(), MainView {
 
     lateinit private var mainControllerScope: Scope
 
+
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup): View {
         var view: View = inflater.inflate(R.layout.controller_main, container, false)
 
@@ -42,6 +44,11 @@ class MainController : Controller(), MainView {
 
         presenter.processData()
         return view
+    }
+
+    override fun onDestroyView(view: View) {
+        super.onDestroyView(view)
+        presenter.onViewDestroy()
     }
 
     private fun showAddPurchaseController(): View.OnClickListener? {

@@ -57,5 +57,20 @@
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/category_purchase_wrapper" />
 
+        <ProgressBar
+            android:id="@+id/progress_add_purchase"
+            android:layout_width="@dimen/spacing_bigger_56"
+            android:layout_height="@dimen/spacing_bigger_56"
+            android:layout_marginBottom="@dimen/spacing_xx_small_8"
+            android:layout_marginEnd="@dimen/spacing_xx_small_8"
+            android:layout_marginStart="@dimen/spacing_xx_small_8"
+            android:layout_marginTop="@dimen/spacing_xx_small_8"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:visibility="visible" />
+
     </android.support.constraint.ConstraintLayout>
 </layout>
