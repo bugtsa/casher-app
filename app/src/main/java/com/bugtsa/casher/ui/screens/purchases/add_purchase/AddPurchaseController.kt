@@ -43,7 +43,6 @@ class AddPurchaseController : Controller(), AddPurchaseView {
         binding.savePurchase.setOnClickListener {
             presenter.addPurchase(binding.pricePurchaseEt.text.toString(),
                     binding.categoryPurchaseEt.text.toString())
-            popCurrentController()
         }
         binding.cancelPurchase.setOnClickListener { popCurrentController() }
     }

@@ -18,7 +18,6 @@ import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
-import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 class AddPurchasePresenter @Inject constructor(googleSheetService: GoogleSheetService,
@@ -37,6 +36,8 @@ class AddPurchasePresenter @Inject constructor(googleSheetService: GoogleSheetSe
         this.disposableSubscriptions = compositeDisposable
     }
 
+    //region ================ Base Methods =================
+
     fun onAttachView(addPurchaseView: AddPurchaseView) {
         this.addPurchaseView = addPurchaseView
         lastNotEmptyRow = purchaseModel.sizePurchaseList
@@ -46,37 +47,24 @@ class AddPurchasePresenter @Inject constructor(googleSheetService: GoogleSheetSe
         disposableSubscriptions.dispose()
     }
 
+    //endregion
+
+    //region ================= Request to add purchase =================
+
     fun addPurchase(pricePurchase: String, categoryPurchase: String) {
         addPurchaseView.showProgressBar()
         disposableSubscriptions.add(
-                writePurchase(serviceSheets,
+                PurchaseSubscriber(serviceSheets,
                         PurchaseDto(pricePurchase, "25.12.17", categoryPurchase))!!
                         .subscribe(this::onBatchPurchasesCollected,
                                 this::onBatchPurchasesCollectionFailure))
     }
 
-    fun onTimerEnded(unit: Long) {
-        addPurchaseView.hideProgressBar()
-        addPurchaseView.completedAddPurchase()
-    }
+    //endregion
 
-    private fun startTimerForApplyUpdates(batchUpdateValuesRes: BatchUpdateValuesResponse) {
-        Single.timer(500, TimeUnit.MILLISECONDS)
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(this::onTimerEnded,
-                        this::onBatchPurchasesCollectionFailure)
-    }
+    //region ================= Purchase Subscriber =================
 
-    fun onBatchPurchasesCollected(batchUpdateValuesRes: BatchUpdateValuesResponse) {
-        if (batchUpdateValuesRes != null) {
-            startTimerForApplyUpdates(batchUpdateValuesRes)
-        }
-    }
-
-    fun onBatchPurchasesCollectionFailure(throwable: Throwable) {
-    }
-
-    private fun writePurchase(service: Sheets, purchase: PurchaseDto): Single<BatchUpdateValuesResponse>? {
+    private fun PurchaseSubscriber(service: Sheets, purchase: PurchaseDto): Single<BatchUpdateValuesResponse>? {
         val data: MutableList<Any> = mutableListOf(purchase.price, purchase.date, purchase.category)
         val arrayData = mutableListOf(data)
         purchaseModel.sizePurchaseList = lastNotEmptyRow + 1
@@ -98,4 +86,17 @@ class AddPurchasePresenter @Inject constructor(googleSheetService: GoogleSheetSe
                 }
                 .observeOn(AndroidSchedulers.mainThread())
     }
+
+    fun onBatchPurchasesCollected(batchUpdateValuesRes: BatchUpdateValuesResponse) {
+        if (batchUpdateValuesRes != null) {
+            addPurchaseView.hideProgressBar()
+            addPurchaseView.completedAddPurchase()
+        }
+    }
+
+    fun onBatchPurchasesCollectionFailure(throwable: Throwable) {
+    }
+
+    //endregion
+
 }
