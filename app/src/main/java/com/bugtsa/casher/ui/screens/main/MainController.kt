@@ -38,9 +38,6 @@ class MainController : Controller(), MainView {
         presenter.onAttachView(this)
 
         presenter.processData()
-
-
-
         return view
     }
 
