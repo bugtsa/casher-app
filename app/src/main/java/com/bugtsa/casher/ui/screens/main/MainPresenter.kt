@@ -54,7 +54,6 @@ class MainPresenter @Inject constructor(googleSheetService : GoogleSheetService)
         private val dataFromApi: MutableList<PurchaseDto>
             @Throws(IOException::class)
             get() {
-//                writePurchase(PurchaseDto("34", "25.12.17", "транспорт. электричка"))
                 val range = "Vova!A1:C"
                 val response = this.mService!!.spreadsheets().values()
                         .get(OWN_GOOGLE_SHEET_ID, range)
@@ -80,26 +79,7 @@ class MainPresenter @Inject constructor(googleSheetService : GoogleSheetService)
                     .build()
         }
 
-        private fun writePurchase(purchase: PurchaseDto) {
-            val range = "Vova!A85:C"
-            val data: MutableList<Any> = mutableListOf(purchase.price, purchase.date, purchase.category)
-            val arrayData = mutableListOf(data)
 
-            val valueData: ValueRange = ValueRange()
-                    .setRange("Vova!A85:C85")
-                    .setValues(arrayData)
-                    .setMajorDimension("ROWS")
-            var batchData: BatchUpdateValuesRequest = BatchUpdateValuesRequest()
-                    .setValueInputOption("RAW")
-                    .setData(mutableListOf(valueData))
-            val response = mService!!.spreadsheets().values()
-                    .batchUpdate(OWN_GOOGLE_SHEET_ID, batchData)
-                    .execute()
-
-            if (response != null) {
-
-            }
-        }
 
         /**
          * Background task to call Google Sheets API.
