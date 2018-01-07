@@ -1,4 +1,4 @@
-package com.bugtsa.casher.model
+package com.bugtsa.casher.di.inject
 
 import io.reactivex.disposables.CompositeDisposable
 import javax.inject.Provider

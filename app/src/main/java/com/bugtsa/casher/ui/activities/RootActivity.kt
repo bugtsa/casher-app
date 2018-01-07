@@ -2,12 +2,7 @@ package com.bugtsa.casher.ui.activities
 
 import android.Manifest
 import android.os.Bundle
-import com.google.api.client.googleapis.extensions.android.gms.auth.UserRecoverableAuthIOException
-import com.google.api.client.googleapis.extensions.android.gms.auth.GooglePlayServicesAvailabilityIOException
-import com.google.api.client.json.jackson2.JacksonFactory
-import com.google.api.client.extensions.android.http.AndroidHttp
 import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential
-import android.os.AsyncTask
 import com.google.android.gms.common.GoogleApiAvailability
 import com.google.android.gms.common.ConnectionResult
 import android.net.ConnectivityManager
@@ -15,34 +10,30 @@ import pub.devrel.easypermissions.EasyPermissions
 import android.accounts.AccountManager
 import android.content.Intent
 import pub.devrel.easypermissions.AfterPermissionGranted
-import com.google.api.client.util.ExponentialBackOff
 import com.google.api.services.sheets.v4.SheetsScopes
 import android.app.Activity
 import android.content.Context
 import android.databinding.DataBindingUtil
-import android.support.v7.widget.LinearLayoutManager
-import android.view.View.GONE
 import android.view.View.VISIBLE
 import com.bluelinelabs.conductor.Conductor
 import com.bluelinelabs.conductor.Router
 import com.bluelinelabs.conductor.RouterTransaction
-import com.bugtsa.casher.ui.adapters.PurchaseAdapter
 import com.bugtsa.casher.R
-import com.bugtsa.casher.data.dto.PurchaseDto
 import com.bugtsa.casher.databinding.ActivityRootBinding
 import com.bugtsa.casher.ui.screens.main.MainController
-import com.bugtsa.casher.utls.GoogleSheetManager.Companion.OWN_GOOGLE_SHEET_ID
-import com.google.api.services.sheets.v4.model.BatchUpdateValuesRequest
-import com.google.api.services.sheets.v4.model.ValueRange
-import java.io.IOException
+import toothpick.Scope
+import toothpick.Toothpick
+import javax.inject.Inject
 
 
-class RootActivity : Activity(), EasyPermissions.PermissionCallbacks {
+class RootActivity : Activity(), EasyPermissions.PermissionCallbacks, RootView {
     private lateinit var mCredential: GoogleAccountCredential
     private lateinit var binding: ActivityRootBinding
-    private var sizePurchaseList: Int = 0
 
     private lateinit var router: Router
+
+    lateinit private var activityScope : Scope
+    @Inject lateinit var presenter : RootPresenter
 
     //region ================= Implements Methods =================
 
@@ -52,20 +43,22 @@ class RootActivity : Activity(), EasyPermissions.PermissionCallbacks {
      */
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        activityScope = Toothpick.openScopes(application, this)
+        Toothpick.inject(this, activityScope)
+
         binding = DataBindingUtil.setContentView(this, R.layout.activity_root)
 
-
-        // Initialize credentials and service object.
-        mCredential = GoogleAccountCredential.usingOAuth2(
-                applicationContext, SCOPES)
-                .setBackOff(ExponentialBackOff())
+        presenter.onAttachView(this)
 
         router = Conductor.attachRouter(this, binding.controllerContainer, savedInstanceState)
-        if (!router.hasRootController()) {
-            router.setRoot(RouterTransaction.with(MainController()))
-        }
 
         getResultsFromApi()
+    }
+
+    override fun onBackPressed() {
+        if (!router.handleBack()) {
+            super.onBackPressed()
+        }
     }
 
     //endregion
@@ -111,6 +104,7 @@ class RootActivity : Activity(), EasyPermissions.PermissionCallbacks {
 
     //region ================= Request Permissions =================
 
+
     /**
      * Called when an activity launched here (specifically, AccountPicker
      * and authorization) exits, giving you the requestCode you started it with,
@@ -138,8 +132,7 @@ class RootActivity : Activity(), EasyPermissions.PermissionCallbacks {
                     val editor = settings.edit()
                     editor.putString(PREF_ACCOUNT_NAME, accountName)
                     editor.apply()
-                    mCredential.selectedAccountName = accountName
-                    getResultsFromApi()
+                    setupAccountNameAndRequestToApi(accountName)
                 }
             }
             REQUEST_AUTHORIZATION -> if (resultCode == RESULT_OK) {
@@ -230,6 +223,18 @@ class RootActivity : Activity(), EasyPermissions.PermissionCallbacks {
      * appropriate.
      */
     private fun getResultsFromApi() {
+        presenter.requestCredential()
+    }
+
+    private fun setupAccountNameAndRequestToApi(accountName: String?) {
+        mCredential.selectedAccountName = accountName
+        requestToApi(mCredential)
+    }
+
+    //region ================= Root View =================
+
+    override fun requestToApi(credential: GoogleAccountCredential) {
+        mCredential = credential
         if (!isGooglePlayServicesAvailable) {
             acquireGooglePlayServices()
         } else if (mCredential.selectedAccountName == null) {
@@ -237,9 +242,13 @@ class RootActivity : Activity(), EasyPermissions.PermissionCallbacks {
         } else if (!isDeviceOnline) {
             showText("No network connection available.")
         } else {
-//            MakeRequestTask(mCredential).execute()
+            if (!router.hasRootController()) {
+                router.setRoot(RouterTransaction.with(MainController()))
+            }
         }
     }
+
+    //endregion
 
     companion object {
 

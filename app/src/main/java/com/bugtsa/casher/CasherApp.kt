@@ -1,7 +1,7 @@
 package com.bugtsa.casher
 
 import android.app.Application
-import com.bugtsa.casher.model.CasherApplicationModule
+import com.bugtsa.casher.di.module.CasherApplicationModule
 import toothpick.Toothpick
 import toothpick.Toothpick.setConfiguration
 import toothpick.configuration.Configuration.forDevelopment

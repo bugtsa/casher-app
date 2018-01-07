@@ -2,7 +2,11 @@ package weather.ekamp.com.weatherappkotlin.model.networking
 
 import android.app.Application
 import com.bugtsa.casher.BuildConfig
+import com.bugtsa.casher.networking.GoogleSheetService
+import com.google.api.client.extensions.android.http.AndroidHttp
+import com.google.api.client.json.jackson2.JacksonFactory
 import okhttp3.Cache
+import okhttp3.OkHttpClient
 import weather.ekamp.com.weatherappkotlin.model.parsers.WeatherDescription
 import java.io.File
 import javax.inject.Inject
@@ -28,7 +32,8 @@ open class WeatherService @Inject constructor(var application: Application) {
         return weatherApi.getCurrentWeather(lat, long, TEMPERATURE_UNITS, WEATHER_API_KEY)
     }
 
-    private fun createRetrofit(application : Application) {
+    private fun createRetrofit(application: Application) {
+
         val clientBuilder = okhttp3.OkHttpClient.Builder()
         val httpCache = Cache(File(application.cacheDir, "http"), sizeOfHttpCache)
         clientBuilder.cache(httpCache)
