@@ -2,12 +2,7 @@ package com.bugtsa.casher.ui.activities
 
 import android.Manifest
 import android.os.Bundle
-import com.google.api.client.googleapis.extensions.android.gms.auth.UserRecoverableAuthIOException
-import com.google.api.client.googleapis.extensions.android.gms.auth.GooglePlayServicesAvailabilityIOException
-import com.google.api.client.json.jackson2.JacksonFactory
-import com.google.api.client.extensions.android.http.AndroidHttp
 import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential
-import android.os.AsyncTask
 import com.google.android.gms.common.GoogleApiAvailability
 import com.google.android.gms.common.ConnectionResult
 import android.net.ConnectivityManager
@@ -15,29 +10,30 @@ import pub.devrel.easypermissions.EasyPermissions
 import android.accounts.AccountManager
 import android.content.Intent
 import pub.devrel.easypermissions.AfterPermissionGranted
-import com.google.api.client.util.ExponentialBackOff
 import com.google.api.services.sheets.v4.SheetsScopes
 import android.app.Activity
 import android.content.Context
 import android.databinding.DataBindingUtil
-import android.support.v7.widget.LinearLayoutManager
-import android.view.View.GONE
 import android.view.View.VISIBLE
-import com.bugtsa.casher.ui.adapters.PurchaseAdapter
+import com.bluelinelabs.conductor.Conductor
+import com.bluelinelabs.conductor.Router
+import com.bluelinelabs.conductor.RouterTransaction
 import com.bugtsa.casher.R
-import com.bugtsa.casher.data.dto.PurchaseDto
 import com.bugtsa.casher.databinding.ActivityRootBinding
-import com.bugtsa.casher.utls.GoogleSheetManager.Companion.OWN_GOOGLE_SHEET_ID
-import com.google.api.services.sheets.v4.model.BatchUpdateValuesRequest
-import com.google.api.services.sheets.v4.model.ValueRange
-import java.io.IOException
-import java.util.*
+import com.bugtsa.casher.ui.screens.main.MainController
+import toothpick.Scope
+import toothpick.Toothpick
+import javax.inject.Inject
 
 
-class RootActivity : Activity(), EasyPermissions.PermissionCallbacks {
+class RootActivity : Activity(), EasyPermissions.PermissionCallbacks, RootView {
     private lateinit var mCredential: GoogleAccountCredential
     private lateinit var binding: ActivityRootBinding
-    private var sizePurchaseList: Int = 0
+
+    private lateinit var router: Router
+
+    lateinit private var activityScope : Scope
+    @Inject lateinit var presenter : RootPresenter
 
     //region ================= Implements Methods =================
 
@@ -47,37 +43,27 @@ class RootActivity : Activity(), EasyPermissions.PermissionCallbacks {
      */
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        activityScope = Toothpick.openScopes(application, this)
+        Toothpick.inject(this, activityScope)
+
         binding = DataBindingUtil.setContentView(this, R.layout.activity_root)
 
+        presenter.onAttachView(this)
 
-        // Initialize credentials and service object.
-        mCredential = GoogleAccountCredential.usingOAuth2(
-                applicationContext, SCOPES)
-                .setBackOff(ExponentialBackOff())
+        router = Conductor.attachRouter(this, binding.controllerContainer, savedInstanceState)
 
         getResultsFromApi()
     }
 
-    //endregion
-
-    /**
-     * Attempt to call the API, after verifying that all the preconditions are
-     * satisfied. The preconditions are: Google Play Services installed, an
-     * account was selected and the device currently has online access. If any
-     * of the preconditions are not satisfied, the app will prompt the user as
-     * appropriate.
-     */
-    private fun getResultsFromApi() {
-        if (!isGooglePlayServicesAvailable) {
-            acquireGooglePlayServices()
-        } else if (mCredential.selectedAccountName == null) {
-            chooseAccount()
-        } else if (!isDeviceOnline) {
-            showText("No network connection available.")
-        } else {
-            MakeRequestTask(mCredential).execute()
+    override fun onBackPressed() {
+        if (!router.handleBack()) {
+            super.onBackPressed()
         }
     }
+
+    //endregion
+
+    //region ================= Request Get Account =================
 
     /**
      * Attempts to set the account used with the API credentials. If an account
@@ -114,6 +100,11 @@ class RootActivity : Activity(), EasyPermissions.PermissionCallbacks {
         }
     }
 
+    //endregion
+
+    //region ================= Request Permissions =================
+
+
     /**
      * Called when an activity launched here (specifically, AccountPicker
      * and authorization) exits, giving you the requestCode you started it with,
@@ -141,8 +132,7 @@ class RootActivity : Activity(), EasyPermissions.PermissionCallbacks {
                     val editor = settings.edit()
                     editor.putString(PREF_ACCOUNT_NAME, accountName)
                     editor.apply()
-                    mCredential.selectedAccountName = accountName
-                    getResultsFromApi()
+                    setupAccountNameAndRequestToApi(accountName)
                 }
             }
             REQUEST_AUTHORIZATION -> if (resultCode == RESULT_OK) {
@@ -189,6 +179,10 @@ class RootActivity : Activity(), EasyPermissions.PermissionCallbacks {
         // Do nothing.
     }
 
+    //endregion
+
+    //region ================= Request Play Services =================
+
     /**
      * Attempt to resolve a missing, out-of-date, invalid or disabled Google
      * Play Services installation via a user dialog, if possible.
@@ -218,126 +212,43 @@ class RootActivity : Activity(), EasyPermissions.PermissionCallbacks {
         dialog.show()
     }
 
-    fun showText(caption : String) {
-        binding.statusTv.text = caption
-        binding.statusTv.visibility = VISIBLE
-    }
+    //endregion
+
 
     /**
-     * An asynchronous task that handles the Google Sheets API call.
-     * Placing the API calls in their own task ensures the UI stays responsive.
+     * Attempt to call the API, after verifying that all the preconditions are
+     * satisfied. The preconditions are: Google Play Services installed, an
+     * account was selected and the device currently has online access. If any
+     * of the preconditions are not satisfied, the app will prompt the user as
+     * appropriate.
      */
-    private inner class MakeRequestTask internal constructor(credential: GoogleAccountCredential) : AsyncTask<Void, Void, MutableList<PurchaseDto>>() {
-        private var mService: com.google.api.services.sheets.v4.Sheets? = null
-        private var mLastError: Exception? = null
+    private fun getResultsFromApi() {
+        presenter.requestCredential()
+    }
 
-        /**
-         * Fetch a list of names and majors of students in a sample spreadsheet:
-         * @return List of names and majors
-         * @throws IOException
-         */
-        private val dataFromApi: MutableList<PurchaseDto>
-            @Throws(IOException::class)
-            get() {
-//                writePurchase(PurchaseDto("34", "25.12.17", "транспорт. электричка"))
-                val range = "Vova!A1:C"
-                val response = this.mService!!.spreadsheets().values()
-                        .get(OWN_GOOGLE_SHEET_ID, range)
-                        .execute()
-                val values = response.getValues()
-                val purchasesList = mutableListOf<PurchaseDto>()
-                sizePurchaseList = purchasesList.size
-                purchasesList.add(PurchaseDto("Сумма", "Дата", "На что"))
-                if (values != null) {
-                    for (row in values) {
-                        var purchase = PurchaseDto(row[0].toString(), row[1].toString(), row[2].toString())
-                        purchasesList.add(purchase)
-                    }
-                }
-                return purchasesList
-            }
+    private fun setupAccountNameAndRequestToApi(accountName: String?) {
+        mCredential.selectedAccountName = accountName
+        requestToApi(mCredential)
+    }
 
-        init {
-            val transport = AndroidHttp.newCompatibleTransport()
-            val jsonFactory = JacksonFactory.getDefaultInstance()
-            mService = com.google.api.services.sheets.v4.Sheets.Builder(
-                    transport, jsonFactory, credential)
-                    .setApplicationName("Google Sheets API Android Quickstart")
-                    .build()
-        }
+    //region ================= Root View =================
 
-        private fun writePurchase(purchase: PurchaseDto) {
-            val range = "Vova!A85:C"
-            val data: MutableList<Any> = mutableListOf(purchase.price, purchase.date, purchase.category)
-            val arrayData = mutableListOf(data)
-
-            val valueData: ValueRange = ValueRange()
-                    .setRange("Vova!A85:C85")
-                    .setValues(arrayData)
-                    .setMajorDimension("ROWS")
-            var batchData: BatchUpdateValuesRequest = BatchUpdateValuesRequest()
-                    .setValueInputOption("RAW")
-                    .setData(mutableListOf(valueData))
-            val response = mService!!.spreadsheets().values()
-                    .batchUpdate(OWN_GOOGLE_SHEET_ID, batchData)
-                    .execute()
-
-            if (response != null) {
-
-            }
-        }
-
-        /**
-         * Background task to call Google Sheets API.
-         * @param params no parameters needed for this task.
-         */
-        override fun doInBackground(vararg params: Void): MutableList<PurchaseDto>? {
-            try {
-                return dataFromApi
-            } catch (e: Exception) {
-                mLastError = e
-                cancel(true)
-                return null
-            }
-
-        }
-
-        override fun onPreExecute() {
-            showText("")
-            binding.progressPurchase.visibility = VISIBLE
-        }
-
-        override fun onPostExecute(purchaseList: MutableList<PurchaseDto>?) {
-            binding.progressPurchase.visibility = GONE
-            if (purchaseList == null || purchaseList.isEmpty()) {
-                showText("No results returned.")
-            } else {
-                var linearLayoutManager = LinearLayoutManager(baseContext)
-                var purchaseAdapter = PurchaseAdapter(purchaseList)
-                binding.purchases.layoutManager = linearLayoutManager
-                binding.purchases.adapter = purchaseAdapter
-            }
-        }
-
-        override fun onCancelled() {
-            binding.progressPurchase.visibility = GONE
-            if (mLastError != null) {
-                if (mLastError is GooglePlayServicesAvailabilityIOException) {
-                    showGooglePlayServicesAvailabilityErrorDialog(
-                            (mLastError as GooglePlayServicesAvailabilityIOException)
-                                    .connectionStatusCode)
-                } else if (mLastError is UserRecoverableAuthIOException) {
-                    startActivityForResult(
-                            (mLastError as UserRecoverableAuthIOException).intent,
-                            REQUEST_AUTHORIZATION)
-                } else {
-                    showText("The following error occurred:\n" + mLastError!!.message)
-                }
-            } else {
-                showText("Request cancelled.")
+    override fun requestToApi(credential: GoogleAccountCredential) {
+        mCredential = credential
+        if (!isGooglePlayServicesAvailable) {
+            acquireGooglePlayServices()
+        } else if (mCredential.selectedAccountName == null) {
+            chooseAccount()
+        } else if (!isDeviceOnline) {
+            showText("No network connection available.")
+        } else {
+            if (!router.hasRootController()) {
+                router.setRoot(RouterTransaction.with(MainController()))
             }
         }
     }
+
+    //endregion
 
     companion object {
 
@@ -350,6 +261,16 @@ class RootActivity : Activity(), EasyPermissions.PermissionCallbacks {
         private val PREF_ACCOUNT_NAME = "accountName"
         private val SCOPES = mutableListOf(SheetsScopes.DRIVE)
     }
+
+    //region ================= Setup Ui =================
+
+    private fun showText(caption : String) {
+        binding.statusTv.text = caption
+        binding.statusTv.visibility = VISIBLE
+    }
+
+    //endregion
+
 
     //region ================= Utils Methods =================
 

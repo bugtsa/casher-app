@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data />
+
+    <android.support.constraint.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <android.support.design.widget.TextInputLayout
+            android:id="@+id/price_purchase_wrapper"
+            style="@style/TilPurchase"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <EditText
+                android:id="@+id/price_purchase_et"
+                style="@style/EditText.ManualCode"
+                android:inputType="number"
+                tools:text="54654632" />
+        </android.support.design.widget.TextInputLayout>
+
+        <android.support.design.widget.TextInputLayout
+            android:id="@+id/category_purchase_wrapper"
+            style="@style/TilPurchase"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/price_purchase_wrapper">
+
+            <EditText
+                android:id="@+id/category_purchase_et"
+                style="@style/EditText.Category"
+                android:inputType="text"
+                tools:text="54654632" />
+        </android.support.design.widget.TextInputLayout>
+
+        <Button
+            android:id="@+id/save_purchase"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/spacing_xxx_medium_32"
+            android:text="@string/add_caption"
+            android:theme="@style/AccentButton"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toLeftOf="@+id/cancel_purchase"
+            app:layout_constraintTop_toBottomOf="@+id/category_purchase_wrapper" />
+
+        <Button
+            android:id="@+id/cancel_purchase"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/spacing_xxx_medium_32"
+            android:text="@string/cancel_caption"
+            android:theme="@style/AccentButton"
+            app:layout_constraintLeft_toRightOf="@+id/save_purchase"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/category_purchase_wrapper" />
+
+        <ProgressBar
+            android:id="@+id/progress_add_purchase"
+            android:layout_width="@dimen/spacing_bigger_56"
+            android:layout_height="@dimen/spacing_bigger_56"
+            android:layout_marginBottom="@dimen/spacing_xx_small_8"
+            android:layout_marginEnd="@dimen/spacing_xx_small_8"
+            android:layout_marginStart="@dimen/spacing_xx_small_8"
+            android:layout_marginTop="@dimen/spacing_xx_small_8"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:visibility="visible" />
+
+    </android.support.constraint.ConstraintLayout>
+</layout>
