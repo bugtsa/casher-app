@@ -10,6 +10,8 @@ import com.bugtsa.casher.utls.ConstantManager.Companion.START_COLUMN_SHEET
 import com.bugtsa.casher.utls.ConstantManager.Companion.TABLE_NAME_SHEET
 import com.bugtsa.casher.utls.ConstantManager.Companion.VALUE_INPUT_OPTION
 import com.bugtsa.casher.utls.GoogleSheetManager.Companion.OWN_GOOGLE_SHEET_ID
+import com.bugtsa.casher.utls.SoftwareUtils
+import com.bugtsa.casher.utls.SoftwareUtils.Companion.getCurrentTimeStamp
 import com.google.api.services.sheets.v4.Sheets
 import com.google.api.services.sheets.v4.model.BatchUpdateValuesRequest
 import com.google.api.services.sheets.v4.model.BatchUpdateValuesResponse
@@ -18,6 +20,7 @@ import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
+import java.util.*
 import javax.inject.Inject
 
 class AddPurchasePresenter @Inject constructor(googleSheetService: GoogleSheetService,
@@ -55,7 +58,9 @@ class AddPurchasePresenter @Inject constructor(googleSheetService: GoogleSheetSe
         addPurchaseView.showProgressBar()
         disposableSubscriptions.add(
                 PurchaseSubscriber(serviceSheets,
-                        PurchaseDto(pricePurchase, "25.12.17", categoryPurchase))!!
+                        PurchaseDto(pricePurchase,
+                                SoftwareUtils.timeStampToString(getCurrentTimeStamp(), Locale.getDefault()),
+                                categoryPurchase))!!
                         .subscribe(this::onBatchPurchasesCollected,
                                 this::onBatchPurchasesCollectionFailure))
     }
@@ -65,7 +70,7 @@ class AddPurchasePresenter @Inject constructor(googleSheetService: GoogleSheetSe
     //region ================= Purchase Subscriber =================
 
     private fun PurchaseSubscriber(service: Sheets, purchase: PurchaseDto): Single<BatchUpdateValuesResponse>? {
-        val data: MutableList<Any> = mutableListOf(purchase.price, purchase.date, purchase.category)
+        val data: MutableList<Any> = mutableListOf(purchase.price, purchase.time, purchase.category)
         val arrayData = mutableListOf(data)
         purchaseModel.sizePurchaseList = lastNotEmptyRow + 1
         lastNotEmptyRow = purchaseModel.sizePurchaseList
