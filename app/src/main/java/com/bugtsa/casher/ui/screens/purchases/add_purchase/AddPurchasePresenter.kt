@@ -22,6 +22,15 @@ import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
 import java.util.*
 import javax.inject.Inject
+import android.databinding.adapters.TextViewBindingAdapter.setText
+import android.widget.SearchView
+import com.bugtsa.casher.utls.RxSearchObservable
+import io.reactivex.ObservableSource
+import io.reactivex.functions.Consumer
+
+import io.reactivex.functions.Function
+import java.util.concurrent.TimeUnit
+
 
 class AddPurchasePresenter @Inject constructor(googleSheetService: GoogleSheetService,
                                                compositeDisposable: CompositeDisposable) {
@@ -66,6 +75,23 @@ class AddPurchasePresenter @Inject constructor(googleSheetService: GoogleSheetSe
     }
 
     //endregion
+
+    public fun requestToSearch(searchView: SearchView) {
+        RxSearchObservable.fromView(searchView)
+                .debounce(300, TimeUnit.MILLISECONDS)
+                .filter { text ->
+                    !text.isEmpty()
+                }
+                .distinctUntilChanged()
+                .switchMap { query -> dataFromNetwork(query) }
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(Consumer<String> { result -> addPurchaseView.setSearchText(result) })
+    }
+
+    private fun dataFromNetwork(query: String): ObservableSource<String> {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
 
     //region ================= Purchase Subscriber =================
 

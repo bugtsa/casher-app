@@ -5,4 +5,6 @@ interface AddPurchaseView {
 
     fun showProgressBar()
     fun hideProgressBar()
+
+    fun setSearchText(result: String)
 }

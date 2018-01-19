@@ -1,5 +1,5 @@
 apply plugin: 'com.android.application'
-
+apply plugin: 'io.fabric'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-kapt'
@@ -32,6 +32,17 @@ android {
 
     buildTypes.each {
         it.buildConfigField 'String', 'WEATHER_API_KEY', '"db9d12cd7429d8827de75c91a999793d"'
+    }
+
+    flavorDimensions "default"
+    productFlavors {
+        prod {
+
+        }
+
+        staging {
+
+        }
     }
 
     packagingOptions {
@@ -78,6 +89,10 @@ dependencies {
     implementation 'com.squareup.retrofit2:adapter-rxjava2:2.3.0'
 
     implementation 'com.bluelinelabs:conductor:2.1.4'
+
+    compile('com.crashlytics.sdk.android:crashlytics:2.8.0@aar') {
+        transitive = true
+    }
 
     kapt 'com.android.databinding:compiler:3.0.1'
 }

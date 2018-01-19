@@ -49,10 +49,6 @@ class AddPurchaseController : Controller(), AddPurchaseView {
 
     //endregion
 
-    private fun popCurrentController() {
-        router.popCurrentController()
-    }
-
     //region ================= Add Purchase View =================
 
     override fun completedAddPurchase() {
@@ -67,7 +63,13 @@ class AddPurchaseController : Controller(), AddPurchaseView {
 //        binding.pro
     }
 
+    override fun setSearchText(result: String) {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
     //endregion
 
-
+    private fun popCurrentController() {
+        router.popCurrentController()
+    }
 }
