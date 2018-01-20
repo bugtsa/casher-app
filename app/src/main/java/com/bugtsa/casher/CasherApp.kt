@@ -2,6 +2,7 @@ package com.bugtsa.casher
 
 import android.app.Application
 import com.bugtsa.casher.di.module.CasherApplicationModule
+import com.facebook.stetho.Stetho
 import toothpick.Toothpick
 import toothpick.Toothpick.setConfiguration
 import toothpick.configuration.Configuration.forDevelopment
@@ -17,6 +18,8 @@ class CasherApp : Application() {
         setConfiguration(configuration.disableReflection())
         FactoryRegistryLocator.setRootRegistry(FactoryRegistry())
         MemberInjectorRegistryLocator.setRootRegistry(MemberInjectorRegistry())
+
+        Stetho.initializeWithDefaults(this);
 
         val appScope = Toothpick.openScope(this)
         appScope.installModules(CasherApplicationModule(this))

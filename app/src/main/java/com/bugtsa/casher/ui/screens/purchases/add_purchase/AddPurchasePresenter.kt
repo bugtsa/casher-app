@@ -76,24 +76,24 @@ class AddPurchasePresenter @Inject constructor(googleSheetService: GoogleSheetSe
 
     //endregion
 
-    public fun requestToSearch(searchView: SearchView) {
-        RxSearchObservable.fromView(searchView)
-                .debounce(300, TimeUnit.MILLISECONDS)
-                .filter { text ->
-                    !text.isEmpty()
-                }
-                .distinctUntilChanged()
-                .switchMap { query -> dataFromNetwork(query) }
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(Consumer<String> { result -> addPurchaseView.setSearchText(result) })
-    }
+//    public fun requestToSearch(searchView: SearchView) {
+//        RxSearchObservable.fromView(searchView)
+//                .debounce(300, TimeUnit.MILLISECONDS)
+//                .filter { text ->
+//                    !text.isEmpty()
+//                }
+//                .distinctUntilChanged()
+//                .switchMap { query -> dataFromNetwork(query) }
+//                .subscribeOn(Schedulers.io())
+//                .observeOn(AndroidSchedulers.mainThread())
+//                .subscribe(Consumer<String> { result -> addPurchaseView.setSearchText(result), throws -> {} })
+//    }
 
     private fun dataFromNetwork(query: String): ObservableSource<String> {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
-    //region ================= Purchase Subscriber =================
+    //region ================= CategoryEntity Subscriber =================
 
     private fun PurchaseSubscriber(service: Sheets, purchase: PurchaseDto): Single<BatchUpdateValuesResponse>? {
         val data: MutableList<Any> = mutableListOf(purchase.price, purchase.time, purchase.category)

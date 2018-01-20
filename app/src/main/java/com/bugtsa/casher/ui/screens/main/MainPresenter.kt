@@ -1,7 +1,9 @@
 package com.bugtsa.casher.ui.screens.main
 
 import android.os.AsyncTask
+import android.util.Log
 import com.bugtsa.casher.arch.models.PurchaseModel
+import com.bugtsa.casher.data.LocalCategoryDataStore
 import com.bugtsa.casher.data.dto.PurchaseDto
 import com.bugtsa.casher.networking.GoogleSheetService
 import com.bugtsa.casher.utls.ConstantManager.Companion.DELIMITER_BETWEEN_COLUMNS
@@ -14,7 +16,10 @@ import com.bugtsa.casher.utls.GoogleSheetManager.Companion.OWN_GOOGLE_SHEET_ID
 import com.google.api.client.googleapis.extensions.android.gms.auth.GooglePlayServicesAvailabilityIOException
 import com.google.api.client.googleapis.extensions.android.gms.auth.UserRecoverableAuthIOException
 import com.google.api.services.sheets.v4.Sheets
+import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.schedulers.Schedulers
+import timber.log.Timber
 import java.io.IOException
 import javax.inject.Inject
 
@@ -22,10 +27,14 @@ class MainPresenter @Inject constructor(googleSheetService: GoogleSheetService) 
 
     private var serviceSheets: Sheets
 
-    @Inject lateinit var purchaseModel: PurchaseModel
+    @Inject
+    lateinit var purchaseModel: PurchaseModel
+    @Inject
+    lateinit var localCategoryDataStore: LocalCategoryDataStore
 
     lateinit var mainView: MainView
-    val disposableSubscriptions: CompositeDisposable = CompositeDisposable()
+    private val disposableSubscriptions: CompositeDisposable = CompositeDisposable()
+
 
     init {
         this.serviceSheets = googleSheetService.mService
@@ -40,7 +49,17 @@ class MainPresenter @Inject constructor(googleSheetService: GoogleSheetService) 
     }
 
     fun processData() {
+//        addComment("rain")
         MakeRequestTask().execute()
+    }
+
+    private fun addComment(category: String) {
+        disposableSubscriptions.add(
+                localCategoryDataStore.add(category)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe({ Timber.d("add comment success") },
+                        { t -> Timber.e(t, "add comment error") }))
     }
 
     //region ================= Request Tasks =================
@@ -62,7 +81,7 @@ class MainPresenter @Inject constructor(googleSheetService: GoogleSheetService) 
             get() {
                 val range = TABLE_NAME_SHEET + START_COLUMN_SHEET + ROW_START_SHEET +
                         DELIMITER_BETWEEN_COLUMNS + END_COLUMN_SHEET
-                val response = serviceSheets!!.spreadsheets().values()
+                val response = serviceSheets.spreadsheets().values()
                         .get(OWN_GOOGLE_SHEET_ID, range)
                         .execute()
                 val values = response.getValues()
@@ -78,14 +97,23 @@ class MainPresenter @Inject constructor(googleSheetService: GoogleSheetService) 
             }
 
         fun processPurchaseDto(price: String, dateOfSheet: String, category: String) : PurchaseDto {
-            if (dateOfSheet.contains(DELIMITER_BETWEEN_DATE_AND_TIME)) {
-                var index = dateOfSheet.indexOf(DELIMITER_BETWEEN_DATE_AND_TIME)
-                var date = dateOfSheet.substring(0, index)
-                var time = dateOfSheet.substring(index + DELIMITER_BETWEEN_DATE_AND_TIME.length, dateOfSheet.length)
-                return PurchaseDto(price, date, time, category)
-            } else {
-                return PurchaseDto(price, dateOfSheet, category)
+            when (dateOfSheet.contains(DELIMITER_BETWEEN_DATE_AND_TIME)) {
+                true -> {
+                    val index = dateOfSheet.indexOf(DELIMITER_BETWEEN_DATE_AND_TIME)
+                    val date = dateOfSheet.substring(0, index)
+                    val time = dateOfSheet.substring(index + DELIMITER_BETWEEN_DATE_AND_TIME.length, dateOfSheet.length)
+                    return PurchaseDto(price, date, time, category)
+                }
+                false -> return PurchaseDto(price, dateOfSheet, category)
             }
+//            if (dateOfSheet.contains(DELIMITER_BETWEEN_DATE_AND_TIME)) {
+//                val index = dateOfSheet.indexOf(DELIMITER_BETWEEN_DATE_AND_TIME)
+//                val date = dateOfSheet.substring(0, index)
+//                val time = dateOfSheet.substring(index + DELIMITER_BETWEEN_DATE_AND_TIME.length, dateOfSheet.length)
+//                return PurchaseDto(price, date, time, category)
+//            } else {
+//                return PurchaseDto(price, dateOfSheet, category)
+//            }
         }
 
         /**

@@ -20,6 +20,7 @@ import com.bluelinelabs.conductor.Router
 import com.bluelinelabs.conductor.RouterTransaction
 import com.bugtsa.casher.R
 import com.bugtsa.casher.databinding.ActivityRootBinding
+import com.bugtsa.casher.di.inject.CategoryDaoProvider
 import com.bugtsa.casher.ui.screens.main.MainController
 import com.crashlytics.android.Crashlytics
 import io.fabric.sdk.android.Fabric
