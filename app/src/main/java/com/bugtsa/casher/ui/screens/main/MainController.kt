@@ -1,6 +1,7 @@
 package com.bugtsa.casher.ui.screens.main
 
 import android.databinding.DataBindingUtil
+import android.support.v4.app.ActivityCompat.startActivityForResult
 import android.support.v7.widget.LinearLayoutManager
 import android.view.LayoutInflater
 import android.view.View
@@ -23,11 +24,12 @@ import javax.inject.Inject
 class MainController : Controller(), MainView {
 
     private lateinit var binding: ControllerMainBinding
-    @Inject lateinit var presenter: MainPresenter
+    @Inject
+    lateinit var presenter: MainPresenter
 
     lateinit private var mainControllerScope: Scope
 
-
+    //region ================= Implements Methods =================
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup): View {
         var view: View = inflater.inflate(R.layout.controller_main, container, false)
@@ -40,6 +42,7 @@ class MainController : Controller(), MainView {
 
         mainControllerScope = Toothpick.openScopes(activity, this)
         Toothpick.inject(this, mainControllerScope)
+
         presenter.onAttachView(this)
 
         presenter.processData()
@@ -49,16 +52,18 @@ class MainController : Controller(), MainView {
     override fun onDestroyView(view: View) {
         super.onDestroyView(view)
         presenter.onViewDestroy()
+        Toothpick.closeScope(this)
     }
+
+    //endregion
+
+    //region ================= Setup Ui =================
 
     private fun showAddPurchaseController(): View.OnClickListener? {
         return View.OnClickListener {
             router.pushController(RouterTransaction.with(AddPurchaseController()))
         }
     }
-
-    //region ================= Setup Ui =================
-
 
     //endregion
 

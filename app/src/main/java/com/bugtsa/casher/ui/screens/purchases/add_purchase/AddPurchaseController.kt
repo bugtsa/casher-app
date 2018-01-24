@@ -35,6 +35,7 @@ class AddPurchaseController : Controller(), AddPurchaseView {
     override fun onDestroyView(view: View) {
         super.onDestroyView(view)
         presenter.onViewDestroy()
+        Toothpick.closeScope(this)
     }
 
     override fun onAttach(view: View) {
