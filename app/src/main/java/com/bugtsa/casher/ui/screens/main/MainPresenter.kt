@@ -1,7 +1,7 @@
 package com.bugtsa.casher.ui.screens.main
 
 import android.os.AsyncTask
-import android.util.Log
+import android.text.TextUtils
 import com.bugtsa.casher.arch.models.PurchaseModel
 import com.bugtsa.casher.data.LocalCategoryDataStore
 import com.bugtsa.casher.data.dto.PurchaseDto
@@ -21,11 +21,16 @@ import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
 import timber.log.Timber
 import java.io.IOException
+import java.util.*
+import java.util.stream.Collectors
+import java.util.stream.Stream
 import javax.inject.Inject
 
 class MainPresenter @Inject constructor(googleSheetService: GoogleSheetService) {
 
     private var serviceSheets: Sheets
+
+    val purchasesList = mutableListOf<PurchaseDto>()
 
     @Inject
     lateinit var purchaseModel: PurchaseModel
@@ -56,10 +61,10 @@ class MainPresenter @Inject constructor(googleSheetService: GoogleSheetService) 
     private fun addComment(category: String) {
         disposableSubscriptions.add(
                 localCategoryDataStore.add(category)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe({ Timber.d("add comment success") },
-                        { t -> Timber.e(t, "add comment error") }))
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe({ Timber.d("add comment success") },
+                                { t -> Timber.e(t, "add comment error") }))
     }
 
     //region ================= Request Tasks =================
@@ -85,7 +90,6 @@ class MainPresenter @Inject constructor(googleSheetService: GoogleSheetService) 
                         .get(OWN_GOOGLE_SHEET_ID, range)
                         .execute()
                 val values = response.getValues()
-                val purchasesList = mutableListOf<PurchaseDto>()
                 purchaseModel.sizePurchaseList = values.size
                 if (values != null) {
                     for (row in values) {
@@ -96,7 +100,7 @@ class MainPresenter @Inject constructor(googleSheetService: GoogleSheetService) 
                 return purchasesList
             }
 
-        fun processPurchaseDto(price: String, dateOfSheet: String, category: String) : PurchaseDto {
+        fun processPurchaseDto(price: String, dateOfSheet: String, category: String): PurchaseDto {
             when (dateOfSheet.contains(DELIMITER_BETWEEN_DATE_AND_TIME)) {
                 true -> {
                     val index = dateOfSheet.indexOf(DELIMITER_BETWEEN_DATE_AND_TIME)
@@ -140,7 +144,7 @@ class MainPresenter @Inject constructor(googleSheetService: GoogleSheetService) 
             if (purchaseList == null || purchaseList.isEmpty()) {
                 mainView.setupStatusText("No results returned.")
             } else {
-                mainView.setupPurchaseList(purchaseList)
+                mainView.setupPurchaseList(purchaseList, processDateMap(purchaseList))
             }
         }
 
@@ -160,6 +164,44 @@ class MainPresenter @Inject constructor(googleSheetService: GoogleSheetService) 
                 mainView.setupStatusText("Request cancelled.")
             }
         }
+    }
+
+//    private fun processDateMap(purchaseList: MutableList<PurchaseDto>): Map<String, Int> {
+////        var dateMap: MutableMap<String, Int> = mutableMapOf()
+//
+//        return purchaseList
+//                .filter { purchase -> !TextUtils.isEmpty(purchase.date) }
+////                .flatMap { purchase -> purchase }
+////                .filter { purchase -> !dateMap.contains(purchase.date) }
+//                .map { purchase ->
+//                    //                    if (!dateMap.contains(purchase.date)) {
+////                        dateMap.put(purchase.date, purchaseList.indexOf(purchase))
+////                    }
+//                    return mutableMapOf(Pair(purchase.date, purchase))
+//                }
+//                .filter { purchase ->  }
+////                .filter { purchase ->  }
+////                .toMap()
+////                .filter {  }
+////                .toMap()
+////        return dateMap
+//    }
+
+    private fun processDateMap(purchaseList: MutableList<PurchaseDto>): MutableMap<String, Int> {
+        var dateMap: MutableMap<String, Int> = mutableMapOf()
+
+        purchaseList
+                .filter { purchase -> !TextUtils.isEmpty(purchase.date) }
+                .map { purchase ->
+                    if (!dateMap.contains(purchase.date)) {
+                        dateMap.put(purchase.date, purchaseList.indexOf(purchase))
+                    }
+                }
+        return dateMap
+    }
+
+    fun requestScrollToDown() {
+        mainView.scrollToPosition(purchasesList.size - 1)
     }
 
     //endregion

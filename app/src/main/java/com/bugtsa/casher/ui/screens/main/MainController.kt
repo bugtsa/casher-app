@@ -20,6 +20,9 @@ import com.google.api.client.googleapis.extensions.android.gms.auth.UserRecovera
 import toothpick.Scope
 import toothpick.Toothpick
 import javax.inject.Inject
+import android.support.v7.widget.RecyclerView
+import com.bugtsa.casher.ui.OnChangePosition
+
 
 class MainController : Controller(), MainView {
 
@@ -38,7 +41,10 @@ class MainController : Controller(), MainView {
 
         var linearLayoutManager = LinearLayoutManager(activity)
         binding.purchases.layoutManager = linearLayoutManager
+        setupScrollListener()
+
         binding.addPurchase.setOnClickListener(showAddPurchaseController())
+        binding.bottomScroll.setOnClickListener(requestToScrollDown())
 
         mainControllerScope = Toothpick.openScopes(activity, this)
         Toothpick.inject(this, mainControllerScope)
@@ -65,13 +71,44 @@ class MainController : Controller(), MainView {
         }
     }
 
+    private fun requestToScrollDown(): View.OnClickListener?   {
+        return View.OnClickListener {
+            presenter.requestScrollToDown()
+        }
+    }
+
+    private fun setupScrollListener() {
+        binding.purchases.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            override fun onScrolled(recyclerView: RecyclerView?, dx: Int, dy: Int) {
+                if (dy > 0 || dy < 0 && binding.bottomScroll.isShown()) {
+                    binding.bottomScroll.hide()
+                }
+            }
+
+            override fun onScrollStateChanged(recyclerView: RecyclerView?, newState: Int) {
+                if (newState == RecyclerView.SCROLL_STATE_IDLE) {
+                    binding.bottomScroll.show()
+                }
+
+                super.onScrollStateChanged(recyclerView, newState)
+            }
+        })
+    }
+
     //endregion
 
     //region ================= Main View =================
 
-    override fun setupPurchaseList(purchaseList: MutableList<PurchaseDto>) {
-        var purchaseAdapter = PurchaseAdapter(purchaseList)
+    override fun scrollToPosition(position: Int) {
+        binding.purchases.scrollToPosition(position)
+        binding.bottomScroll.visibility = GONE
+    }
+
+    override fun setupPurchaseList(purchaseList: MutableList<PurchaseDto>,
+                                   dateMap: MutableMap<String, Int>) {
+        var purchaseAdapter = PurchaseAdapter(purchaseList, dateMap )
         binding.purchases.adapter = purchaseAdapter
+        presenter.requestScrollToDown()
     }
 
     override fun setupStatusText(caption: String) {
