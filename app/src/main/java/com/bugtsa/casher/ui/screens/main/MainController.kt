@@ -71,7 +71,7 @@ class MainController : Controller(), MainView {
         }
     }
 
-    private fun requestToScrollDown(): View.OnClickListener?   {
+    private fun requestToScrollDown(): View.OnClickListener? {
         return View.OnClickListener {
             presenter.requestScrollToDown()
         }
@@ -80,17 +80,9 @@ class MainController : Controller(), MainView {
     private fun setupScrollListener() {
         binding.purchases.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrolled(recyclerView: RecyclerView?, dx: Int, dy: Int) {
-                if (dy > 0 || dy < 0 && binding.bottomScroll.isShown()) {
-                    binding.bottomScroll.hide()
+                if (dy > 0 || dy < 0) {
+                    presenter.setScrollPurchasesList(true)
                 }
-            }
-
-            override fun onScrollStateChanged(recyclerView: RecyclerView?, newState: Int) {
-                if (newState == RecyclerView.SCROLL_STATE_IDLE) {
-                    binding.bottomScroll.show()
-                }
-
-                super.onScrollStateChanged(recyclerView, newState)
             }
         })
     }
@@ -99,6 +91,14 @@ class MainController : Controller(), MainView {
 
     //region ================= Main View =================
 
+    override fun showBottomScroll() {
+        binding.bottomScroll.show()
+    }
+
+    override fun hideBottomScroll() {
+        binding.bottomScroll.hide()
+    }
+
     override fun scrollToPosition(position: Int) {
         binding.purchases.scrollToPosition(position)
         binding.bottomScroll.visibility = GONE
@@ -106,7 +106,11 @@ class MainController : Controller(), MainView {
 
     override fun setupPurchaseList(purchaseList: MutableList<PurchaseDto>,
                                    dateMap: MutableMap<String, Int>) {
-        var purchaseAdapter = PurchaseAdapter(purchaseList, dateMap )
+        var purchaseAdapter = PurchaseAdapter(purchaseList, dateMap, object : OnChangePosition {
+            override fun changePosition(position: Int) {
+                presenter.checkPositionAdapter(position)
+            }
+        })
         binding.purchases.adapter = purchaseAdapter
         presenter.requestScrollToDown()
     }

@@ -14,4 +14,7 @@ interface MainView {
     fun setupPurchaseList(purchaseList: MutableList<PurchaseDto>,
                           dateMap: MutableMap<String, Int>)
     fun scrollToPosition(position: Int)
+
+    fun showBottomScroll()
+    fun hideBottomScroll()
 }

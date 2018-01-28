@@ -103,6 +103,7 @@
             android:layout_height="wrap_content"
             android:layout_margin="@dimen/spacing_normal_16"
             android:src="@drawable/ic_keyboard_arrow_down_black_24dp"
+            android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent" />
 

@@ -13,12 +13,13 @@ import com.bugtsa.casher.ui.OnChangePosition
 import kotlinx.android.synthetic.main.item_purchase.view.*
 
 class PurchaseAdapter(purchaseList: MutableList<PurchaseDto>,
-                      dateMap: MutableMap<String, Int>)
+                      dateMap: MutableMap<String, Int>,
+                      onChangePosition: OnChangePosition)
     : RecyclerView.Adapter<PurchaseAdapter.ViewHolder>() {
 
     var purchasesList: MutableList<PurchaseDto> = purchaseList
     var datesMap: MutableMap<String, Int> = dateMap
-//    var onChangePosition: OnChangePosition = onChangePosition
+    var onChangePosition: OnChangePosition = onChangePosition
 
     //region ================= Implements Methods =================
 
@@ -32,7 +33,7 @@ class PurchaseAdapter(purchaseList: MutableList<PurchaseDto>,
         holder?.timePurchase?.text = purchase.time
         holder?.price?.text = purchase.price
         holder?.category?.text = purchase.category
-//        onChangePosition.changePosition(holder?.layoutPosition!!)
+        onChangePosition.changePosition(holder?.layoutPosition!!)
     }
 
     override fun getItemCount(): Int {

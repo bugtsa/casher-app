@@ -32,6 +32,8 @@ class MainPresenter @Inject constructor(googleSheetService: GoogleSheetService) 
 
     val purchasesList = mutableListOf<PurchaseDto>()
 
+    private var isScrollPurchasesList: Boolean
+
     @Inject
     lateinit var purchaseModel: PurchaseModel
     @Inject
@@ -43,6 +45,7 @@ class MainPresenter @Inject constructor(googleSheetService: GoogleSheetService) 
 
     init {
         this.serviceSheets = googleSheetService.mService
+        isScrollPurchasesList = false
     }
 
     fun onAttachView(landingView: MainView) {
@@ -202,6 +205,26 @@ class MainPresenter @Inject constructor(googleSheetService: GoogleSheetService) 
 
     fun requestScrollToDown() {
         mainView.scrollToPosition(purchasesList.size - 1)
+    }
+
+    fun checkPositionAdapter(position: Int) {
+        if (position <= purchasesList.size - 10 && isScrollPurchasesList()) {
+            mainView.showBottomScroll()
+        } else {
+            mainView.hideBottomScroll()
+        }
+    }
+
+    //endregion
+
+    //region ================= Scroll Purchases List =================
+
+    private fun isScrollPurchasesList() : Boolean {
+        return isScrollPurchasesList
+    }
+
+    fun setScrollPurchasesList(isScroll: Boolean) {
+        isScrollPurchasesList = isScroll
     }
 
     //endregion
