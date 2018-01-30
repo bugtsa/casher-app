@@ -20,7 +20,10 @@ import com.bluelinelabs.conductor.Router
 import com.bluelinelabs.conductor.RouterTransaction
 import com.bugtsa.casher.R
 import com.bugtsa.casher.databinding.ActivityRootBinding
+import com.bugtsa.casher.di.inject.CategoryDaoProvider
 import com.bugtsa.casher.ui.screens.main.MainController
+import com.crashlytics.android.Crashlytics
+import io.fabric.sdk.android.Fabric
 import toothpick.Scope
 import toothpick.Toothpick
 import javax.inject.Inject
@@ -43,6 +46,7 @@ class RootActivity : Activity(), EasyPermissions.PermissionCallbacks, RootView {
      */
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        Fabric.with(this, Crashlytics())
         activityScope = Toothpick.openScopes(application, this)
         Toothpick.inject(this, activityScope)
 

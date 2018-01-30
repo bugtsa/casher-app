@@ -22,6 +22,16 @@ import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
 import java.util.*
 import javax.inject.Inject
+import com.bugtsa.casher.data.LocalCategoryDataStore
+import com.bugtsa.casher.model.CategoryEntity
+import io.reactivex.Flowable
+import io.reactivex.Flowable.fromIterable
+import io.reactivex.Observable.fromIterable
+import io.reactivex.ObservableSource
+
+import timber.log.Timber
+import java.util.stream.Collectors.toList
+
 
 class AddPurchasePresenter @Inject constructor(googleSheetService: GoogleSheetService,
                                                compositeDisposable: CompositeDisposable) {
@@ -30,7 +40,11 @@ class AddPurchasePresenter @Inject constructor(googleSheetService: GoogleSheetSe
     private var disposableSubscriptions: CompositeDisposable
     lateinit var addPurchaseView: AddPurchaseView
 
-    @Inject lateinit var purchaseModel: PurchaseModel
+    @Inject
+    lateinit var purchaseModel: PurchaseModel
+
+    @Inject
+    lateinit var localCategoryDataStore: LocalCategoryDataStore
 
     var lastNotEmptyRow: Int = 0
 
@@ -52,6 +66,30 @@ class AddPurchasePresenter @Inject constructor(googleSheetService: GoogleSheetSe
 
     //endregion
 
+    //region ================= Categories From Database =================
+
+    fun checkExistCategoriesInDatabase() {
+        disposableSubscriptions.add(
+                localCategoryDataStore.getCategories()
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .flatMap { categoryList ->
+                            var nameList: MutableList<String> = mutableListOf()
+                            for (categoryEntity in categoryList) {
+                                nameList.add(categoryEntity.name)
+                            }
+                            Flowable.fromArray(nameList)
+                        }
+                        .subscribe({ categoriesList: List<String> ->
+                            addPurchaseView.setupCategoriesList(categoriesList)
+                            Timber.d("get all categories")
+                        },
+                                { t -> Timber.e(t, "error at check exist categories " + t) }))
+    }
+
+    //endregion
+
+
     //region ================= Request to add purchase =================
 
     fun addPurchase(pricePurchase: String, categoryPurchase: String) {
@@ -67,7 +105,24 @@ class AddPurchasePresenter @Inject constructor(googleSheetService: GoogleSheetSe
 
     //endregion
 
-    //region ================= Purchase Subscriber =================
+//    public fun requestToSearch(searchView: SearchView) {
+//        RxSearchObservable.fromView(searchView)
+//                .debounce(300, TimeUnit.MILLISECONDS)
+//                .filter { text ->
+//                    !text.isEmpty()
+//                }
+//                .distinctUntilChanged()
+//                .switchMap { query -> dataFromNetwork(query) }
+//                .subscribeOn(Schedulers.io())
+//                .observeOn(AndroidSchedulers.mainThread())
+//                .subscribe(Consumer<String> { result -> addPurchaseView.setSearchText(result), throws -> {} })
+//    }
+
+    private fun dataFromNetwork(query: String): ObservableSource<String> {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    //region ================= CategoryEntity Subscriber =================
 
     private fun PurchaseSubscriber(service: Sheets, purchase: PurchaseDto): Single<BatchUpdateValuesResponse>? {
         val data: MutableList<Any> = mutableListOf(purchase.price, purchase.time, purchase.category)

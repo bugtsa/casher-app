@@ -1,8 +1,23 @@
 apply plugin: 'com.android.application'
-
+apply plugin: 'io.fabric'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-kapt'
+
+project.ext {
+    supportLibraryVersion = "26.1.0"
+    androidArchVersion = "1.0.0"
+    daggerVersion = "2.11"
+    rxJavaVersion = "2.1.0"
+    rxAndroidVersion = "2.0.1"
+    timberVersion = "4.5.1"
+    priorityJobQueueVersion = "2.0.1"
+    playServicesVersion = "11.4.2"
+    retrofitVersion = "2.1.0"
+    okHttpVersion = "3.4.1"
+    rxRelayVersion = "2.0.0"
+    rxLintVersion = "1.6"
+}
 
 android {
     compileSdkVersion 26
@@ -13,6 +28,7 @@ android {
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        vectorDrawables.useSupportLibrary = true
         multiDexEnabled true
 
 //        javaCompileOptions {
@@ -34,6 +50,17 @@ android {
         it.buildConfigField 'String', 'WEATHER_API_KEY', '"db9d12cd7429d8827de75c91a999793d"'
     }
 
+    flavorDimensions "default"
+    productFlavors {
+        prod {
+
+        }
+
+        staging {
+
+        }
+    }
+
     packagingOptions {
         exclude 'META-INF/rxjava.properties'
     }
@@ -46,14 +73,11 @@ android {
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlin_version"
-    implementation 'com.android.support:appcompat-v7:26.1.0'
-    implementation 'com.android.support:design:26.1.0'
-    implementation 'com.android.support:recyclerview-v7:26.1.0'
+    implementation "com.android.support:appcompat-v7:$project.supportLibraryVersion"
+    implementation "com.android.support:design:$project.supportLibraryVersion"
+    implementation "com.android.support:recyclerview-v7:$project.supportLibraryVersion"
     implementation 'com.android.support.constraint:constraint-layout:1.0.2'
 
-//    testImplementation 'junit:junit:4.12'
-//    androidTestImplementation 'com.android.support.test:runner:1.0.1'
-//    androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.1'
 
     implementation 'com.google.android.gms:play-services-auth:11.8.0'
     implementation 'pub.devrel:easypermissions:0.3.0'
@@ -79,7 +103,22 @@ dependencies {
 
     implementation 'com.bluelinelabs:conductor:2.1.4'
 
+    compile('com.crashlytics.sdk.android:crashlytics:2.8.0@aar') {
+        transitive = true
+    }
+
     kapt 'com.android.databinding:compiler:3.0.1'
+
+    // Room Database
+    implementation "android.arch.persistence.room:runtime:$project.androidArchVersion"
+    implementation "android.arch.persistence.room:rxjava2:$project.androidArchVersion"
+//    annotationProcessor "android.arch.persistence.room:compiler:$project.androidArchVersion"
+    kapt "android.arch.persistence.room:compiler:$project.androidArchVersion"
+
+    // Timber
+    implementation "com.jakewharton.timber:timber:$project.timberVersion"
+
+    implementation 'com.facebook.stetho:stetho:1.5.0'
 }
 
 kapt {

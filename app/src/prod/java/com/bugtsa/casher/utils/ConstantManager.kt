@@ -5,7 +5,7 @@ class ConstantManager {
     companion object {
         var TABLE_NAME_SHEET = "Вова!"
         var ROW_START_SHEET = "3"
-        var START_COLUMN_SHEET = "P"
+        var START_COLUMN_SHEET = "Q"
         var END_COLUMN_SHEET = "S"
         var DELIMITER_BETWEEN_COLUMNS = ":"
         var MAJOR_DIMENSION = "ROWS"
