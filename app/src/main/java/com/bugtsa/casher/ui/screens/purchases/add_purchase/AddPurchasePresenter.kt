@@ -22,14 +22,15 @@ import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
 import java.util.*
 import javax.inject.Inject
-import android.databinding.adapters.TextViewBindingAdapter.setText
-import android.widget.SearchView
-import com.bugtsa.casher.utls.RxSearchObservable
+import com.bugtsa.casher.data.LocalCategoryDataStore
+import com.bugtsa.casher.model.CategoryEntity
+import io.reactivex.Flowable
+import io.reactivex.Flowable.fromIterable
+import io.reactivex.Observable.fromIterable
 import io.reactivex.ObservableSource
-import io.reactivex.functions.Consumer
 
-import io.reactivex.functions.Function
-import java.util.concurrent.TimeUnit
+import timber.log.Timber
+import java.util.stream.Collectors.toList
 
 
 class AddPurchasePresenter @Inject constructor(googleSheetService: GoogleSheetService,
@@ -39,7 +40,11 @@ class AddPurchasePresenter @Inject constructor(googleSheetService: GoogleSheetSe
     private var disposableSubscriptions: CompositeDisposable
     lateinit var addPurchaseView: AddPurchaseView
 
-    @Inject lateinit var purchaseModel: PurchaseModel
+    @Inject
+    lateinit var purchaseModel: PurchaseModel
+
+    @Inject
+    lateinit var localCategoryDataStore: LocalCategoryDataStore
 
     var lastNotEmptyRow: Int = 0
 
@@ -60,6 +65,30 @@ class AddPurchasePresenter @Inject constructor(googleSheetService: GoogleSheetSe
     }
 
     //endregion
+
+    //region ================= Categories From Database =================
+
+    fun checkExistCategoriesInDatabase() {
+        disposableSubscriptions.add(
+                localCategoryDataStore.getCategories()
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .flatMap { categoryList ->
+                            var nameList: MutableList<String> = mutableListOf()
+                            for (categoryEntity in categoryList) {
+                                nameList.add(categoryEntity.name)
+                            }
+                            Flowable.fromArray(nameList)
+                        }
+                        .subscribe({ categoriesList: List<String> ->
+                            addPurchaseView.setupCategoriesList(categoriesList)
+                            Timber.d("get all categories")
+                        },
+                                { t -> Timber.e(t, "error at check exist categories " + t) }))
+    }
+
+    //endregion
+
 
     //region ================= Request to add purchase =================
 

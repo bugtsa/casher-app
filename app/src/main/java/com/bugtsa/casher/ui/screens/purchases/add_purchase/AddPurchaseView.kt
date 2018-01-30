@@ -7,4 +7,6 @@ interface AddPurchaseView {
     fun hideProgressBar()
 
     fun setSearchText(result: String)
+
+    fun setupCategoriesList(categoriesList: List<String>)
 }

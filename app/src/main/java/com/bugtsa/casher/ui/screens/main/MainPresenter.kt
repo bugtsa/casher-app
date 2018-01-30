@@ -5,6 +5,7 @@ import android.text.TextUtils
 import com.bugtsa.casher.arch.models.PurchaseModel
 import com.bugtsa.casher.data.LocalCategoryDataStore
 import com.bugtsa.casher.data.dto.PurchaseDto
+import com.bugtsa.casher.model.CategoryEntity
 import com.bugtsa.casher.networking.GoogleSheetService
 import com.bugtsa.casher.utls.ConstantManager.Companion.DELIMITER_BETWEEN_COLUMNS
 import com.bugtsa.casher.utls.ConstantManager.Companion.DELIMITER_BETWEEN_DATE_AND_TIME
@@ -18,12 +19,10 @@ import com.google.api.client.googleapis.extensions.android.gms.auth.UserRecovera
 import com.google.api.services.sheets.v4.Sheets
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.functions.Consumer
 import io.reactivex.schedulers.Schedulers
 import timber.log.Timber
 import java.io.IOException
-import java.util.*
-import java.util.stream.Collectors
-import java.util.stream.Stream
 import javax.inject.Inject
 
 class MainPresenter @Inject constructor(googleSheetService: GoogleSheetService) {
@@ -57,38 +56,61 @@ class MainPresenter @Inject constructor(googleSheetService: GoogleSheetService) 
     }
 
     fun processData() {
-//        addComment("rain")
-//        addComment("спорт. кроссфит")
-//        addComment("спорт. обувь")
-//        addComment("услуги. моб связь")
-//        addComment("товары. дом")
-//        addComment("еда. продукты")
-//        addComment("еда. обед")
-//        addComment("еда. кафе")
-//        addComment("еда. фастфуд")
-//        addComment("здоровье. аптека")
-//        addComment("развлечения. театр")
-//        addComment("развлечения. антикафе")
-//        addComment("развлечения. батут")
-//        addComment("развлечения. кино")
-//        addComment("развлечения. хобби")
-//        addComment("развлечения. экскурсия")
-//        addComment("развлечения. аттракцион")
-//        addComment("транспорт. маршрутка")
-//        addComment("транспорт. электричка")
-//        addComment("транспорт. такси")
-//        addComment("транспорт. самолет")
+        checkExistCategoriesInDatabase()
+
         MakeRequestTask().execute()
     }
 
-    private fun addComment(category: String) {
+    //region ================= DataBase =================
+
+    private fun saveAllFieldsToDatabase() {
+        addFieldToDatabase("спорт. кроссфит")
+        addFieldToDatabase("спорт. обувь")
+        addFieldToDatabase("услуги. моб связь")
+        addFieldToDatabase("товары. дом")
+        addFieldToDatabase("еда. продукты")
+        addFieldToDatabase("еда. обед")
+        addFieldToDatabase("еда. кафе")
+        addFieldToDatabase("еда. фастфуд")
+        addFieldToDatabase("здоровье. аптека")
+        addFieldToDatabase("развлечения. театр")
+        addFieldToDatabase("развлечения. антикафе")
+        addFieldToDatabase("развлечения. батут")
+        addFieldToDatabase("развлечения. кино")
+        addFieldToDatabase("развлечения. хобби")
+        addFieldToDatabase("развлечения. экскурсия")
+        addFieldToDatabase("развлечения. аттракцион")
+        addFieldToDatabase("транспорт. маршрутка")
+        addFieldToDatabase("транспорт. электричка")
+        addFieldToDatabase("транспорт. такси")
+        addFieldToDatabase("транспорт. самолет")
+    }
+
+    private fun addFieldToDatabase(category: String) {
         disposableSubscriptions.add(
                 localCategoryDataStore.add(category)
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe({ Timber.d("add comment success") },
-                                { t -> Timber.e(t, "add comment error") }))
+                        .subscribe({ Timber.d("add categories to database success") },
+                                { t -> Timber.e(t, "add categories to database error") }))
     }
+
+    private fun checkExistCategoriesInDatabase() {
+        disposableSubscriptions.add(
+                localCategoryDataStore.getCategories()
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe({ categoriesList: List<CategoryEntity> ->
+                            if (categoriesList.isEmpty()) {
+                                saveAllFieldsToDatabase()
+                                Timber.d("save all categories")
+                            }
+                        },
+                                { t -> Timber.e(t, "error at check exist categories") }))
+    }
+
+    //endregion
+
 
     //region ================= Request Tasks =================
 
@@ -239,7 +261,7 @@ class MainPresenter @Inject constructor(googleSheetService: GoogleSheetService) 
 
     //region ================= Scroll Purchases List =================
 
-    private fun isScrollPurchasesList() : Boolean {
+    private fun isScrollPurchasesList(): Boolean {
         return isScrollPurchasesList
     }
 

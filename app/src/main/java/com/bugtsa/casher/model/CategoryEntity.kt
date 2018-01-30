@@ -7,17 +7,6 @@ import android.arch.persistence.room.PrimaryKey
 @Entity(tableName = "category")
 data class CategoryEntity(var name: String) {
 
-
     @PrimaryKey(autoGenerate = true)
     var id: Long = 0
-//    @Ignore
-//    constructor(name: String) {
-//        this.name = name
-//    }
-//
-//    @Ignore
-//    constructor(id: Long, name: String) {
-//        this.id = id
-//        this.name = name
-//    }
 }
