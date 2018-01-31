@@ -157,6 +157,15 @@ class AddPurchasePresenter @Inject constructor(googleSheetService: GoogleSheetSe
     fun onBatchPurchasesCollectionFailure(throwable: Throwable) {
     }
 
+    fun setupCurrentDate() {
+        disposableSubscriptions.add(Flowable
+                .just(SoftwareUtils.modernTimeStampToString(getCurrentTimeStamp(), Locale.getDefault()))
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe { currentDateAndTime -> addPurchaseView.setupCurrentDate(currentDateAndTime) })
+//                addPurchaseView . setupCurrentDate (SoftwareUtils.modernTimeStampToString(getCurrentTimeStamp(), Locale.getDefault()))
+    }
+
     //endregion
 
 }

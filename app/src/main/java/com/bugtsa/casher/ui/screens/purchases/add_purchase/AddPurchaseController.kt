@@ -42,6 +42,7 @@ class AddPurchaseController : Controller(), AddPurchaseView {
         addPurchaseScope = Toothpick.openScopes(activity, this)
         Toothpick.inject(this, addPurchaseScope)
         presenter.onAttachView(this)
+        presenter.setupCurrentDate()
         presenter.checkExistCategoriesInDatabase()
 
         return view
@@ -89,6 +90,10 @@ class AddPurchaseController : Controller(), AddPurchaseView {
                 android.R.layout.simple_dropdown_item_1line,
                 categoriesList)
         binding.categoryPurchaseEt.setAdapter(adapter)
+    }
+
+    override fun setupCurrentDate(dateAndTimeString: String) {
+        binding.datePurchase.text = activity!!.resources.getString(R.string.current_date_and_time) +  dateAndTimeString
     }
 
     //endregion

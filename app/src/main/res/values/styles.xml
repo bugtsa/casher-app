@@ -33,12 +33,21 @@
         <item name="android:padding">@dimen/spacing_xx_small_8</item>
     </style>
 
+    <style name="DatePurchase" parent="MatchWrap">
+        <item name="android:layout_marginLeft">@dimen/spacing_xx_small_8</item>
+        <item name="android:layout_marginRight">@dimen/spacing_xx_small_8</item>
+        <item name="android:layout_marginTop">@dimen/spacing_xx_small_8</item>
+        <item name="android:layout_marginBottom">@dimen/spacing_xx_small_8</item>
+    </style>
+
     <style name="EditText.ManualCode">
         <item name="android:hint">@string/price_purchase</item>
     </style>
 
     <style name="EditText.Category">
         <item name="android:hint">@string/category_purchase</item>
+        <item name="android:layout_marginLeft">@dimen/spacing_xx_small_8</item>
+        <item name="android:layout_marginRight">@dimen/spacing_xx_small_8</item>
     </style>
 
     <style name="AccentButton" parent="Base.Widget.AppCompat.Button">

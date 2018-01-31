@@ -25,8 +25,6 @@
         <android.support.v7.widget.AppCompatAutoCompleteTextView
             android:id="@+id/category_purchase_et"
             style="@style/EditText.Category"
-            android:layout_marginLeft="@dimen/spacing_xx_small_8"
-            android:layout_marginRight="@dimen/spacing_xx_small_8"
             android:drawableEnd="@drawable/ic_cancel_accent_24dp"
             android:drawableLeft="@drawable/ic_search_accent_24dp"
             android:drawableRight="@drawable/ic_cancel_accent_24dp"
@@ -35,6 +33,20 @@
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/price_purchase_wrapper"
             tools:text="54654632" />
+
+        <CheckBox
+            android:id="@+id/add_date_purchase"
+            style="@style/DatePurchase"
+            android:text="@string/date_purchase"
+            app:layout_constraintTop_toBottomOf="@+id/category_purchase_et"/>
+
+        <TextView
+            android:id="@+id/date_purchase"
+            style="@style/DatePurchase"
+            android:textSize="@dimen/font_medium_14"
+            android:textColor="@color/colorDarkText"
+            tools:text="@string/add_caption"
+            app:layout_constraintTop_toBottomOf="@+id/add_date_purchase"/>
 
         <Button
             android:id="@+id/save_purchase"
@@ -45,7 +57,7 @@
             android:theme="@style/AccentButton"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toLeftOf="@+id/cancel_purchase"
-            app:layout_constraintTop_toBottomOf="@+id/category_purchase_et" />
+            app:layout_constraintTop_toBottomOf="@+id/date_purchase" />
 
         <Button
             android:id="@+id/cancel_purchase"
@@ -56,7 +68,7 @@
             android:theme="@style/AccentButton"
             app:layout_constraintLeft_toRightOf="@+id/save_purchase"
             app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/category_purchase_et" />
+            app:layout_constraintTop_toBottomOf="@+id/date_purchase" />
 
         <ProgressBar
             android:id="@+id/progress_add_purchase"
