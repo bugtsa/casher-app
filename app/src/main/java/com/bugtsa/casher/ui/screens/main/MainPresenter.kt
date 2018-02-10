@@ -66,7 +66,11 @@ class MainPresenter @Inject constructor(googleSheetService: GoogleSheetService) 
     private fun saveAllFieldsToDatabase() {
         addFieldToDatabase("спорт. кроссфит")
         addFieldToDatabase("спорт. обувь")
+        addFieldToDatabase("спорт. батут")
+        addFieldToDatabase("спорт. кроссфит")
         addFieldToDatabase("услуги. моб связь")
+        addFieldToDatabase("услуги. стрижка")
+        addFieldToDatabase("услуги. ремонт телефона")
         addFieldToDatabase("товары. дом")
         addFieldToDatabase("еда. продукты")
         addFieldToDatabase("еда. обед")
@@ -84,6 +88,10 @@ class MainPresenter @Inject constructor(googleSheetService: GoogleSheetService) 
         addFieldToDatabase("транспорт. электричка")
         addFieldToDatabase("транспорт. такси")
         addFieldToDatabase("транспорт. самолет")
+        addFieldToDatabase("авто. парковка")
+        addFieldToDatabase("авто. бензин")
+        addFieldToDatabase("питомцы. корм")
+        addFieldToDatabase("техника. наушники")
     }
 
     private fun addFieldToDatabase(category: String) {

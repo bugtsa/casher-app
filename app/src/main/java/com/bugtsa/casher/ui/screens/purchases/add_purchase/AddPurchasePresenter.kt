@@ -24,13 +24,18 @@ import java.util.*
 import javax.inject.Inject
 import com.bugtsa.casher.data.LocalCategoryDataStore
 import com.bugtsa.casher.model.CategoryEntity
+import io.reactivex.BackpressureStrategy
 import io.reactivex.Flowable
 import io.reactivex.Flowable.fromIterable
 import io.reactivex.Observable.fromIterable
 import io.reactivex.ObservableSource
+import io.reactivex.annotations.NonNull
 
 import timber.log.Timber
+import java.util.concurrent.TimeUnit
 import java.util.stream.Collectors.toList
+import io.reactivex.subjects.PublishSubject
+import javax.xml.datatype.DatatypeConstants.SECONDS
 
 
 class AddPurchasePresenter @Inject constructor(googleSheetService: GoogleSheetService,
@@ -148,7 +153,7 @@ class AddPurchasePresenter @Inject constructor(googleSheetService: GoogleSheetSe
     }
 
     fun onBatchPurchasesCollected(batchUpdateValuesRes: BatchUpdateValuesResponse) {
-        if (batchUpdateValuesRes != null) {
+        if (!batchUpdateValuesRes.isEmpty()) {
             addPurchaseView.hideProgressBar()
             addPurchaseView.completedAddPurchase()
         }
@@ -157,13 +162,35 @@ class AddPurchasePresenter @Inject constructor(googleSheetService: GoogleSheetSe
     fun onBatchPurchasesCollectionFailure(throwable: Throwable) {
     }
 
-    fun setupCurrentDate() {
+//    fun setupCurrentDate() {
+//        disposableSubscriptions.add(Flowable
+//                .just(SoftwareUtils.modernTimeStampToString(getCurrentTimeStamp(), Locale.getDefault()))
+//                .repeat()
+//                .debounce(10, TimeUnit.SECONDS)
+//                .subscribeOn(Schedulers.io())
+//                .observeOn(AndroidSchedulers.mainThread())
+//                .subscribe { currentDateAndTime -> addPurchaseView.setupCurrentDate(currentDateAndTime) })
+////                addPurchaseView . setupCurrentDate (SoftwareUtils.modernTimeStampToString(getCurrentTimeStamp(), Locale.getDefault()))
+//    }
+
+    @NonNull
+    private val updateSubject = PublishSubject.create<String>()
+
+    private fun loadCurrentDate() {
         disposableSubscriptions.add(Flowable
                 .just(SoftwareUtils.modernTimeStampToString(getCurrentTimeStamp(), Locale.getDefault()))
+                .debounce(10, TimeUnit.SECONDS)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe { currentDateAndTime -> addPurchaseView.setupCurrentDate(currentDateAndTime) })
-//                addPurchaseView . setupCurrentDate (SoftwareUtils.modernTimeStampToString(getCurrentTimeStamp(), Locale.getDefault()))
+                .repeatWhen({ repeatHandler -> repeatHandler.flatMap({ result -> updateSubject.toFlowable(BackpressureStrategy.LATEST) }) })
+                .subscribe({ result -> addPurchaseView.setupCurrentDate(result) }, { err -> }))
+    }
+
+    fun setupCurrentDate() {
+//        updateSubject.onNext(SoftwareUtils.modernTimeStampToString(getCurrentTimeStamp(), Locale.getDefault()))
+        updateSubject.onNext(null.toString())
+//        loadCurrentDate()
+//        disposableSubscriptions.add(updateSubject.subscribe({ result -> addPurchaseView.setupCurrentDate(result)}))
     }
 
     //endregion
