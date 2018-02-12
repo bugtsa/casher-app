@@ -10,5 +10,6 @@
     <string name="add_caption">Добавить</string>
     <string name="date_purchase">установить дату самостоятельно</string>
     <string name="current_date_and_time">"Текущая дата и время: "</string>
+    <string name="changed_date_and_time">"Установленные дата и время: "</string>
 
 </resources>

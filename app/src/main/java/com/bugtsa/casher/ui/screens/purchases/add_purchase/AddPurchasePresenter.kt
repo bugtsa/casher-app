@@ -23,19 +23,15 @@ import io.reactivex.schedulers.Schedulers
 import java.util.*
 import javax.inject.Inject
 import com.bugtsa.casher.data.LocalCategoryDataStore
-import com.bugtsa.casher.model.CategoryEntity
+import com.maxproj.calendarpicker.Models.YearMonthDay
 import io.reactivex.BackpressureStrategy
 import io.reactivex.Flowable
-import io.reactivex.Flowable.fromIterable
-import io.reactivex.Observable.fromIterable
 import io.reactivex.ObservableSource
 import io.reactivex.annotations.NonNull
 
 import timber.log.Timber
 import java.util.concurrent.TimeUnit
-import java.util.stream.Collectors.toList
 import io.reactivex.subjects.PublishSubject
-import javax.xml.datatype.DatatypeConstants.SECONDS
 
 
 class AddPurchasePresenter @Inject constructor(googleSheetService: GoogleSheetService,
@@ -52,6 +48,8 @@ class AddPurchasePresenter @Inject constructor(googleSheetService: GoogleSheetSe
     lateinit var localCategoryDataStore: LocalCategoryDataStore
 
     var lastNotEmptyRow: Int = 0
+
+    var installDate: String = ""
 
     init {
         this.serviceSheets = googleSheetService.mService
@@ -162,16 +160,18 @@ class AddPurchasePresenter @Inject constructor(googleSheetService: GoogleSheetSe
     fun onBatchPurchasesCollectionFailure(throwable: Throwable) {
     }
 
-//    fun setupCurrentDate() {
-//        disposableSubscriptions.add(Flowable
-//                .just(SoftwareUtils.modernTimeStampToString(getCurrentTimeStamp(), Locale.getDefault()))
-//                .repeat()
-//                .debounce(10, TimeUnit.SECONDS)
-//                .subscribeOn(Schedulers.io())
-//                .observeOn(AndroidSchedulers.mainThread())
-//                .subscribe { currentDateAndTime -> addPurchaseView.setupCurrentDate(currentDateAndTime) })
-////                addPurchaseView . setupCurrentDate (SoftwareUtils.modernTimeStampToString(getCurrentTimeStamp(), Locale.getDefault()))
-//    }
+
+    private fun refreshCurrentDate() {
+        disposableSubscriptions.add(Flowable
+                .interval(10, TimeUnit.SECONDS)
+                .flatMap { t ->
+                    Flowable.just(
+                            SoftwareUtils.modernTimeStampToString(getCurrentTimeStamp(), Locale.getDefault()))
+                }
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe({ result -> addPurchaseView.setupCurrentDate(result) }, { err -> }))
+    }
 
     @NonNull
     private val updateSubject = PublishSubject.create<String>()
@@ -182,15 +182,33 @@ class AddPurchasePresenter @Inject constructor(googleSheetService: GoogleSheetSe
                 .debounce(10, TimeUnit.SECONDS)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .repeatWhen({ repeatHandler -> repeatHandler.flatMap({ result -> updateSubject.toFlowable(BackpressureStrategy.LATEST) }) })
+                .repeatWhen({ repeatHandler ->
+                    repeatHandler
+                            .flatMap({ result -> updateSubject.toFlowable(BackpressureStrategy.LATEST) })
+                })
                 .subscribe({ result -> addPurchaseView.setupCurrentDate(result) }, { err -> }))
     }
 
     fun setupCurrentDate() {
-//        updateSubject.onNext(SoftwareUtils.modernTimeStampToString(getCurrentTimeStamp(), Locale.getDefault()))
-        updateSubject.onNext(null.toString())
-//        loadCurrentDate()
-//        disposableSubscriptions.add(updateSubject.subscribe({ result -> addPurchaseView.setupCurrentDate(result)}))
+        addPurchaseView.setupCurrentDate(SoftwareUtils.modernTimeStampToString(getCurrentTimeStamp(), Locale.getDefault()))
+        refreshCurrentDate()
+    }
+
+    fun checkShowDateAndTimePickers(checked: Boolean) {
+        if(checked) {
+            addPurchaseView.setupCalendarPicker()
+        }
+
+    }
+
+    fun changeCalendar(selectedDate: YearMonthDay) {
+         installDate = "" + String.format("%02d", selectedDate.day) + "." +
+                String.format("%02d", selectedDate.month) + "." +
+                selectedDate.year
+                        .toString()
+                        .substring(selectedDate.year.toString().length - 2)
+        addPurchaseView.setupChangedDate(installDate, "")
+
     }
 
     //endregion

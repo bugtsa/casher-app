@@ -1,12 +1,7 @@
 package com.bugtsa.casher.ui.screens.purchases.add_purchase
 
-import android.annotation.SuppressLint
 import android.databinding.DataBindingUtil
 import android.graphics.Color
-import android.graphics.PorterDuff
-import android.graphics.drawable.Drawable
-import android.support.v4.content.ContextCompat
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
@@ -14,11 +9,11 @@ import android.view.ViewGroup
 import com.bluelinelabs.conductor.Controller
 import com.bugtsa.casher.R
 import com.bugtsa.casher.databinding.ControllerAddPurchaseBinding
-import com.bugtsa.casher.model.CategoryEntity
 import toothpick.Scope
 import toothpick.Toothpick
 import javax.inject.Inject
 import android.widget.ArrayAdapter
+import com.maxproj.calendarpicker.Builder
 
 
 @Suppress("DEPRECATED_IDENTITY_EQUALS")
@@ -38,6 +33,9 @@ class AddPurchaseController : Controller(), AddPurchaseView {
         binding = DataBindingUtil.bind(view)
 
         setupCategoriesTouchListener()
+        binding.addDatePurchase.setOnClickListener({ viewAddDatePurchase ->
+            presenter.checkShowDateAndTimePickers(binding.addDatePurchase.isChecked)
+        })
 
         addPurchaseScope = Toothpick.openScopes(activity, this)
         Toothpick.inject(this, addPurchaseScope)
@@ -93,10 +91,34 @@ class AddPurchaseController : Controller(), AddPurchaseView {
     }
 
     override fun setupCurrentDate(dateAndTimeString: String) {
-        binding.datePurchase.text = activity!!.resources.getString(R.string.current_date_and_time) +  dateAndTimeString
+        binding.datePurchase.text = activity!!.resources.getString(R.string.current_date_and_time) + dateAndTimeString
+    }
+
+    override fun setupChangedDate(date: String, time: String) {
+        binding.datePurchase.text = activity!!.resources.getString(R.string.changed_date_and_time) + date + " " + time
+    }
+
+    //region ================= Calendar And Time Picker =================
+
+    override fun setupCalendarPicker() {
+        var builder = Builder(activity, Builder.CalendarPickerOnConfirm { yearMonthDay ->
+            presenter.changeCalendar(yearMonthDay)
+        })
+        builder
+                .setPromptText("Select Date")
+                .setPromptSize(18)
+                .setPromptColor(Color.RED)
+//                .setPromptBgColor(0xFFFFFFFF)
+
+        builder.show()
+
+//        Builder.CalendarPickerOnConfirm.onComplete(CalendarPickerOnConfirm)
     }
 
     //endregion
+
+    //endregion
+
 
     //region ================= Categories List Methods =================
 
