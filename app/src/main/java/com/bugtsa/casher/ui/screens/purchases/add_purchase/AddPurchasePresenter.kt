@@ -3,12 +3,9 @@ package com.bugtsa.casher.ui.screens.purchases.add_purchase
 import com.bugtsa.casher.arch.models.PurchaseModel
 import com.bugtsa.casher.data.dto.PurchaseDto
 import com.bugtsa.casher.networking.GoogleSheetService
-import com.bugtsa.casher.utils.ConstantManager.Companion.DELIMITER_BETWEEN_COLUMNS
 import com.bugtsa.casher.utils.ConstantManager.Companion.END_COLUMN_SHEET
-import com.bugtsa.casher.utils.ConstantManager.Companion.MAJOR_DIMENSION
 import com.bugtsa.casher.utils.ConstantManager.Companion.START_COLUMN_SHEET
-import com.bugtsa.casher.utils.ConstantManager.Companion.TABLE_NAME_SHEET
-import com.bugtsa.casher.utils.ConstantManager.Companion.VALUE_INPUT_OPTION
+import com.bugtsa.casher.utils.ConstantManager.Companion.PURCHASE_TABLE_NAME_SHEET
 import com.bugtsa.casher.utils.GoogleSheetManager.Companion.OWN_GOOGLE_SHEET_ID
 import com.bugtsa.casher.utils.SoftwareUtils
 import com.bugtsa.casher.utils.SoftwareUtils.Companion.getCurrentTimeStamp
@@ -23,6 +20,9 @@ import io.reactivex.schedulers.Schedulers
 import java.util.*
 import javax.inject.Inject
 import com.bugtsa.casher.data.LocalCategoryDataStore
+import com.bugtsa.casher.utils.ParentConstantManager.Companion.DELIMITER_BETWEEN_COLUMNS
+import com.bugtsa.casher.utils.ParentConstantManager.Companion.MAJOR_DIMENSION
+import com.bugtsa.casher.utils.ParentConstantManager.Companion.VALUE_INPUT_OPTION
 import com.maxproj.calendarpicker.Models.YearMonthDay
 import io.reactivex.BackpressureStrategy
 import io.reactivex.Flowable
@@ -133,7 +133,7 @@ class AddPurchasePresenter @Inject constructor(googleSheetService: GoogleSheetSe
         purchaseModel.sizePurchaseList = lastNotEmptyRow + 1
         lastNotEmptyRow = purchaseModel.sizePurchaseList
         val valueData: ValueRange = ValueRange()
-                .setRange(TABLE_NAME_SHEET + START_COLUMN_SHEET + lastNotEmptyRow + DELIMITER_BETWEEN_COLUMNS + END_COLUMN_SHEET + lastNotEmptyRow)
+                .setRange(PURCHASE_TABLE_NAME_SHEET + START_COLUMN_SHEET + lastNotEmptyRow + DELIMITER_BETWEEN_COLUMNS + END_COLUMN_SHEET + lastNotEmptyRow)
                 .setValues(arrayData)
                 .setMajorDimension(MAJOR_DIMENSION)
         var batchData: BatchUpdateValuesRequest = BatchUpdateValuesRequest()

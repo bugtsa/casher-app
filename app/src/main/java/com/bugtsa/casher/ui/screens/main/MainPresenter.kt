@@ -7,13 +7,13 @@ import com.bugtsa.casher.data.LocalCategoryDataStore
 import com.bugtsa.casher.data.dto.PurchaseDto
 import com.bugtsa.casher.model.CategoryEntity
 import com.bugtsa.casher.networking.GoogleSheetService
-import com.bugtsa.casher.utils.ConstantManager.Companion.DELIMITER_BETWEEN_COLUMNS
-import com.bugtsa.casher.utils.ConstantManager.Companion.DELIMITER_BETWEEN_DATE_AND_TIME
 import com.bugtsa.casher.utils.ConstantManager.Companion.END_COLUMN_SHEET
 import com.bugtsa.casher.utils.ConstantManager.Companion.ROW_START_SHEET
 import com.bugtsa.casher.utils.ConstantManager.Companion.START_COLUMN_SHEET
-import com.bugtsa.casher.utils.ConstantManager.Companion.TABLE_NAME_SHEET
+import com.bugtsa.casher.utils.ConstantManager.Companion.PURCHASE_TABLE_NAME_SHEET
 import com.bugtsa.casher.utils.GoogleSheetManager.Companion.OWN_GOOGLE_SHEET_ID
+import com.bugtsa.casher.utils.ParentConstantManager.Companion.DELIMITER_BETWEEN_COLUMNS
+import com.bugtsa.casher.utils.ParentConstantManager.Companion.DELIMITER_BETWEEN_DATE_AND_TIME
 import com.google.api.client.googleapis.extensions.android.gms.auth.GooglePlayServicesAvailabilityIOException
 import com.google.api.client.googleapis.extensions.android.gms.auth.UserRecoverableAuthIOException
 import com.google.api.services.sheets.v4.Sheets
@@ -139,7 +139,7 @@ class MainPresenter @Inject constructor(googleSheetService: GoogleSheetService) 
         private val dataFromApi: MutableList<PurchaseDto>
             @Throws(IOException::class)
             get() {
-                val range = TABLE_NAME_SHEET + START_COLUMN_SHEET + ROW_START_SHEET +
+                val range = PURCHASE_TABLE_NAME_SHEET + START_COLUMN_SHEET + ROW_START_SHEET +
                         DELIMITER_BETWEEN_COLUMNS + END_COLUMN_SHEET
                 val response = serviceSheets.spreadsheets().values()
                         .get(OWN_GOOGLE_SHEET_ID, range)
