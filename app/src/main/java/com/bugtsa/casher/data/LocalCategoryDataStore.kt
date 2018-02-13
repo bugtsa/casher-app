@@ -10,7 +10,7 @@ import javax.inject.Inject
 
 class LocalCategoryDataStore @Inject constructor(categoryDao: CategoryDao) : LocalCategoryRepository {
 
-    lateinit var categoryDao: CategoryDao
+    var categoryDao: CategoryDao
 
     init {
         this.categoryDao = categoryDao

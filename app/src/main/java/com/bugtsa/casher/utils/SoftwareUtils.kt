@@ -1,4 +1,4 @@
-package com.bugtsa.casher.utls
+package com.bugtsa.casher.utils
 
 import java.sql.Timestamp
 import java.text.ParseException

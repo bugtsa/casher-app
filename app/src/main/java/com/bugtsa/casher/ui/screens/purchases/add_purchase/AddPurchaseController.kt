@@ -112,7 +112,6 @@ class AddPurchaseController : Controller(), AddPurchaseView, TimePickerDialog.On
                 .setPromptText("Select Date")
                 .setPromptSize(18)
                 .setPromptColor(Color.RED)
-//                .setPromptBgColor(0xFFFFFFFF)
         builder.show()
     }
 
@@ -123,7 +122,6 @@ class AddPurchaseController : Controller(), AddPurchaseView, TimePickerDialog.On
                 now.get(Calendar.HOUR_OF_DAY),
                 now.get(Calendar.MINUTE),
                 true
-//                mode24Hours.isChecked()
         )
         tpd.show(activity!!.fragmentManager, "TagTimePickerDialog")
     }
@@ -131,10 +129,7 @@ class AddPurchaseController : Controller(), AddPurchaseView, TimePickerDialog.On
     override fun onTimeSet(view: TimePickerDialog, hourOfDay: Int, minute: Int, second: Int) {
         val hourString = if (hourOfDay < 10) "0" + hourOfDay else "" + hourOfDay
         val minuteString = if (minute < 10) "0" + minute else "" + minute
-        val secondString = if (second < 10) "0" + second else "" + second
-        val time = "You picked the following time: " + hourString + "h" + minuteString + "m" + secondString + "s"
         presenter.changeTime(hourString, minuteString)
-//        timeTextView!!.text = time
     }
 
     //endregion
@@ -158,8 +153,12 @@ class AddPurchaseController : Controller(), AddPurchaseView, TimePickerDialog.On
 
     //endregion
 
+    //region ================= Private Methods =================
 
     private fun popCurrentController() {
         router.popCurrentController()
     }
+
+    //endregion
+
 }
