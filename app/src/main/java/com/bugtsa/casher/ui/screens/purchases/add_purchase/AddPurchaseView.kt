@@ -12,5 +12,6 @@ interface AddPurchaseView {
 
     fun setupCurrentDate(dateAndTimeString: String)
     fun setupChangedDate(date: String, time: String)
-    fun setupCalendarPicker()
+    fun setupDatePicker()
+    fun setupTimePicker()
 }

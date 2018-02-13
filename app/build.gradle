@@ -23,7 +23,7 @@ android {
     compileSdkVersion 26
     defaultConfig {
         applicationId "com.bugtsa.casher"
-        minSdkVersion 16
+        minSdkVersion 17
         targetSdkVersion 26
         versionCode 1
         versionName "1.0"
@@ -121,6 +121,7 @@ dependencies {
     implementation 'com.facebook.stetho:stetho:1.5.0'
 
     implementation 'com.github.maxyou:CalendarPicker:v1.0.3'
+    implementation 'net.alhazmy13.hijridatepicker:library:2.0.2'
 }
 
 kapt {

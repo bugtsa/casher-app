@@ -179,7 +179,6 @@ class AddPurchasePresenter @Inject constructor(googleSheetService: GoogleSheetSe
     private fun loadCurrentDate() {
         disposableSubscriptions.add(Flowable
                 .just(SoftwareUtils.modernTimeStampToString(getCurrentTimeStamp(), Locale.getDefault()))
-                .debounce(10, TimeUnit.SECONDS)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .repeatWhen({ repeatHandler ->
@@ -195,20 +194,25 @@ class AddPurchasePresenter @Inject constructor(googleSheetService: GoogleSheetSe
     }
 
     fun checkShowDateAndTimePickers(checked: Boolean) {
-        if(checked) {
-            addPurchaseView.setupCalendarPicker()
+        if (checked) {
+            addPurchaseView.setupDatePicker()
+            disposableSubscriptions.clear()
+        } else {
+            setupCurrentDate()
         }
-
     }
 
     fun changeCalendar(selectedDate: YearMonthDay) {
-         installDate = "" + String.format("%02d", selectedDate.day) + "." +
+        installDate = "" + String.format("%02d", selectedDate.day) + "." +
                 String.format("%02d", selectedDate.month) + "." +
                 selectedDate.year
                         .toString()
                         .substring(selectedDate.year.toString().length - 2)
-        addPurchaseView.setupChangedDate(installDate, "")
+        addPurchaseView.setupTimePicker()
+    }
 
+    fun changeTime(hourString: String, minuteString: String) {
+        addPurchaseView.setupChangedDate(installDate, hourString +":" + minuteString)
     }
 
     //endregion
