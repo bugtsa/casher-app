@@ -58,16 +58,15 @@ class MainPresenter @Inject constructor(googleSheetService: GoogleSheetService) 
 
     fun processData() {
         checkExistCategoriesInDatabase()
-
         MakeRequestTask().execute()
     }
 
     //region ================= Load Categories =================
 
-    private fun requestLoadFieldsCategories() {
+    private fun requestLoadFieldsCategories(storageCategoriesList: List<String>) {
         disposableSubscriptions.add(
                 loadFieldsCategoriesSubscriber(serviceSheets)!!
-                        .subscribe({ t -> onBatchPurchasesCollected(t) }))
+                        .subscribe({ loadedCategoriesList -> saveCategoriesListToDatabase(loadedCategoriesList, storageCategoriesList) }))
     }
 
     private fun loadFieldsCategoriesSubscriber(service: Sheets): Single<List<String>>? {
@@ -81,18 +80,25 @@ class MainPresenter @Inject constructor(googleSheetService: GoogleSheetService) 
                             .get(OWN_GOOGLE_SHEET_ID, range)
                             .execute()
                             .getValues()
-                            .map { rowList: MutableList<Any>? -> rowList!!.lastOrNull().toString()})
+                            .map { rowList: MutableList<Any>? -> rowList!!.lastOrNull().toString() })
                 }
                 .observeOn(AndroidSchedulers.mainThread())
     }
 
-    fun onBatchPurchasesCollected(data: List<String>) {
-        if (!data.isEmpty()) {
-            
-//            addPurchaseView.hideProgressBar()
-//            addPurchaseView.completedAddPurchase()
+    fun saveCategoriesListToDatabase(networkCategoriesList: List<String>,
+                                     storageCategoriesList: List<String>) {
+        var isListsHasSameContent = networkCategoriesList sameContentWith storageCategoriesList
+
+        if (!networkCategoriesList.isEmpty() && !isListsHasSameContent) {
+            for (category in networkCategoriesList) {
+                if (!storageCategoriesList.contains(category)) {
+                    addFieldToDatabase(category)
+                }
+            }
         }
     }
+
+    infix fun <T> Collection<T>.sameContentWith(collection: Collection<T>?) = collection?.let { this.size == it.size && this.containsAll(it) }
 
     fun onBatchPurchasesCollectionFailure(throwable: Throwable) {
     }
@@ -101,40 +107,6 @@ class MainPresenter @Inject constructor(googleSheetService: GoogleSheetService) 
 
 
     //region ================= DataBase =================
-
-    private fun saveAllFieldsToDatabase() {
-        addFieldToDatabase("спорт. кроссфит")
-        addFieldToDatabase("спорт. обувь")
-        addFieldToDatabase("спорт. батут")
-        addFieldToDatabase("спорт. кроссфит")
-        addFieldToDatabase("услуги. моб связь")
-        addFieldToDatabase("услуги. стрижка")
-        addFieldToDatabase("услуги. ремонт телефона")
-        addFieldToDatabase("услуги. ком платежи")
-        addFieldToDatabase("товары. дом")
-        addFieldToDatabase("еда. продукты")
-        addFieldToDatabase("еда. обед")
-        addFieldToDatabase("еда. кафе")
-        addFieldToDatabase("еда. фастфуд")
-        addFieldToDatabase("здоровье. аптека")
-        addFieldToDatabase("здоровье. косметика")
-        addFieldToDatabase("развлечения. театр")
-        addFieldToDatabase("развлечения. антикафе")
-        addFieldToDatabase("развлечения. батут")
-        addFieldToDatabase("развлечения. кино")
-        addFieldToDatabase("развлечения. хобби")
-        addFieldToDatabase("развлечения. экскурсия")
-        addFieldToDatabase("развлечения. аттракцион")
-        addFieldToDatabase("транспорт. маршрутка")
-        addFieldToDatabase("транспорт. электричка")
-        addFieldToDatabase("транспорт. такси")
-        addFieldToDatabase("транспорт. самолет")
-        addFieldToDatabase("авто. парковка")
-        addFieldToDatabase("авто. бензин")
-        addFieldToDatabase("авто. ремонт")
-        addFieldToDatabase("питомцы. корм")
-        addFieldToDatabase("техника. наушники")
-    }
 
     private fun addFieldToDatabase(category: String) {
         disposableSubscriptions.add(
@@ -150,12 +122,9 @@ class MainPresenter @Inject constructor(googleSheetService: GoogleSheetService) 
                 localCategoryDataStore.getCategories()
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe({ categoriesList: List<CategoryEntity> ->
-                            requestLoadFieldsCategories()
-                            if (categoriesList.isEmpty()) {
-//                                saveAllFieldsToDatabase()
-                                Timber.d("save all categories")
-                            }
+                        .map { it.mapNotNull { it.name } }
+                        .subscribe({ storageCategoriesList: List<String> ->
+                            requestLoadFieldsCategories(storageCategoriesList)
                         },
                                 { t -> Timber.e(t, "error at check exist categories") }))
     }
