@@ -22,7 +22,7 @@ class LocalCategoryDataStore @Inject constructor(categoryDao: CategoryDao) : Loc
         }
     }
 
-    override fun getCategories(): Flowable<List<CategoryEntity>> {
+    override fun getCategoriesList(): Flowable<List<CategoryEntity>> {
         return categoryDao.getCategories()
     }
 }

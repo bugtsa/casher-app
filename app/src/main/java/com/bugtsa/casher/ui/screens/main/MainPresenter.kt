@@ -5,7 +5,6 @@ import android.text.TextUtils
 import com.bugtsa.casher.arch.models.PurchaseModel
 import com.bugtsa.casher.data.LocalCategoryDataStore
 import com.bugtsa.casher.data.dto.PurchaseDto
-import com.bugtsa.casher.model.CategoryEntity
 import com.bugtsa.casher.networking.GoogleSheetService
 import com.bugtsa.casher.utils.ConstantManager.Companion.END_COLUMN_SHEET
 import com.bugtsa.casher.utils.ConstantManager.Companion.ROW_START_SHEET
@@ -57,25 +56,37 @@ class MainPresenter @Inject constructor(googleSheetService: GoogleSheetService) 
     }
 
     fun processData() {
-        checkExistCategoriesInDatabase()
+        performCheckStorageCategoriesList()
         MakeRequestTask().execute()
     }
 
-    //region ================= Load Categories =================
+    //region ================= Compare Storage and Network Categories =================
 
-    private fun requestLoadFieldsCategories(storageCategoriesList: List<String>) {
+    private fun performCheckStorageCategoriesList() {
         disposableSubscriptions.add(
-                loadFieldsCategoriesSubscriber(serviceSheets)!!
-                        .subscribe({ loadedCategoriesList -> saveCategoriesListToDatabase(loadedCategoriesList, storageCategoriesList) }))
+                localCategoryDataStore.getCategoriesList()
+                        .subscribeOn(Schedulers.io())
+                        .map { it.mapNotNull { it.name } }
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .doOnNext { storageCategoriesList: List<String> ->
+                            disposableSubscriptions.add(networkCategoriesListSingle(serviceSheets)!!
+                                    .subscribe({ networkCategoriesList ->
+                                        checkNetworkCategoriesListInDatabase(networkCategoriesList, storageCategoriesList)
+                                    },
+                                            { t -> Timber.e(t, "error at check exist categories") }))
+                        }
+                        .subscribe({ storageCategoriesList: List<String> ->
+                        },
+                                { t -> Timber.e(t, "error at check exist categories") }))
     }
 
-    private fun loadFieldsCategoriesSubscriber(service: Sheets): Single<List<String>>? {
+    private fun networkCategoriesListSingle(service: Sheets): Single<List<String>>? {
         val range = CATEGORIES_TABLE_NAME_SHEET + START_COLUMN_SHEET + ROW_START_SHEET +
                 DELIMITER_BETWEEN_COLUMNS + START_COLUMN_SHEET
 
         return Single.just("")
                 .subscribeOn(Schedulers.newThread())
-                .flatMap { emptyString ->
+                .flatMap { _ ->
                     Single.just(service.spreadsheets().values()
                             .get(OWN_GOOGLE_SHEET_ID, range)
                             .execute()
@@ -85,30 +96,26 @@ class MainPresenter @Inject constructor(googleSheetService: GoogleSheetService) 
                 .observeOn(AndroidSchedulers.mainThread())
     }
 
-    fun saveCategoriesListToDatabase(networkCategoriesList: List<String>,
-                                     storageCategoriesList: List<String>) {
-        var isListsHasSameContent = networkCategoriesList sameContentWith storageCategoriesList
+    private fun checkNetworkCategoriesListInDatabase(networkCategoriesList: List<String>,
+                                                     storageCategoriesList: List<String>) {
+        val isListsHasSameContent: Boolean? = networkCategoriesList sameContentWith storageCategoriesList
 
-        if (!networkCategoriesList.isEmpty() && !isListsHasSameContent) {
+        if (!networkCategoriesList.isEmpty() && !isListsHasSameContent!!) {
             for (category in networkCategoriesList) {
                 if (!storageCategoriesList.contains(category)) {
-                    addFieldToDatabase(category)
+                    addCategoryToDatabase(category)
                 }
             }
         }
     }
 
-    infix fun <T> Collection<T>.sameContentWith(collection: Collection<T>?) = collection?.let { this.size == it.size && this.containsAll(it) }
-
-    fun onBatchPurchasesCollectionFailure(throwable: Throwable) {
-    }
+    private infix fun <T> Collection<T>.sameContentWith(collection: Collection<T>?) = collection?.let { this.size == it.size && this.containsAll(it) }
 
     //endregion
 
-
     //region ================= DataBase =================
 
-    private fun addFieldToDatabase(category: String) {
+    private fun addCategoryToDatabase(category: String) {
         disposableSubscriptions.add(
                 localCategoryDataStore.add(category)
                         .subscribeOn(Schedulers.io())
@@ -117,20 +124,7 @@ class MainPresenter @Inject constructor(googleSheetService: GoogleSheetService) 
                                 { t -> Timber.e(t, "add categories to database error") }))
     }
 
-    private fun checkExistCategoriesInDatabase() {
-        disposableSubscriptions.add(
-                localCategoryDataStore.getCategories()
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .map { it.mapNotNull { it.name } }
-                        .subscribe({ storageCategoriesList: List<String> ->
-                            requestLoadFieldsCategories(storageCategoriesList)
-                        },
-                                { t -> Timber.e(t, "error at check exist categories") }))
-    }
-
     //endregion
-
 
     //region ================= Request Tasks =================
 

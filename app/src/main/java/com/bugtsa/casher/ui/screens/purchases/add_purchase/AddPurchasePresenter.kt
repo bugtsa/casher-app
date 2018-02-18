@@ -73,7 +73,7 @@ class AddPurchasePresenter @Inject constructor(googleSheetService: GoogleSheetSe
 
     fun checkExistCategoriesInDatabase() {
         disposableSubscriptions.add(
-                localCategoryDataStore.getCategories()
+                localCategoryDataStore.getCategoriesList()
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .flatMap { categoryList ->
