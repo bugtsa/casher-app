@@ -3,7 +3,7 @@ package com.bugtsa.casher.utils
  class ParentConstantManager {
 
      companion object {
-         var CATEGORIES_TABLE_NAME_SHEET = "Categories"
+         var CATEGORIES_TABLE_NAME_SHEET = "Categories!"
 
          var DELIMITER_BETWEEN_COLUMNS = ":"
          var MAJOR_DIMENSION = "ROWS"
