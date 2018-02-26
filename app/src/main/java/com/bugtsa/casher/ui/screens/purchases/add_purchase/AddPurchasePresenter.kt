@@ -20,47 +20,39 @@ import io.reactivex.schedulers.Schedulers
 import java.util.*
 import javax.inject.Inject
 import com.bugtsa.casher.data.LocalCategoryDataStore
+import com.bugtsa.casher.utils.ParentConstantManager.Companion.CATEGORIES_TABLE_NAME_SHEET
 import com.bugtsa.casher.utils.ParentConstantManager.Companion.DELIMITER_BETWEEN_COLUMNS
 import com.bugtsa.casher.utils.ParentConstantManager.Companion.MAJOR_DIMENSION
 import com.bugtsa.casher.utils.ParentConstantManager.Companion.VALUE_INPUT_OPTION
 import com.maxproj.calendarpicker.Models.YearMonthDay
-import io.reactivex.BackpressureStrategy
 import io.reactivex.Flowable
-import io.reactivex.ObservableSource
-import io.reactivex.annotations.NonNull
 
 import timber.log.Timber
 import java.util.concurrent.TimeUnit
-import io.reactivex.subjects.PublishSubject
 
 
 class AddPurchasePresenter @Inject constructor(googleSheetService: GoogleSheetService,
                                                compositeDisposable: CompositeDisposable) {
 
-    private var serviceSheets: Sheets
-    private var disposableSubscriptions: CompositeDisposable
-    lateinit var addPurchaseView: AddPurchaseView
+    private var serviceSheets: Sheets = googleSheetService.mService
+    private var disposableSubscriptions: CompositeDisposable = compositeDisposable
 
     @Inject
     lateinit var purchaseModel: PurchaseModel
-
     @Inject
     lateinit var localCategoryDataStore: LocalCategoryDataStore
 
-    var lastNotEmptyRow: Int = 0
-
+    var lastNotEmptyPurchaseRow: Int = 0
     var installDate: String = ""
 
-    init {
-        this.serviceSheets = googleSheetService.mService
-        this.disposableSubscriptions = compositeDisposable
-    }
+    lateinit var addPurchaseView: AddPurchaseView
+
 
     //region ================ Base Methods =================
 
     fun onAttachView(addPurchaseView: AddPurchaseView) {
         this.addPurchaseView = addPurchaseView
-        lastNotEmptyRow = purchaseModel.sizePurchaseList
+        lastNotEmptyPurchaseRow = purchaseModel.sizePurchaseList
     }
 
     fun onViewDestroy() {
@@ -77,7 +69,7 @@ class AddPurchasePresenter @Inject constructor(googleSheetService: GoogleSheetSe
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .flatMap { categoryList ->
-                            var nameList: MutableList<String> = mutableListOf()
+                            val nameList: MutableList<String> = mutableListOf()
                             for (categoryEntity in categoryList) {
                                 nameList.add(categoryEntity.name)
                             }
@@ -98,51 +90,98 @@ class AddPurchasePresenter @Inject constructor(googleSheetService: GoogleSheetSe
     fun addPurchase(pricePurchase: String, categoryPurchase: String) {
         addPurchaseView.showProgressBar()
         disposableSubscriptions.add(
-                PurchaseSubscriber(serviceSheets,
+                addPurchaseSubscriber(serviceSheets,
                         PurchaseDto(pricePurchase,
                                 SoftwareUtils.timeStampToString(getCurrentTimeStamp(), Locale.getDefault()),
                                 categoryPurchase))!!
                         .subscribe(this::onBatchPurchasesCollected,
                                 this::onBatchPurchasesCollectionFailure))
+        performCheckStorageCategoriesList(categoryPurchase)
     }
 
     //endregion
 
-//    public fun requestToSearch(searchView: SearchView) {
-//        RxSearchObservable.fromView(searchView)
-//                .debounce(300, TimeUnit.MILLISECONDS)
-//                .filter { text ->
-//                    !text.isEmpty()
-//                }
-//                .distinctUntilChanged()
-//                .switchMap { query -> dataFromNetwork(query) }
-//                .subscribeOn(Schedulers.io())
-//                .observeOn(AndroidSchedulers.mainThread())
-//                .subscribe(Consumer<String> { result -> addPurchaseView.setSearchText(result), throws -> {} })
-//    }
+    //region ================= Add & Check Server Categories List =================
 
-    private fun dataFromNetwork(query: String): ObservableSource<String> {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    private fun performCheckStorageCategoriesList(currentCategory: String) {
+        disposableSubscriptions.add(
+                localCategoryDataStore.getCategoriesList()
+                        .subscribeOn(Schedulers.io())
+                        .map { it.mapNotNull { it.name } }
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe({ storageCategoriesList: List<String> ->
+                            if (!isContainsCurrentCategoryInDatabase(currentCategory, storageCategoriesList)) {
+                                addCategoryToDatabase(currentCategory)
+                                addCategoryToServer(serviceSheets, currentCategory, storageCategoriesList.size + 1)
+                            }
+                        },
+                                { t -> Timber.e(t, "error at check exist categories") }))
     }
 
-    //region ================= CategoryEntity Subscriber =================
+    private fun isContainsCurrentCategoryInDatabase(currentCategory: String, storageCategoriesList: List<String>): Boolean {
+        if (!storageCategoriesList.isEmpty()) {
+            for (category in storageCategoriesList) {
+                if (storageCategoriesList.contains(currentCategory)) {
+                    return true
+                }
+            }
+        }
+        return false
+    }
 
-    private fun PurchaseSubscriber(service: Sheets, purchase: PurchaseDto): Single<BatchUpdateValuesResponse>? {
-        val data: MutableList<Any> = mutableListOf(purchase.price, purchase.time, purchase.category)
+    private fun addCategoryToDatabase(category: String) {
+        disposableSubscriptions.add(
+                localCategoryDataStore.add(category)
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe({ Timber.d("add category to database success") },
+                                { t -> Timber.e(t, "add category to database error") }))
+    }
+
+    private fun addCategoryToServer(service: Sheets, currentCategory: String, firstEmptyRow: Int){
+        val data: MutableList<Any> = mutableListOf(currentCategory)
         val arrayData = mutableListOf(data)
-        purchaseModel.sizePurchaseList = lastNotEmptyRow + 1
-        lastNotEmptyRow = purchaseModel.sizePurchaseList
+
         val valueData: ValueRange = ValueRange()
-                .setRange(PURCHASE_TABLE_NAME_SHEET + START_COLUMN_SHEET + lastNotEmptyRow + DELIMITER_BETWEEN_COLUMNS + END_COLUMN_SHEET + lastNotEmptyRow)
+                .setRange(CATEGORIES_TABLE_NAME_SHEET + START_COLUMN_SHEET + firstEmptyRow)
                 .setValues(arrayData)
                 .setMajorDimension(MAJOR_DIMENSION)
-        var batchData: BatchUpdateValuesRequest = BatchUpdateValuesRequest()
+        val batchData: BatchUpdateValuesRequest = BatchUpdateValuesRequest()
+                .setValueInputOption(VALUE_INPUT_OPTION)
+                .setData(mutableListOf(valueData))
+
+        disposableSubscriptions.add(Single.just("")
+                .subscribeOn(Schedulers.newThread())
+                .flatMap { emptyString ->
+                    Single.just(service!!.spreadsheets().values()
+                            .batchUpdate(OWN_GOOGLE_SHEET_ID, batchData)
+                            .execute())
+                }
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe({ Timber.d("add category to server success") },
+                        { t -> Timber.e(t, "add category to server error") }))
+    }
+
+    //endregion
+
+    //region ================= Purchase Subscriber =================
+
+    private fun addPurchaseSubscriber(service: Sheets, purchase: PurchaseDto): Single<BatchUpdateValuesResponse>? {
+        val data: MutableList<Any> = mutableListOf(purchase.price, purchase.time, purchase.category)
+        val arrayData = mutableListOf(data)
+        purchaseModel.sizePurchaseList = lastNotEmptyPurchaseRow + 1
+        lastNotEmptyPurchaseRow = purchaseModel.sizePurchaseList
+        val valueData: ValueRange = ValueRange()
+                .setRange(PURCHASE_TABLE_NAME_SHEET + START_COLUMN_SHEET + lastNotEmptyPurchaseRow + DELIMITER_BETWEEN_COLUMNS + END_COLUMN_SHEET + lastNotEmptyPurchaseRow)
+                .setValues(arrayData)
+                .setMajorDimension(MAJOR_DIMENSION)
+        val batchData: BatchUpdateValuesRequest = BatchUpdateValuesRequest()
                 .setValueInputOption(VALUE_INPUT_OPTION)
                 .setData(mutableListOf(valueData))
 
         return Single.just("")
                 .subscribeOn(Schedulers.newThread())
-                .flatMap { emptyString ->
+                .flatMap { _ ->
                     Single.just(service!!.spreadsheets().values()
                             .batchUpdate(OWN_GOOGLE_SHEET_ID, batchData)
                             .execute())
@@ -160,6 +199,15 @@ class AddPurchasePresenter @Inject constructor(googleSheetService: GoogleSheetSe
     fun onBatchPurchasesCollectionFailure(throwable: Throwable) {
     }
 
+    //endregion
+
+    //region ================= Setup Current Date =================
+
+    fun setupCurrentDate() {
+        addPurchaseView.setupCurrentDate(SoftwareUtils.modernTimeStampToString(getCurrentTimeStamp(), Locale.getDefault()))
+        refreshCurrentDate()
+    }
+
 
     private fun refreshCurrentDate() {
         disposableSubscriptions.add(Flowable
@@ -171,26 +219,6 @@ class AddPurchasePresenter @Inject constructor(googleSheetService: GoogleSheetSe
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({ result -> addPurchaseView.setupCurrentDate(result) }, { err -> }))
-    }
-
-    @NonNull
-    private val updateSubject = PublishSubject.create<String>()
-
-    private fun loadCurrentDate() {
-        disposableSubscriptions.add(Flowable
-                .just(SoftwareUtils.modernTimeStampToString(getCurrentTimeStamp(), Locale.getDefault()))
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .repeatWhen({ repeatHandler ->
-                    repeatHandler
-                            .flatMap({ result -> updateSubject.toFlowable(BackpressureStrategy.LATEST) })
-                })
-                .subscribe({ result -> addPurchaseView.setupCurrentDate(result) }, { err -> }))
-    }
-
-    fun setupCurrentDate() {
-        addPurchaseView.setupCurrentDate(SoftwareUtils.modernTimeStampToString(getCurrentTimeStamp(), Locale.getDefault()))
-        refreshCurrentDate()
     }
 
     fun checkShowDateAndTimePickers(checked: Boolean) {
@@ -212,9 +240,8 @@ class AddPurchasePresenter @Inject constructor(googleSheetService: GoogleSheetSe
     }
 
     fun changeTime(hourString: String, minuteString: String) {
-        addPurchaseView.setupChangedDate(installDate, hourString +":" + minuteString)
+        addPurchaseView.setupChangedDate(installDate, hourString + ":" + minuteString)
     }
 
     //endregion
-
 }

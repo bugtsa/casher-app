@@ -17,7 +17,7 @@ import com.bugtsa.casher.utils.ParentConstantManager.Companion.DELIMITER_BETWEEN
 import com.google.api.client.googleapis.extensions.android.gms.auth.GooglePlayServicesAvailabilityIOException
 import com.google.api.client.googleapis.extensions.android.gms.auth.UserRecoverableAuthIOException
 import com.google.api.services.sheets.v4.Sheets
-import io.reactivex.Single
+import io.reactivex.Flowable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
@@ -25,25 +25,21 @@ import timber.log.Timber
 import java.io.IOException
 import javax.inject.Inject
 
-class MainPresenter @Inject constructor(googleSheetService: GoogleSheetService) {
+class MainPresenter @Inject constructor(googleSheetService: GoogleSheetService,
+                                        injectPurchaseModel: PurchaseModel,
+                                        injectLocalCategoryDataStore: LocalCategoryDataStore) {
 
-    private var serviceSheets: Sheets
+    private var serviceSheets: Sheets = googleSheetService.mService
+    private var purchaseModel: PurchaseModel = injectPurchaseModel
+    private var localCategoryDataStore: LocalCategoryDataStore = injectLocalCategoryDataStore
 
-    val purchasesList = mutableListOf<PurchaseDto>()
-
+    private val purchasesList = mutableListOf<PurchaseDto>()
     private var isScrollPurchasesList: Boolean
-
-    @Inject
-    lateinit var purchaseModel: PurchaseModel
-    @Inject
-    lateinit var localCategoryDataStore: LocalCategoryDataStore
 
     lateinit var mainView: MainView
     private val disposableSubscriptions: CompositeDisposable = CompositeDisposable()
 
-
     init {
-        this.serviceSheets = googleSheetService.mService
         isScrollPurchasesList = false
     }
 
@@ -69,7 +65,7 @@ class MainPresenter @Inject constructor(googleSheetService: GoogleSheetService) 
                         .map { it.mapNotNull { it.name } }
                         .observeOn(AndroidSchedulers.mainThread())
                         .doOnNext { storageCategoriesList: List<String> ->
-                            disposableSubscriptions.add(networkCategoriesListSingle(serviceSheets)!!
+                            disposableSubscriptions.add(getServerCategoriesList(serviceSheets)!!
                                     .subscribe({ networkCategoriesList ->
                                         checkNetworkCategoriesListInDatabase(networkCategoriesList, storageCategoriesList)
                                     },
@@ -80,14 +76,14 @@ class MainPresenter @Inject constructor(googleSheetService: GoogleSheetService) 
                                 { t -> Timber.e(t, "error at check exist categories") }))
     }
 
-    private fun networkCategoriesListSingle(service: Sheets): Single<List<String>>? {
+    private fun getServerCategoriesList(service: Sheets): Flowable<List<String>>? {
         val range = CATEGORIES_TABLE_NAME_SHEET + START_COLUMN_SHEET + ROW_START_SHEET +
                 DELIMITER_BETWEEN_COLUMNS + START_COLUMN_SHEET
 
-        return Single.just("")
+        return Flowable.just("")
                 .subscribeOn(Schedulers.newThread())
                 .flatMap { _ ->
-                    Single.just(service.spreadsheets().values()
+                    Flowable.just(service.spreadsheets().values()
                             .get(OWN_GOOGLE_SHEET_ID, range)
                             .execute()
                             .getValues()
