@@ -43,10 +43,11 @@ class AddPurchasePresenter @Inject constructor(googleSheetService: GoogleSheetSe
     lateinit var localCategoryDataStore: LocalCategoryDataStore
 
     var lastNotEmptyPurchaseRow: Int = 0
-    var installDate: String = ""
+    var customDate: String = ""
+    var customTime: String = ""
+    var checkedCustomDateTime: Boolean = false
 
     lateinit var addPurchaseView: AddPurchaseView
-
 
     //region ================ Base Methods =================
 
@@ -84,7 +85,6 @@ class AddPurchasePresenter @Inject constructor(googleSheetService: GoogleSheetSe
 
     //endregion
 
-
     //region ================= Request to add purchase =================
 
     fun addPurchase(pricePurchase: String, categoryPurchase: String) {
@@ -92,7 +92,7 @@ class AddPurchasePresenter @Inject constructor(googleSheetService: GoogleSheetSe
         disposableSubscriptions.add(
                 addPurchaseSubscriber(serviceSheets,
                         PurchaseDto(pricePurchase,
-                                SoftwareUtils.timeStampToString(getCurrentTimeStamp(), Locale.getDefault()),
+                                getActualDateAndTime(),
                                 categoryPurchase))!!
                         .subscribe(this::onBatchPurchasesCollected,
                                 this::onBatchPurchasesCollectionFailure))
@@ -204,7 +204,7 @@ class AddPurchasePresenter @Inject constructor(googleSheetService: GoogleSheetSe
     //region ================= Setup Current Date =================
 
     fun setupCurrentDate() {
-        addPurchaseView.setupCurrentDate(SoftwareUtils.modernTimeStampToString(getCurrentTimeStamp(), Locale.getDefault()))
+        addPurchaseView.setupCurrentDateAndTime(SoftwareUtils.modernTimeStampToString(getCurrentTimeStamp(), Locale.getDefault()))
         refreshCurrentDate()
     }
 
@@ -212,35 +212,45 @@ class AddPurchasePresenter @Inject constructor(googleSheetService: GoogleSheetSe
     private fun refreshCurrentDate() {
         disposableSubscriptions.add(Flowable
                 .interval(10, TimeUnit.SECONDS)
-                .flatMap { t ->
+                .flatMap { _ ->
                     Flowable.just(
                             SoftwareUtils.modernTimeStampToString(getCurrentTimeStamp(), Locale.getDefault()))
                 }
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe({ result -> addPurchaseView.setupCurrentDate(result) }, { err -> }))
+                .subscribe({ result -> addPurchaseView.setupCurrentDateAndTime(result) }, { _ -> }))
     }
 
-    fun checkShowDateAndTimePickers(checked: Boolean) {
-        if (checked) {
-            addPurchaseView.setupDatePicker()
+    fun checkSetupCustomDateAndTime(checkedCustomDateTime: Boolean) {
+        this.checkedCustomDateTime = checkedCustomDateTime
+        if (checkedCustomDateTime) {
+            addPurchaseView.showDatePicker()
             disposableSubscriptions.clear()
         } else {
             setupCurrentDate()
         }
     }
 
+    private fun getActualDateAndTime() : String{
+        return if (checkedCustomDateTime) {
+            "$customDate, $customTime"
+        } else {
+            SoftwareUtils.timeStampToString(getCurrentTimeStamp(), Locale.getDefault())
+        }
+    }
+
     fun changeCalendar(selectedDate: YearMonthDay) {
-        installDate = "" + String.format("%02d", selectedDate.day) + "." +
+        customDate = "" + String.format("%02d", selectedDate.day) + "." +
                 String.format("%02d", selectedDate.month) + "." +
                 selectedDate.year
                         .toString()
                         .substring(selectedDate.year.toString().length - 2)
-        addPurchaseView.setupTimePicker()
+        addPurchaseView.showTimePicker()
     }
 
     fun changeTime(hourString: String, minuteString: String) {
-        addPurchaseView.setupChangedDate(installDate, hourString + ":" + minuteString)
+        customTime = "$hourString:$minuteString"
+        addPurchaseView.setupCustomDateAndTime(customDate, customTime)
     }
 
     //endregion

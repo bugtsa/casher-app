@@ -97,11 +97,16 @@ class MainPresenter @Inject constructor(googleSheetService: GoogleSheetService,
         val isListsHasSameContent: Boolean? = networkCategoriesList sameContentWith storageCategoriesList
 
         if (!networkCategoriesList.isEmpty() && !isListsHasSameContent!!) {
-            for (category in networkCategoriesList) {
-                if (!storageCategoriesList.contains(category)) {
-                    addCategoryToDatabase(category)
-                }
-            }
+
+            networkCategoriesList
+                    .filter { networkCategory -> !storageCategoriesList.contains(networkCategory) }
+                    .forEach { networkCategory -> addCategoryToDatabase(networkCategory) }
+
+//            for (category in networkCategoriesList) {
+//                if (!storageCategoriesList.contains(category)) {
+//                    addCategoryToDatabase(category)
+//                }
+//            }
         }
     }
 
@@ -165,14 +170,6 @@ class MainPresenter @Inject constructor(googleSheetService: GoogleSheetService,
                 }
                 false -> return PurchaseDto(price, dateOfSheet, category)
             }
-//            if (dateOfSheet.contains(DELIMITER_BETWEEN_DATE_AND_TIME)) {
-//                val index = dateOfSheet.indexOf(DELIMITER_BETWEEN_DATE_AND_TIME)
-//                val date = dateOfSheet.substring(0, index)
-//                val time = dateOfSheet.substring(index + DELIMITER_BETWEEN_DATE_AND_TIME.length, dateOfSheet.length)
-//                return PurchaseDto(price, date, time, category)
-//            } else {
-//                return PurchaseDto(price, dateOfSheet, category)
-//            }
         }
 
         /**
@@ -207,9 +204,7 @@ class MainPresenter @Inject constructor(googleSheetService: GoogleSheetService,
             mainView.hideProgressBar()
             if (mLastError != null) {
                 if (mLastError is GooglePlayServicesAvailabilityIOException) {
-//                    showGooglePlayServicesAvailabilityErrorDialog(
-//                            (mLastError as GooglePlayServicesAvailabilityIOException)
-//                                    .connectionStatusCode)
+
                 } else if (mLastError is UserRecoverableAuthIOException) {
                     mainView.startIntent(mLastError)
                 } else {
@@ -221,29 +216,8 @@ class MainPresenter @Inject constructor(googleSheetService: GoogleSheetService,
         }
     }
 
-//    private fun processDateMap(purchaseList: MutableList<PurchaseDto>): Map<String, Int> {
-////        var dateMap: MutableMap<String, Int> = mutableMapOf()
-//
-//        return purchaseList
-//                .filter { purchase -> !TextUtils.isEmpty(purchase.date) }
-////                .flatMap { purchase -> purchase }
-////                .filter { purchase -> !dateMap.contains(purchase.date) }
-//                .map { purchase ->
-//                    //                    if (!dateMap.contains(purchase.date)) {
-////                        dateMap.put(purchase.date, purchaseList.indexOf(purchase))
-////                    }
-//                    return mutableMapOf(Pair(purchase.date, purchase))
-//                }
-//                .filter { purchase ->  }
-////                .filter { purchase ->  }
-////                .toMap()
-////                .filter {  }
-////                .toMap()
-////        return dateMap
-//    }
-
     private fun processDateMap(purchaseList: MutableList<PurchaseDto>): MutableMap<String, Int> {
-        var dateMap: MutableMap<String, Int> = mutableMapOf()
+        val dateMap: MutableMap<String, Int> = mutableMapOf()
 
         purchaseList
                 .filter { purchase -> !TextUtils.isEmpty(purchase.date) }

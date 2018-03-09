@@ -135,5 +135,4 @@ class MainController : Controller(), MainView {
                 REQUEST_AUTHORIZATION)
     }
     //endregion
-
 }

@@ -10,8 +10,8 @@ interface AddPurchaseView {
 
     fun setupCategoriesList(categoriesList: List<String>)
 
-    fun setupCurrentDate(dateAndTimeString: String)
-    fun setupChangedDate(date: String, time: String)
-    fun setupDatePicker()
-    fun setupTimePicker()
+    fun setupCurrentDateAndTime(dateAndTimeString: String)
+    fun setupCustomDateAndTime(date: String, time: String)
+    fun showDatePicker()
+    fun showTimePicker()
 }

@@ -13,9 +13,10 @@ import toothpick.Scope
 import toothpick.Toothpick
 import javax.inject.Inject
 import android.widget.ArrayAdapter
+import com.borax12.materialdaterangepicker.time.TimePickerDialog
 import com.maxproj.calendarpicker.Builder
-import net.alhazmy13.hijridatepicker.time.TimePickerDialog
 import java.util.*
+import com.borax12.materialdaterangepicker.time.RadialPickerLayout
 
 
 @Suppress("DEPRECATED_IDENTITY_EQUALS")
@@ -31,12 +32,12 @@ class AddPurchaseController : Controller(), AddPurchaseView, TimePickerDialog.On
     //region ================= Implements Methods =================
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup): View {
-        var view: View = inflater.inflate(R.layout.controller_add_purchase, container, false)
+        val view: View = inflater.inflate(R.layout.controller_add_purchase, container, false)
         binding = DataBindingUtil.bind(view)
 
         setupCategoriesTouchListener()
         binding.addDatePurchase.setOnClickListener({ viewAddDatePurchase ->
-            presenter.checkShowDateAndTimePickers(binding.addDatePurchase.isChecked)
+            presenter.checkSetupCustomDateAndTime(binding.addDatePurchase.isChecked)
         })
 
         addPurchaseScope = Toothpick.openScopes(activity, this)
@@ -92,19 +93,19 @@ class AddPurchaseController : Controller(), AddPurchaseView, TimePickerDialog.On
         binding.categoryPurchaseEt.setAdapter(adapter)
     }
 
-    override fun setupCurrentDate(dateAndTimeString: String) {
-        binding.datePurchase.text = activity!!.resources.getString(R.string.current_date_and_time) + dateAndTimeString
+    override fun setupCurrentDateAndTime(dateAndTime: String) {
+        binding.datePurchase.text = activity!!.resources.getString(R.string.current_date_and_time) + dateAndTime
     }
 
-    override fun setupChangedDate(date: String, time: String) {
-        binding.datePurchase.text = activity!!.resources.getString(R.string.changed_date_and_time) + date + " " + time
+    override fun setupCustomDateAndTime(date: String, time: String) {
+        binding.datePurchase.text = activity!!.resources.getString(R.string.changed_date_and_time) + "$date $time"
     }
 
     //endregion
 
     //region ================= Calendar And Time Picker =================
 
-    override fun setupDatePicker() {
+    override fun showDatePicker() {
         var builder = Builder(activity, Builder.CalendarPickerOnConfirm { yearMonthDay ->
             presenter.changeCalendar(yearMonthDay)
         })
@@ -115,7 +116,7 @@ class AddPurchaseController : Controller(), AddPurchaseView, TimePickerDialog.On
         builder.show()
     }
 
-    override fun setupTimePicker() {
+    override fun showTimePicker() {
         val now = Calendar.getInstance()
         val tpd = TimePickerDialog.newInstance(
                 this,
@@ -126,9 +127,9 @@ class AddPurchaseController : Controller(), AddPurchaseView, TimePickerDialog.On
         tpd.show(activity!!.fragmentManager, "TagTimePickerDialog")
     }
 
-    override fun onTimeSet(view: TimePickerDialog, hourOfDay: Int, minute: Int, second: Int) {
-        val hourString = if (hourOfDay < 10) "0" + hourOfDay else "" + hourOfDay
-        val minuteString = if (minute < 10) "0" + minute else "" + minute
+    override fun onTimeSet(view: RadialPickerLayout?, hourOfDay: Int, minute: Int, hourOfDayEnd: Int, minuteEnd: Int) {
+        val hourString = if (hourOfDay < 10) "0$hourOfDay" else "" + hourOfDay
+        val minuteString = if (minute < 10) "0$minute" else "" + minute
         presenter.changeTime(hourString, minuteString)
     }
 

@@ -2,17 +2,14 @@ package com.bugtsa.casher.utils
 
 import android.content.Context
 import android.support.v7.content.res.AppCompatResources
-import android.support.v4.content.res.TypedArrayUtils.getResourceId
 import android.os.Build
 import android.graphics.drawable.Drawable
-import com.bugtsa.casher.utils.CustomTextView
-import android.content.res.TypedArray
-import android.support.v7.widget.AppCompatTextView
+import android.support.v7.widget.AppCompatAutoCompleteTextView
 import android.util.AttributeSet
 import com.bugtsa.casher.R
 
 
-class CustomTextView : AppCompatTextView {
+class CustomAutoComplete : AppCompatAutoCompleteTextView {
     constructor(context: Context) : super(context) {}
     constructor(context: Context, attrs: AttributeSet) : super(context, attrs) {
         initAttrs(context, attrs)
@@ -26,22 +23,22 @@ class CustomTextView : AppCompatTextView {
         if (attrs != null) {
             val attributeArray = context.obtainStyledAttributes(
                     attrs,
-                    R.styleable.CustomTextView)
+                    R.styleable.CustomAutoComplete)
 
             var drawableLeft: Drawable? = null
             var drawableRight: Drawable? = null
             var drawableBottom: Drawable? = null
             var drawableTop: Drawable? = null
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                drawableLeft = attributeArray.getDrawable(R.styleable.CustomTextView_drawableLeftCompat)
-                drawableRight = attributeArray.getDrawable(R.styleable.CustomTextView_drawableRightCompat)
-                drawableBottom = attributeArray.getDrawable(R.styleable.CustomTextView_drawableBottomCompat)
-                drawableTop = attributeArray.getDrawable(R.styleable.CustomTextView_drawableTopCompat)
+                drawableLeft = attributeArray.getDrawable(R.styleable.CustomAutoComplete_drawableLeftCompat)
+                drawableRight = attributeArray.getDrawable(R.styleable.CustomAutoComplete_drawableRightCompat)
+                drawableBottom = attributeArray.getDrawable(R.styleable.CustomAutoComplete_drawableBottomCompat)
+                drawableTop = attributeArray.getDrawable(R.styleable.CustomAutoComplete_drawableTopCompat)
             } else {
-                val drawableLeftId = attributeArray.getResourceId(R.styleable.CustomTextView_drawableLeftCompat, -1)
-                val drawableRightId = attributeArray.getResourceId(R.styleable.CustomTextView_drawableRightCompat, -1)
-                val drawableBottomId = attributeArray.getResourceId(R.styleable.CustomTextView_drawableBottomCompat, -1)
-                val drawableTopId = attributeArray.getResourceId(R.styleable.CustomTextView_drawableTopCompat, -1)
+                val drawableLeftId = attributeArray.getResourceId(R.styleable.CustomAutoComplete_drawableLeftCompat, -1)
+                val drawableRightId = attributeArray.getResourceId(R.styleable.CustomAutoComplete_drawableRightCompat, -1)
+                val drawableBottomId = attributeArray.getResourceId(R.styleable.CustomAutoComplete_drawableBottomCompat, -1)
+                val drawableTopId = attributeArray.getResourceId(R.styleable.CustomAutoComplete_drawableTopCompat, -1)
 
                 if (drawableLeftId != -1)
                     drawableLeft = AppCompatResources.getDrawable(context, drawableLeftId)

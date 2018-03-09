@@ -5,7 +5,7 @@ apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-kapt'
 
 project.ext {
-    supportLibraryVersion = "26.1.0"
+    supportLibraryVersion = "27.1.0"
     androidArchVersion = "1.0.0"
     daggerVersion = "2.11"
     rxJavaVersion = "2.1.0"
@@ -20,24 +20,16 @@ project.ext {
 }
 
 android {
-    compileSdkVersion 26
+    compileSdkVersion 27
     defaultConfig {
         applicationId "com.bugtsa.casher"
-        minSdkVersion 17
-        targetSdkVersion 26
+        minSdkVersion 16
+        targetSdkVersion 27
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
         multiDexEnabled true
-
-//        javaCompileOptions {
-//            annotationProcessorOptions {
-//                arguments = [
-//                        'toothpick_registry_package_name': 'com.bugtsa.casher',
-//                ]
-//            }
-//        }
     }
     buildTypes {
         release {
@@ -75,6 +67,7 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlin_version"
     implementation "com.android.support:appcompat-v7:$project.supportLibraryVersion"
     implementation "com.android.support:design:$project.supportLibraryVersion"
+    implementation "com.android.support:support-v13:$project.supportLibraryVersion"
     implementation "com.android.support:recyclerview-v7:$project.supportLibraryVersion"
     implementation 'com.android.support.constraint:constraint-layout:1.0.2'
 
@@ -112,7 +105,6 @@ dependencies {
     // Room Database
     implementation "android.arch.persistence.room:runtime:$project.androidArchVersion"
     implementation "android.arch.persistence.room:rxjava2:$project.androidArchVersion"
-//    annotationProcessor "android.arch.persistence.room:compiler:$project.androidArchVersion"
     kapt "android.arch.persistence.room:compiler:$project.androidArchVersion"
 
     // Timber
@@ -121,7 +113,9 @@ dependencies {
     implementation 'com.facebook.stetho:stetho:1.5.0'
 
     implementation 'com.github.maxyou:CalendarPicker:v1.0.3'
-    implementation 'net.alhazmy13.hijridatepicker:library:2.0.2'
+    implementation 'com.borax12.materialdaterangepicker:library:1.9'
+
+    implementation 'com.android.support:multidex:1.0.3'
 }
 
 kapt {
