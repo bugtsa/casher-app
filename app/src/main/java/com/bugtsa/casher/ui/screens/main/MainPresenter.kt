@@ -20,7 +20,9 @@ import com.google.api.services.sheets.v4.Sheets
 import io.reactivex.Flowable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.functions.Consumer
 import io.reactivex.schedulers.Schedulers
+import org.reactivestreams.Subscriber
 import timber.log.Timber
 import java.io.IOException
 import javax.inject.Inject
@@ -33,7 +35,6 @@ class MainPresenter @Inject constructor(googleSheetService: GoogleSheetService,
     private var purchaseModel: PurchaseModel = injectPurchaseModel
     private var localCategoryDataStore: LocalCategoryDataStore = injectLocalCategoryDataStore
 
-    private val purchasesList = mutableListOf<PurchaseDto>()
     private var isScrollPurchasesList: Boolean
 
     lateinit var mainView: MainView
@@ -53,7 +54,7 @@ class MainPresenter @Inject constructor(googleSheetService: GoogleSheetService,
 
     fun processData() {
         performCheckStorageCategoriesList()
-        MakeRequestTask().execute()
+        getPurchasesList(serviceSheets)
     }
 
     //region ================= Compare Storage and Network Categories =================
@@ -71,7 +72,7 @@ class MainPresenter @Inject constructor(googleSheetService: GoogleSheetService,
                                     },
                                             { t -> Timber.e(t, "error at check exist categories") }))
                         }
-                        .subscribe({ storageCategoriesList: List<String> ->
+                        .subscribe({ _: List<String> ->
                         },
                                 { t -> Timber.e(t, "error at check exist categories") }))
     }
@@ -127,92 +128,61 @@ class MainPresenter @Inject constructor(googleSheetService: GoogleSheetService,
 
     //endregion
 
-    //region ================= Request Tasks =================
+    //region ================= Replace Task to Rx functions =================
 
-    /**
-     * An asynchronous task that handles the Google Sheets API call.
-     * Placing the API calls in their own task ensures the UI stays responsive.
-     */
-    private inner class MakeRequestTask internal constructor() : AsyncTask<Void, Void, MutableList<PurchaseDto>>() {
-        private var mLastError: Exception? = null
-
-        /**
-         * Fetch a list of names and majors of students in a sample spreadsheet:
-         * @return List of names and majors
-         * @throws IOException
-         */
-        private val dataFromApi: MutableList<PurchaseDto>
-            @Throws(IOException::class)
-            get() {
-                val range = PURCHASE_TABLE_NAME_SHEET + START_COLUMN_SHEET + ROW_START_SHEET +
-                        DELIMITER_BETWEEN_COLUMNS + END_COLUMN_SHEET
-                val response = serviceSheets.spreadsheets().values()
-                        .get(OWN_GOOGLE_SHEET_ID, range)
-                        .execute()
-                val values = response.getValues()
-                purchaseModel.sizePurchaseList = values.size
-                if (values != null) {
-                    for (row in values) {
-                        var purchase = processPurchaseDto(row[0].toString(), row[1].toString(), row[2].toString())
-                        purchasesList.add(purchase)
+    private fun getPurchasesList(service: Sheets) {
+        val range = PURCHASE_TABLE_NAME_SHEET + START_COLUMN_SHEET + ROW_START_SHEET +
+                DELIMITER_BETWEEN_COLUMNS + END_COLUMN_SHEET
+        mainView.showProgressBar()
+        Flowable.just("")
+                .subscribeOn(Schedulers.newThread())
+                .flatMap { _ ->
+                    Flowable.just(service.spreadsheets().values()
+                            .get(OWN_GOOGLE_SHEET_ID, range)
+                            .execute())
+                            .map { rawList -> rawList.getValues() }
+                            .map { values ->
+                                val purchasesList = mutableListOf<PurchaseDto>()
+                                purchaseModel.sizePurchaseList = values.size
+                                for (row in values) {
+                                    val purchase = processPurchaseDto(row[0].toString(), row[1].toString(), row[2].toString())
+                                    purchasesList.add(purchase)
+                                }
+                                purchasesList
+                            }
+                }
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe({ purchases ->
+                    mainView.hideProgressBar()
+                    if (purchases.isEmpty()) {
+                        mainView.setupStatusText("No results returned.")
+                    } else {
+                        mainView.setupPurchaseList(purchases, processDateMap(purchases))
                     }
-                }
-                return purchasesList
+                },
+                        { throwable ->
+                            mainView.hideProgressBar()
+                            if (throwable is GooglePlayServicesAvailabilityIOException) {
+
+                            } else if (throwable is UserRecoverableAuthIOException) {
+                                mainView.startIntent(throwable)
+                            } else {
+                                mainView.setupStatusText("The following error occurred:\n" + throwable.message)
+                            }
+                            Timber.e(throwable, "error at check exist categories")
+                        })
+
+    }
+
+    private fun processPurchaseDto(price: String, dateOfSheet: String, category: String): PurchaseDto {
+        when (dateOfSheet.contains(DELIMITER_BETWEEN_DATE_AND_TIME)) {
+            true -> {
+                val index = dateOfSheet.indexOf(DELIMITER_BETWEEN_DATE_AND_TIME)
+                val date = dateOfSheet.substring(0, index)
+                val time = dateOfSheet.substring(index + DELIMITER_BETWEEN_DATE_AND_TIME.length, dateOfSheet.length)
+                return PurchaseDto(price, date, time, category)
             }
-
-        fun processPurchaseDto(price: String, dateOfSheet: String, category: String): PurchaseDto {
-            when (dateOfSheet.contains(DELIMITER_BETWEEN_DATE_AND_TIME)) {
-                true -> {
-                    val index = dateOfSheet.indexOf(DELIMITER_BETWEEN_DATE_AND_TIME)
-                    val date = dateOfSheet.substring(0, index)
-                    val time = dateOfSheet.substring(index + DELIMITER_BETWEEN_DATE_AND_TIME.length, dateOfSheet.length)
-                    return PurchaseDto(price, date, time, category)
-                }
-                false -> return PurchaseDto(price, dateOfSheet, category)
-            }
-        }
-
-        /**
-         * Background task to call Google Sheets API.
-         * @param params no parameters needed for this task.
-         */
-        override fun doInBackground(vararg params: Void): MutableList<PurchaseDto>? {
-            try {
-                return dataFromApi
-            } catch (e: Exception) {
-                mLastError = e
-                cancel(true)
-                return null
-            }
-
-        }
-
-        override fun onPreExecute() {
-            mainView.showProgressBar()
-        }
-
-        override fun onPostExecute(purchaseList: MutableList<PurchaseDto>?) {
-            mainView.hideProgressBar()
-            if (purchaseList == null || purchaseList.isEmpty()) {
-                mainView.setupStatusText("No results returned.")
-            } else {
-                mainView.setupPurchaseList(purchaseList, processDateMap(purchaseList))
-            }
-        }
-
-        override fun onCancelled() {
-            mainView.hideProgressBar()
-            if (mLastError != null) {
-                if (mLastError is GooglePlayServicesAvailabilityIOException) {
-
-                } else if (mLastError is UserRecoverableAuthIOException) {
-                    mainView.startIntent(mLastError)
-                } else {
-                    mainView.setupStatusText("The following error occurred:\n" + mLastError!!.message)
-                }
-            } else {
-                mainView.setupStatusText("Request cancelled.")
-            }
+            false -> return PurchaseDto(price, dateOfSheet, category)
         }
     }
 
@@ -229,12 +199,16 @@ class MainPresenter @Inject constructor(googleSheetService: GoogleSheetService,
         return dateMap
     }
 
+    //endregion
+
+    //region ================= Scroll Function =================
+
     fun requestScrollToDown() {
-        mainView.scrollToPosition(purchasesList.size - 1)
+        mainView.scrollToPosition(purchaseModel.sizePurchaseList - 1)
     }
 
     fun checkPositionAdapter(position: Int) {
-        if (position <= purchasesList.size - 10 && isScrollPurchasesList()) {
+        if (position <= purchaseModel.sizePurchaseList - 10 && isScrollPurchasesList()) {
             mainView.showBottomScroll()
         } else {
             mainView.hideBottomScroll()

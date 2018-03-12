@@ -34,20 +34,20 @@ import java.util.concurrent.TimeUnit
 class AddPurchasePresenter @Inject constructor(googleSheetService: GoogleSheetService,
                                                compositeDisposable: CompositeDisposable) {
 
-    private var serviceSheets: Sheets = googleSheetService.mService
-    private var disposableSubscriptions: CompositeDisposable = compositeDisposable
-
     @Inject
     lateinit var purchaseModel: PurchaseModel
     @Inject
     lateinit var localCategoryDataStore: LocalCategoryDataStore
 
-    var lastNotEmptyPurchaseRow: Int = 0
-    var customDate: String = ""
-    var customTime: String = ""
-    var checkedCustomDateTime: Boolean = false
+    private var serviceSheets: Sheets = googleSheetService.mService
+    private var disposableSubscriptions: CompositeDisposable = compositeDisposable
 
-    lateinit var addPurchaseView: AddPurchaseView
+    private var lastNotEmptyPurchaseRow: Int = 0
+    private var customDate: String = ""
+    private var customTime: String = ""
+    private var checkedCustomDateTime: Boolean = false
+
+    private lateinit var addPurchaseView: AddPurchaseView
 
     //region ================ Base Methods =================
 
@@ -152,8 +152,8 @@ class AddPurchasePresenter @Inject constructor(googleSheetService: GoogleSheetSe
 
         disposableSubscriptions.add(Single.just("")
                 .subscribeOn(Schedulers.newThread())
-                .flatMap { emptyString ->
-                    Single.just(service!!.spreadsheets().values()
+                .flatMap { _ ->
+                    Single.just(service.spreadsheets().values()
                             .batchUpdate(OWN_GOOGLE_SHEET_ID, batchData)
                             .execute())
                 }
@@ -182,21 +182,21 @@ class AddPurchasePresenter @Inject constructor(googleSheetService: GoogleSheetSe
         return Single.just("")
                 .subscribeOn(Schedulers.newThread())
                 .flatMap { _ ->
-                    Single.just(service!!.spreadsheets().values()
+                    Single.just(service.spreadsheets().values()
                             .batchUpdate(OWN_GOOGLE_SHEET_ID, batchData)
                             .execute())
                 }
                 .observeOn(AndroidSchedulers.mainThread())
     }
 
-    fun onBatchPurchasesCollected(batchUpdateValuesRes: BatchUpdateValuesResponse) {
+    private fun onBatchPurchasesCollected(batchUpdateValuesRes: BatchUpdateValuesResponse) {
         if (!batchUpdateValuesRes.isEmpty()) {
             addPurchaseView.hideProgressBar()
             addPurchaseView.completedAddPurchase()
         }
     }
 
-    fun onBatchPurchasesCollectionFailure(throwable: Throwable) {
+    private fun onBatchPurchasesCollectionFailure(throwable: Throwable) {
     }
 
     //endregion

@@ -106,7 +106,7 @@ class MainController : Controller(), MainView {
 
     override fun setupPurchaseList(purchaseList: MutableList<PurchaseDto>,
                                    dateMap: MutableMap<String, Int>) {
-        var purchaseAdapter = PurchaseAdapter(purchaseList, dateMap, object : OnChangePosition {
+        val purchaseAdapter = PurchaseAdapter(purchaseList, dateMap, object : OnChangePosition {
             override fun changePosition(position: Int) {
                 presenter.checkPositionAdapter(position)
             }
