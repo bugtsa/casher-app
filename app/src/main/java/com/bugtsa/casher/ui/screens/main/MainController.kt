@@ -30,16 +30,16 @@ class MainController : Controller(), MainView {
     @Inject
     lateinit var presenter: MainPresenter
 
-    lateinit private var mainControllerScope: Scope
+    private lateinit var mainControllerScope: Scope
 
     //region ================= Implements Methods =================
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup): View {
-        var view: View = inflater.inflate(R.layout.controller_main, container, false)
+        val view: View = inflater.inflate(R.layout.controller_main, container, false)
 
-        binding = DataBindingUtil.bind(view)
+        binding = DataBindingUtil.bind(view)!!
 
-        var linearLayoutManager = LinearLayoutManager(activity)
+        val linearLayoutManager = LinearLayoutManager(activity)
         binding.purchases.layoutManager = linearLayoutManager
         setupScrollListener()
 

@@ -27,13 +27,13 @@ class AddPurchaseController : Controller(), AddPurchaseView, TimePickerDialog.On
     @Inject
     lateinit var presenter: AddPurchasePresenter
 
-    lateinit private var addPurchaseScope: Scope
+    private lateinit var addPurchaseScope: Scope
 
     //region ================= Implements Methods =================
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup): View {
         val view: View = inflater.inflate(R.layout.controller_add_purchase, container, false)
-        binding = DataBindingUtil.bind(view)
+        binding = DataBindingUtil.bind(view)!!
 
         setupCategoriesTouchListener()
         binding.addDatePurchase.setOnClickListener({ viewAddDatePurchase ->

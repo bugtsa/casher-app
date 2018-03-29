@@ -37,8 +37,8 @@ class MainPresenter @Inject constructor(googleSheetService: GoogleSheetService,
 
     private var isScrollPurchasesList: Boolean
 
-    lateinit var mainView: MainView
     private val disposableSubscriptions: CompositeDisposable = CompositeDisposable()
+    lateinit var mainView: MainView
 
     init {
         isScrollPurchasesList = false

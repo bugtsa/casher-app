@@ -6,7 +6,7 @@ apply plugin: 'kotlin-kapt'
 
 project.ext {
     supportLibraryVersion = "27.1.0"
-    androidArchVersion = "1.0.0"
+    androidArchVersion = "1.1.0-alpha1"
     daggerVersion = "2.11"
     rxJavaVersion = "2.1.0"
     rxAndroidVersion = "2.0.1"
@@ -72,7 +72,7 @@ dependencies {
     implementation 'com.android.support.constraint:constraint-layout:1.0.2'
 
 
-    implementation 'com.google.android.gms:play-services-auth:11.8.0'
+    implementation 'com.google.android.gms:play-services-auth:12.0.1'
     implementation 'pub.devrel:easypermissions:0.3.0'
     implementation('com.google.api-client:google-api-client-android:1.23.0') {
         exclude group: 'org.apache.httpcomponents'
@@ -80,7 +80,6 @@ dependencies {
     implementation('com.google.apis:google-api-services-sheets:v4-rev496-1.23.0') {
         exclude group: 'org.apache.httpcomponents'
     }
-    implementation 'com.google.android.gms:play-services-location:11.8.0'
 
     implementation 'com.github.stephanenicolas.toothpick:toothpick-runtime:1.1.1'
     kapt 'com.github.stephanenicolas.toothpick:toothpick-compiler:1.1.1'
@@ -96,11 +95,11 @@ dependencies {
 
     implementation 'com.bluelinelabs:conductor:2.1.4'
 
-    compile('com.crashlytics.sdk.android:crashlytics:2.8.0@aar') {
+    implementation('com.crashlytics.sdk.android:crashlytics:2.8.0@aar') {
         transitive = true
     }
 
-    kapt 'com.android.databinding:compiler:3.0.1'
+    kapt 'com.android.databinding:compiler:3.1.0'
 
     // Room Database
     implementation "android.arch.persistence.room:runtime:$project.androidArchVersion"

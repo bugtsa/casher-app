@@ -32,15 +32,14 @@ import java.util.concurrent.TimeUnit
 
 
 class AddPurchasePresenter @Inject constructor(googleSheetService: GoogleSheetService,
-                                               compositeDisposable: CompositeDisposable) {
-
-    @Inject
-    lateinit var purchaseModel: PurchaseModel
-    @Inject
-    lateinit var localCategoryDataStore: LocalCategoryDataStore
+                                               compositeDisposable: CompositeDisposable,
+                                               injectPurchaseModel: PurchaseModel,
+                                               injectCategoryDataStore: LocalCategoryDataStore) {
 
     private var serviceSheets: Sheets = googleSheetService.mService
     private var disposableSubscriptions: CompositeDisposable = compositeDisposable
+    private var purchaseModel: PurchaseModel = injectPurchaseModel
+    private var localCategoryDataStore: LocalCategoryDataStore = injectCategoryDataStore
 
     private var lastNotEmptyPurchaseRow: Int = 0
     private var customDate: String = ""
