@@ -7,7 +7,7 @@ import javax.inject.Singleton
 @Singleton
 class PurchaseModelProvider : Provider<PurchaseModel> {
 
-    var purchaseModel : PurchaseModel
+    private val purchaseModel : PurchaseModel
 
     constructor() {
         purchaseModel = PurchaseModel()

@@ -5,8 +5,8 @@ apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-kapt'
 
 project.ext {
-    supportLibraryVersion = "27.1.0"
-    androidArchVersion = "1.1.0-alpha1"
+    supportLibraryVersion = "27.1.1"
+    androidArchVersion = "1.1.1"
     daggerVersion = "2.11"
     rxJavaVersion = "2.1.0"
     rxAndroidVersion = "2.0.1"
@@ -64,15 +64,14 @@ android {
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlin_version"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
     implementation "com.android.support:appcompat-v7:$project.supportLibraryVersion"
     implementation "com.android.support:design:$project.supportLibraryVersion"
     implementation "com.android.support:support-v13:$project.supportLibraryVersion"
     implementation "com.android.support:recyclerview-v7:$project.supportLibraryVersion"
-    implementation 'com.android.support.constraint:constraint-layout:1.0.2'
+    implementation 'com.android.support.constraint:constraint-layout:1.1.2'
 
-
-    implementation 'com.google.android.gms:play-services-auth:12.0.1'
+    implementation 'com.google.android.gms:play-services-auth:15.0.1'
     implementation 'pub.devrel:easypermissions:0.3.0'
     implementation('com.google.api-client:google-api-client-android:1.23.0') {
         exclude group: 'org.apache.httpcomponents'
@@ -86,7 +85,7 @@ dependencies {
     //highly recommended
     testImplementation 'com.github.stephanenicolas.toothpick:toothpick-testing:1.1.1'
 
-    implementation "io.reactivex.rxjava2:rxjava:2.1.0"
+    implementation "io.reactivex.rxjava2:rxjava:2.1.12"
     implementation "io.reactivex.rxjava2:rxandroid:2.0.1"
 
     implementation 'com.squareup.retrofit2:retrofit:2.3.0'
@@ -99,7 +98,7 @@ dependencies {
         transitive = true
     }
 
-    kapt 'com.android.databinding:compiler:3.1.0'
+    kapt 'com.android.databinding:compiler:3.1.3'
 
     // Room Database
     implementation "android.arch.persistence.room:runtime:$project.androidArchVersion"

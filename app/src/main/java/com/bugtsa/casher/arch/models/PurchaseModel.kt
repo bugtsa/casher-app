@@ -12,7 +12,6 @@ class PurchaseModel {
     }
 
     companion object {
-
         private var instance: PurchaseModel? = null
     }
 }
