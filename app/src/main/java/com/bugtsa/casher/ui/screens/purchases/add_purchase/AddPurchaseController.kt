@@ -1,12 +1,14 @@
 package com.bugtsa.casher.ui.screens.purchases.add_purchase
 
+import android.content.Context
 import android.databinding.DataBindingUtil
 import android.graphics.Color
+import android.os.Bundle
+import android.support.v4.app.Fragment
 import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
-import com.bluelinelabs.conductor.Controller
 import com.bugtsa.casher.R
 import com.bugtsa.casher.databinding.ControllerAddPurchaseBinding
 import toothpick.Scope
@@ -20,7 +22,7 @@ import com.borax12.materialdaterangepicker.time.RadialPickerLayout
 
 
 @Suppress("DEPRECATED_IDENTITY_EQUALS")
-class AddPurchaseController : Controller(), AddPurchaseView, TimePickerDialog.OnTimeSetListener {
+class AddPurchaseController : Fragment(), AddPurchaseView, TimePickerDialog.OnTimeSetListener {
 
     lateinit var binding: ControllerAddPurchaseBinding
 
@@ -31,7 +33,7 @@ class AddPurchaseController : Controller(), AddPurchaseView, TimePickerDialog.On
 
     //region ================= Implements Methods =================
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup): View {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val view: View = inflater.inflate(R.layout.controller_add_purchase, container, false)
         binding = DataBindingUtil.bind(view)!!
 
@@ -49,15 +51,14 @@ class AddPurchaseController : Controller(), AddPurchaseView, TimePickerDialog.On
         return view
     }
 
-    override fun onDestroyView(view: View) {
-        super.onDestroyView(view)
+    override fun onDestroyView() {
+        super.onDestroyView()
         presenter.onViewDestroy()
         Toothpick.closeScope(this)
     }
 
-    override fun onAttach(view: View) {
-        super.onAttach(view)
-
+    override fun onAttach(context: Context?) {
+        super.onAttach(context)
         binding.savePurchase.setOnClickListener {
             presenter.addPurchase(binding.pricePurchaseEt.text.toString(),
                     binding.categoryPurchaseEt.text.toString())
@@ -157,7 +158,7 @@ class AddPurchaseController : Controller(), AddPurchaseView, TimePickerDialog.On
     //region ================= Private Methods =================
 
     private fun popCurrentController() {
-        router.popCurrentController()
+//        router.popCurrentController()
     }
 
     //endregion

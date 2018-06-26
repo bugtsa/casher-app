@@ -4,6 +4,10 @@ apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-kapt'
 
+repositories {
+    maven { url 'https://maven.fabric.io/public' }
+}
+
 project.ext {
     supportLibraryVersion = "27.1.1"
     androidArchVersion = "1.1.1"
@@ -43,15 +47,15 @@ android {
     }
 
     flavorDimensions "default"
-    productFlavors {
-        prod {
-
-        }
-
-        staging {
-
-        }
-    }
+//    productFlavors {
+//        prod {
+//
+//        }
+//
+//        staging {
+//
+//        }
+//    }
 
     packagingOptions {
         exclude 'META-INF/rxjava.properties'
@@ -86,13 +90,14 @@ dependencies {
     testImplementation 'com.github.stephanenicolas.toothpick:toothpick-testing:1.1.1'
 
     implementation "io.reactivex.rxjava2:rxjava:2.1.12"
-    implementation "io.reactivex.rxjava2:rxandroid:2.0.1"
+    implementation "io.reactivex.rxjava2:rxandroid:2.0.2"
 
-    implementation 'com.squareup.retrofit2:retrofit:2.3.0'
+    implementation 'com.squareup.retrofit2:retrofit:2.4.0'
     implementation 'com.squareup.retrofit2:converter-moshi:2.3.0'
-    implementation 'com.squareup.retrofit2:adapter-rxjava2:2.3.0'
+    implementation 'com.squareup.retrofit2:adapter-rxjava2:2.4.0'
 
-    implementation 'com.bluelinelabs:conductor:2.1.4'
+    //Bones
+    implementation 'com.github.horovodovodo4ka:bones:0.8.1'
 
     implementation('com.crashlytics.sdk.android:crashlytics:2.8.0@aar') {
         transitive = true
@@ -114,6 +119,10 @@ dependencies {
     implementation 'com.borax12.materialdaterangepicker:library:1.9'
 
     implementation 'com.android.support:multidex:1.0.3'
+
+    implementation('com.crashlytics.sdk.android:crashlytics:2.9.4@aar') {
+        transitive = true;
+    }
 }
 
 kapt {

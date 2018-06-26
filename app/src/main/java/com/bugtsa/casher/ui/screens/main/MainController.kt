@@ -1,15 +1,15 @@
 package com.bugtsa.casher.ui.screens.main
 
 import android.databinding.DataBindingUtil
+import android.os.Bundle
 import android.support.v4.app.ActivityCompat.startActivityForResult
+import android.support.v4.app.Fragment
 import android.support.v7.widget.LinearLayoutManager
 import android.view.LayoutInflater
 import android.view.View
 import android.view.View.GONE
 import android.view.View.VISIBLE
 import android.view.ViewGroup
-import com.bluelinelabs.conductor.Controller
-import com.bluelinelabs.conductor.RouterTransaction
 import com.bugtsa.casher.R
 import com.bugtsa.casher.data.dto.PurchaseDto
 import com.bugtsa.casher.databinding.ControllerMainBinding
@@ -22,9 +22,29 @@ import toothpick.Toothpick
 import javax.inject.Inject
 import android.support.v7.widget.RecyclerView
 import com.bugtsa.casher.ui.OnChangePosition
+import pro.horovodovodo4ka.bones.Finger
+import pro.horovodovodo4ka.bones.Phalanx
+import pro.horovodovodo4ka.bones.extensions.closest
+import pro.horovodovodo4ka.bones.persistance.BonePersisterInterface
+import pro.horovodovodo4ka.bones.ui.ScreenInterface
+import pro.horovodovodo4ka.bones.ui.delegates.Page
 
 
-class MainController : Controller(), MainView {
+class MainBone : Phalanx() {
+
+    fun showRootView() {
+        val bot = closest<Finger>()?.phalanxes?.first()
+//        val dlg = RootSpineBone(TabBarBone(NavigationStackBone(CardListBone()),
+//                ProfileNavigationStack(),
+//                NavigationStackBone(UploadPhotoBone())))
+//        closest<Finger>()?.replace(bot, dlg)
+    }
+
+    override val seed = { MainController() }
+}
+
+class MainController : Fragment(), MainView,
+        ScreenInterface<MainBone> by Page(), BonePersisterInterface<MainBone> {
 
     private lateinit var binding: ControllerMainBinding
     @Inject
@@ -34,7 +54,7 @@ class MainController : Controller(), MainView {
 
     //region ================= Implements Methods =================
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup): View {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val view: View = inflater.inflate(R.layout.controller_main, container, false)
 
         binding = DataBindingUtil.bind(view)!!
@@ -55,10 +75,20 @@ class MainController : Controller(), MainView {
         return view
     }
 
-    override fun onDestroyView(view: View) {
-        super.onDestroyView(view)
+    override fun onDestroyView() {
+        super.onDestroyView()
         presenter.onViewDestroy()
         Toothpick.closeScope(this)
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super<BonePersisterInterface>.onSaveInstanceState(outState)
+        super<Fragment>.onSaveInstanceState(outState)
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super<BonePersisterInterface>.onCreate(savedInstanceState)
+        super<Fragment>.onCreate(savedInstanceState)
     }
 
     //endregion
@@ -67,7 +97,7 @@ class MainController : Controller(), MainView {
 
     private fun showAddPurchaseController(): View.OnClickListener? {
         return View.OnClickListener {
-            router.pushController(RouterTransaction.with(AddPurchaseController()))
+//            router.pushController(RouterTransaction.with(AddPurchaseController()))
         }
     }
 

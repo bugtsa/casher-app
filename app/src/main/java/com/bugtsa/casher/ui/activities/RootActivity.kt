@@ -2,38 +2,54 @@ package com.bugtsa.casher.ui.activities
 
 import android.Manifest
 import android.os.Bundle
-import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential
-import com.google.android.gms.common.GoogleApiAvailability
-import com.google.android.gms.common.ConnectionResult
-import android.net.ConnectivityManager
 import pub.devrel.easypermissions.EasyPermissions
 import android.accounts.AccountManager
-import android.content.Intent
 import pub.devrel.easypermissions.AfterPermissionGranted
 import com.google.api.services.sheets.v4.SheetsScopes
-import android.app.Activity
+import android.annotation.SuppressLint
 import android.content.Context
+import android.content.Intent
 import android.databinding.DataBindingUtil
+import android.net.ConnectivityManager
+import android.support.v4.app.Fragment
+import android.support.v7.app.AppCompatActivity
 import android.view.View.VISIBLE
-import com.bluelinelabs.conductor.Conductor
-import com.bluelinelabs.conductor.Router
-import com.bluelinelabs.conductor.RouterTransaction
 import com.bugtsa.casher.R
 import com.bugtsa.casher.databinding.ActivityRootBinding
-import com.bugtsa.casher.di.inject.CategoryDaoProvider
+import com.bugtsa.casher.ui.screens.main.MainBone
 import com.bugtsa.casher.ui.screens.main.MainController
 import com.crashlytics.android.Crashlytics
+import com.google.android.gms.common.ConnectionResult
+import com.google.android.gms.common.GoogleApiAvailability
+import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential
 import io.fabric.sdk.android.Fabric
+import pro.horovodovodo4ka.bones.Bone
+import pro.horovodovodo4ka.bones.Finger
+import pro.horovodovodo4ka.bones.extensions.glueWith
+import pro.horovodovodo4ka.bones.extensions.processBackPress
+import pro.horovodovodo4ka.bones.persistance.BonePersisterInterface
+import pro.horovodovodo4ka.bones.statesstore.EmergencyPersister
+import pro.horovodovodo4ka.bones.statesstore.EmergencyPersisterInterface
+import pro.horovodovodo4ka.bones.ui.FingerNavigatorInterface
+import pro.horovodovodo4ka.bones.ui.delegates.FingerNavigator
+import pro.horovodovodo4ka.bones.ui.helpers.ActivityAppRestartCleaner
 import toothpick.Scope
 import toothpick.Toothpick
 import javax.inject.Inject
 
+class RootFinger(root: Bone) : Finger(root) {
+    init {
+        persistSibling = true
+    }
+}
 
-class RootActivity : Activity(), EasyPermissions.PermissionCallbacks, RootView {
+class RootActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks, RootView,
+        FingerNavigatorInterface<RootFinger> by FingerNavigator(android.R.id.content),
+        BonePersisterInterface<RootFinger>,
+        EmergencyPersisterInterface<RootActivity> by EmergencyPersister(), ActivityAppRestartCleaner {
     private lateinit var mCredential: GoogleAccountCredential
     private lateinit var binding: ActivityRootBinding
 
-    private lateinit var router: Router
 
     lateinit private var activityScope : Scope
     @Inject lateinit var presenter : RootPresenter
@@ -45,7 +61,7 @@ class RootActivity : Activity(), EasyPermissions.PermissionCallbacks, RootView {
      * @param savedInstanceState previously saved instance data.
      */
     override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
+        super<AppCompatActivity>.onCreate(savedInstanceState)
         Fabric.with(this, Crashlytics())
         activityScope = Toothpick.openScopes(application, this)
         Toothpick.inject(this, activityScope)
@@ -54,14 +70,52 @@ class RootActivity : Activity(), EasyPermissions.PermissionCallbacks, RootView {
 
         presenter.onAttachView(this)
 
-        router = Conductor.attachRouter(this, binding.controllerContainer, savedInstanceState)
+        if (!emergencyLoad(savedInstanceState, this)) {
+
+            super<ActivityAppRestartCleaner>.onCreate(savedInstanceState)
+
+            bone = RootFinger(MainBone())
+
+            glueWith(bone)
+            bone.isActive = true
+
+            supportFragmentManager
+                    .beginTransaction()
+                    .replace(android.R.id.content, bone.phalanxes.first().sibling as Fragment)
+                    .commit()
+        } else {
+            glueWith(bone)
+        }
 
         getResultsFromApi()
     }
 
     override fun onBackPressed() {
-        if (!router.handleBack()) {
-            super.onBackPressed()
+        if (bone.processBackPress()) {
+            finish()
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        emergencyRemovePin()
+
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super<AppCompatActivity>.onSaveInstanceState(outState)
+        emergencyPin(outState)
+    }
+
+//    @SuppressLint("MissingSuperCall")
+    override fun onDestroy() {
+        super.onDestroy()
+
+        with(bone) {
+            sibling = null
+            emergencySave {
+                it.bone = this
+            }
         }
     }
 
@@ -246,9 +300,9 @@ class RootActivity : Activity(), EasyPermissions.PermissionCallbacks, RootView {
         } else if (!isDeviceOnline) {
             showText("No network connection available.")
         } else {
-            if (!router.hasRootController()) {
-                router.setRoot(RouterTransaction.with(MainController()))
-            }
+//            if (!router.hasRootController()) {
+//                router.setRoot(RouterTransaction.with(MainController()))
+//            }
         }
     }
 
