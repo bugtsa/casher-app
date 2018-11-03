@@ -1,10 +1,10 @@
 package com.bugtsa.casher.ui.screens.main
 
-import android.databinding.DataBindingUtil
 import android.os.Bundle
-import android.support.v4.app.ActivityCompat.startActivityForResult
+import android.support.design.widget.FloatingActionButton
 import android.support.v4.app.Fragment
 import android.support.v7.widget.LinearLayoutManager
+import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.View.GONE
@@ -12,22 +12,20 @@ import android.view.View.VISIBLE
 import android.view.ViewGroup
 import com.bugtsa.casher.R
 import com.bugtsa.casher.data.dto.PurchaseDto
-import com.bugtsa.casher.databinding.ControllerMainBinding
+import com.bugtsa.casher.ui.OnChangePosition
 import com.bugtsa.casher.ui.activities.RootActivity.Companion.REQUEST_AUTHORIZATION
 import com.bugtsa.casher.ui.adapters.PurchaseAdapter
-import com.bugtsa.casher.ui.screens.purchases.add_purchase.AddPurchaseController
 import com.google.api.client.googleapis.extensions.android.gms.auth.UserRecoverableAuthIOException
-import toothpick.Scope
-import toothpick.Toothpick
-import javax.inject.Inject
-import android.support.v7.widget.RecyclerView
-import com.bugtsa.casher.ui.OnChangePosition
+import kotlinx.android.synthetic.main.controller_main.*
 import pro.horovodovodo4ka.bones.Finger
 import pro.horovodovodo4ka.bones.Phalanx
 import pro.horovodovodo4ka.bones.extensions.closest
 import pro.horovodovodo4ka.bones.persistance.BonePersisterInterface
 import pro.horovodovodo4ka.bones.ui.ScreenInterface
 import pro.horovodovodo4ka.bones.ui.delegates.Page
+import toothpick.Scope
+import toothpick.Toothpick
+import javax.inject.Inject
 
 
 class MainBone : Phalanx() {
@@ -46,7 +44,6 @@ class MainBone : Phalanx() {
 class MainController : Fragment(), MainView,
         ScreenInterface<MainBone> by Page(), BonePersisterInterface<MainBone> {
 
-    private lateinit var binding: ControllerMainBinding
     @Inject
     lateinit var presenter: MainPresenter
 
@@ -55,16 +52,18 @@ class MainController : Fragment(), MainView,
     //region ================= Implements Methods =================
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        val view: View = inflater.inflate(R.layout.controller_main, container, false)
+        return inflater.inflate(R.layout.controller_main, container, false)
+    }
 
-        binding = DataBindingUtil.bind(view)!!
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
 
         val linearLayoutManager = LinearLayoutManager(activity)
-        binding.purchases.layoutManager = linearLayoutManager
+        purchases.layoutManager = linearLayoutManager
         setupScrollListener()
 
-        binding.addPurchase.setOnClickListener(showAddPurchaseController())
-        binding.bottomScroll.setOnClickListener(requestToScrollDown())
+        add_purchase.setOnClickListener(showAddPurchaseController())
+        bottom_scroll.setOnClickListener(requestToScrollDown())
 
         mainControllerScope = Toothpick.openScopes(activity, this)
         Toothpick.inject(this, mainControllerScope)
@@ -72,7 +71,6 @@ class MainController : Fragment(), MainView,
         presenter.onAttachView(this)
 
         presenter.processData()
-        return view
     }
 
     override fun onDestroyView() {
@@ -97,7 +95,7 @@ class MainController : Fragment(), MainView,
 
     private fun showAddPurchaseController(): View.OnClickListener? {
         return View.OnClickListener {
-//            router.pushController(RouterTransaction.with(AddPurchaseController()))
+            //            router.pushController(RouterTransaction.with(AddPurchaseController()))
         }
     }
 
@@ -108,12 +106,16 @@ class MainController : Fragment(), MainView,
     }
 
     private fun setupScrollListener() {
-        binding.purchases.addOnScrollListener(object : RecyclerView.OnScrollListener() {
-            override fun onScrolled(recyclerView: RecyclerView?, dx: Int, dy: Int) {
-                if (dy > 0 || dy < 0) {
-                    presenter.setScrollPurchasesList(true)
-                }
+        purchases.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                super.onScrolled(recyclerView, dx, dy)
             }
+
+//            override fun onScrolled(recyclerView: RecyclerView?, dx: Int, dy: Int) {
+//                if (dy > 0 || dy < 0) {
+//                    presenter.setScrollPurchasesList(true)
+//                }
+//            }
         })
     }
 
@@ -122,16 +124,16 @@ class MainController : Fragment(), MainView,
     //region ================= Main View =================
 
     override fun showBottomScroll() {
-        binding.bottomScroll.show()
+        bottom_scroll.show()
     }
 
     override fun hideBottomScroll() {
-        binding.bottomScroll.hide()
+        bottom_scroll.hide()
     }
 
     override fun scrollToPosition(position: Int) {
-        binding.purchases.scrollToPosition(position)
-        binding.bottomScroll.visibility = GONE
+        purchases.scrollToPosition(position)
+        bottom_scroll.visibility = GONE
     }
 
     override fun setupPurchaseList(purchaseList: MutableList<PurchaseDto>,
@@ -141,22 +143,22 @@ class MainController : Fragment(), MainView,
                 presenter.checkPositionAdapter(position)
             }
         })
-        binding.purchases.adapter = purchaseAdapter
+        purchases.adapter = purchaseAdapter
         presenter.requestScrollToDown()
     }
 
     override fun setupStatusText(caption: String) {
-        binding.statusTv.text = caption
-        binding.statusTv.visibility = VISIBLE
+        status_tv.text = caption
+        status_tv.visibility = VISIBLE
     }
 
     override fun showProgressBar() {
         setupStatusText("")
-        binding.progressPurchase.visibility = VISIBLE
+        progress_purchase.visibility = VISIBLE
     }
 
     override fun hideProgressBar() {
-        binding.progressPurchase.visibility = GONE
+        progress_purchase.visibility = GONE
     }
 
     override fun startIntent(lastError: Exception?) {

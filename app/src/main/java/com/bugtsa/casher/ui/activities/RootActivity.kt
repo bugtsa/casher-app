@@ -1,28 +1,23 @@
 package com.bugtsa.casher.ui.activities
 
 import android.Manifest
-import android.os.Bundle
-import pub.devrel.easypermissions.EasyPermissions
 import android.accounts.AccountManager
-import pub.devrel.easypermissions.AfterPermissionGranted
-import com.google.api.services.sheets.v4.SheetsScopes
-import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
-import android.databinding.DataBindingUtil
 import android.net.ConnectivityManager
+import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v7.app.AppCompatActivity
 import android.view.View.VISIBLE
 import com.bugtsa.casher.R
-import com.bugtsa.casher.databinding.ActivityRootBinding
 import com.bugtsa.casher.ui.screens.main.MainBone
-import com.bugtsa.casher.ui.screens.main.MainController
 import com.crashlytics.android.Crashlytics
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.GoogleApiAvailability
 import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential
+import com.google.api.services.sheets.v4.SheetsScopes
 import io.fabric.sdk.android.Fabric
+import kotlinx.android.synthetic.main.activity_root.*
 import pro.horovodovodo4ka.bones.Bone
 import pro.horovodovodo4ka.bones.Finger
 import pro.horovodovodo4ka.bones.extensions.glueWith
@@ -33,6 +28,8 @@ import pro.horovodovodo4ka.bones.statesstore.EmergencyPersisterInterface
 import pro.horovodovodo4ka.bones.ui.FingerNavigatorInterface
 import pro.horovodovodo4ka.bones.ui.delegates.FingerNavigator
 import pro.horovodovodo4ka.bones.ui.helpers.ActivityAppRestartCleaner
+import pub.devrel.easypermissions.AfterPermissionGranted
+import pub.devrel.easypermissions.EasyPermissions
 import toothpick.Scope
 import toothpick.Toothpick
 import javax.inject.Inject
@@ -48,11 +45,10 @@ class RootActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks, R
         BonePersisterInterface<RootFinger>,
         EmergencyPersisterInterface<RootActivity> by EmergencyPersister(), ActivityAppRestartCleaner {
     private lateinit var mCredential: GoogleAccountCredential
-    private lateinit var binding: ActivityRootBinding
 
-
-    lateinit private var activityScope : Scope
-    @Inject lateinit var presenter : RootPresenter
+    private lateinit var activityScope: Scope
+    @Inject
+    lateinit var presenter: RootPresenter
 
     //region ================= Implements Methods =================
 
@@ -66,7 +62,7 @@ class RootActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks, R
         activityScope = Toothpick.openScopes(application, this)
         Toothpick.inject(this, activityScope)
 
-        binding = DataBindingUtil.setContentView(this, R.layout.activity_root)
+        setContentView(R.layout.activity_root)
 
         presenter.onAttachView(this)
 
@@ -107,7 +103,7 @@ class RootActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks, R
         emergencyPin(outState)
     }
 
-//    @SuppressLint("MissingSuperCall")
+    //    @SuppressLint("MissingSuperCall")
     override fun onDestroy() {
         super.onDestroy()
 
@@ -136,7 +132,7 @@ class RootActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks, R
     @AfterPermissionGranted(REQUEST_PERMISSION_GET_ACCOUNTS)
     private fun chooseAccount() {
         if (EasyPermissions.hasPermissions(
-                this, Manifest.permission.GET_ACCOUNTS)) {
+                        this, Manifest.permission.GET_ACCOUNTS)) {
             val accountName = getPreferences(Context.MODE_PRIVATE)
                     .getString(PREF_ACCOUNT_NAME, null)
             if (accountName != null) {
@@ -178,7 +174,7 @@ class RootActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks, R
         super.onActivityResult(requestCode, resultCode, data)
         when (requestCode) {
             REQUEST_GOOGLE_PLAY_SERVICES -> if (resultCode != RESULT_OK) {
-                showText( "This app requires Google Play Services. Please install " + "Google Play Services on your device and relaunch this app.")
+                showText("This app requires Google Play Services. Please install " + "Google Play Services on your device and relaunch this app.")
             } else {
                 getResultsFromApi()
             }
@@ -322,9 +318,9 @@ class RootActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks, R
 
     //region ================= Setup Ui =================
 
-    private fun showText(caption : String) {
-        binding.statusTv.text = caption
-        binding.statusTv.visibility = VISIBLE
+    private fun showText(caption: String) {
+        status_tv.text = caption
+        status_tv.visibility = VISIBLE
     }
 
     //endregion
