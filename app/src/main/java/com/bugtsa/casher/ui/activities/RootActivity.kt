@@ -50,6 +50,16 @@ class RootActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks, R
     @Inject
     lateinit var presenter: RootPresenter
 
+    companion object {
+
+        internal val REQUEST_ACCOUNT_PICKER = 1000
+        internal val REQUEST_AUTHORIZATION = 1001
+        internal val REQUEST_GOOGLE_PLAY_SERVICES = 1002
+        internal const val REQUEST_PERMISSION_GET_ACCOUNTS = 1003
+
+        private const val PREF_ACCOUNT_NAME = "accountName"
+    }
+
     //region ================= Implements Methods =================
 
     /**
@@ -84,6 +94,11 @@ class RootActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks, R
         }
 
         getResultsFromApi()
+    }
+
+    override fun onStart() {
+        super.onStart()
+        toolbar.title = getString(R.string.app_name)
     }
 
     override fun onBackPressed() {
@@ -303,18 +318,6 @@ class RootActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks, R
     }
 
     //endregion
-
-    companion object {
-
-        internal val REQUEST_ACCOUNT_PICKER = 1000
-        internal val REQUEST_AUTHORIZATION = 1001
-        internal val REQUEST_GOOGLE_PLAY_SERVICES = 1002
-        internal const val REQUEST_PERMISSION_GET_ACCOUNTS = 1003
-
-        private val BUTTON_TEXT = "Call Google Sheets API"
-        private val PREF_ACCOUNT_NAME = "accountName"
-        private val SCOPES = mutableListOf(SheetsScopes.DRIVE)
-    }
 
     //region ================= Setup Ui =================
 

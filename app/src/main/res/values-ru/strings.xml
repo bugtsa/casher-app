@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Русходничек</string>
+    <string name="price_caption">Сумма</string>
+    <string name="time_caption">Дата</string>
+    <string name="category_caption">На что</string>
+
+    <string name="price_purchase">Цена траты</string>
+    <string name="category_purchase">На что потрачено</string>
+    <string name="cancel_caption">Отмена</string>
+    <string name="add_caption">Добавить</string>
+    <string name="date_purchase">установить дату самостоятельно</string>
+    <string name="current_date_and_time">"Текущая дата и время: "</string>
+    <string name="changed_date_and_time">"Установленные дата и время: "</string>
+</resources>
