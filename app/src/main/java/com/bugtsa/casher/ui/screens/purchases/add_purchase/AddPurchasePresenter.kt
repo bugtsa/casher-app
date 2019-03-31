@@ -31,12 +31,11 @@ import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 
-class AddPurchasePresenter @Inject constructor(googleSheetService: GoogleSheetService,
-                                               compositeDisposable: CompositeDisposable,
+class AddPurchasePresenter @Inject constructor(compositeDisposable: CompositeDisposable,
                                                injectPurchaseModel: PurchaseModel,
                                                injectCategoryDataStore: LocalCategoryDataStore) {
 
-    private var serviceSheets: Sheets = googleSheetService.mService
+//    private var serviceSheets: Sheets = googleSheetService.mService
     private var disposableSubscriptions: CompositeDisposable = compositeDisposable
     private var purchaseModel: PurchaseModel = injectPurchaseModel
     private var localCategoryDataStore: LocalCategoryDataStore = injectCategoryDataStore
@@ -88,14 +87,14 @@ class AddPurchasePresenter @Inject constructor(googleSheetService: GoogleSheetSe
 
     fun addPurchase(pricePurchase: String, categoryPurchase: String) {
         addPurchaseView.showProgressBar()
-        disposableSubscriptions.add(
-                addPurchaseSubscriber(serviceSheets,
-                        PurchaseDto(pricePurchase,
-                                getActualDateAndTime(),
-                                categoryPurchase))!!
-                        .subscribe(this::onBatchPurchasesCollected,
-                                this::onBatchPurchasesCollectionFailure))
-        performCheckStorageCategoriesList(categoryPurchase)
+//        disposableSubscriptions.add(
+//                addPurchaseSubscriber(serviceSheets,
+//                        PurchaseDto(pricePurchase,
+//                                getActualDateAndTime(),
+//                                categoryPurchase))!!
+//                        .subscribe(this::onBatchPurchasesCollected,
+//                                this::onBatchPurchasesCollectionFailure))
+//        performCheckStorageCategoriesList(categoryPurchase)
     }
 
     //endregion
@@ -103,18 +102,18 @@ class AddPurchasePresenter @Inject constructor(googleSheetService: GoogleSheetSe
     //region ================= Add & Check Server Categories List =================
 
     private fun performCheckStorageCategoriesList(currentCategory: String) {
-        disposableSubscriptions.add(
-                localCategoryDataStore.getCategoriesList()
-                        .subscribeOn(Schedulers.io())
-                        .map { it.mapNotNull { it.name } }
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe({ storageCategoriesList: List<String> ->
-                            if (!isContainsCurrentCategoryInDatabase(currentCategory, storageCategoriesList)) {
-                                addCategoryToDatabase(currentCategory)
-                                addCategoryToServer(serviceSheets, currentCategory, storageCategoriesList.size + 1)
-                            }
-                        },
-                                { t -> Timber.e(t, "error at check exist categories") }))
+//        disposableSubscriptions.add(
+//                localCategoryDataStore.getCategoriesList()
+//                        .subscribeOn(Schedulers.io())
+//                        .map { it.mapNotNull { it.name } }
+//                        .observeOn(AndroidSchedulers.mainThread())
+//                        .subscribe({ storageCategoriesList: List<String> ->
+//                            if (!isContainsCurrentCategoryInDatabase(currentCategory, storageCategoriesList)) {
+//                                addCategoryToDatabase(currentCategory)
+//                                addCategoryToServer(serviceSheets, currentCategory, storageCategoriesList.size + 1)
+//                            }
+//                        },
+//                                { t -> Timber.e(t, "error at check exist categories") }))
     }
 
     private fun isContainsCurrentCategoryInDatabase(currentCategory: String, storageCategoriesList: List<String>): Boolean {

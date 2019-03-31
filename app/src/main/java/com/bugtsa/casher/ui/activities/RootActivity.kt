@@ -6,16 +6,21 @@ import android.content.Context
 import android.content.Intent
 import android.net.ConnectivityManager
 import android.os.Bundle
+import android.preference.PreferenceManager
 import android.support.v4.app.Fragment
 import android.support.v7.app.AppCompatActivity
+import android.util.Log
 import android.view.View.VISIBLE
 import com.bugtsa.casher.R
+import com.bugtsa.casher.data.dto.PaymentRes
+import com.bugtsa.casher.networking.RetrofitService
 import com.bugtsa.casher.ui.screens.main.MainBone
 import com.crashlytics.android.Crashlytics
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.GoogleApiAvailability
+import com.google.api.client.extensions.android.http.AndroidHttp
 import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential
-import com.google.api.services.sheets.v4.SheetsScopes
+import com.google.api.client.json.jackson2.JacksonFactory
 import io.fabric.sdk.android.Fabric
 import kotlinx.android.synthetic.main.activity_root.*
 import pro.horovodovodo4ka.bones.Bone
@@ -33,6 +38,11 @@ import pub.devrel.easypermissions.EasyPermissions
 import toothpick.Scope
 import toothpick.Toothpick
 import javax.inject.Inject
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.schedulers.Schedulers
+import timber.log.Timber
+
 
 class RootFinger(root: Bone) : Finger(root) {
     init {
@@ -56,8 +66,14 @@ class RootActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks, R
         internal val REQUEST_AUTHORIZATION = 1001
         internal val REQUEST_GOOGLE_PLAY_SERVICES = 1002
         internal const val REQUEST_PERMISSION_GET_ACCOUNTS = 1003
+        internal const val REQUEST_CONTACTS = 1005
 
-        private const val PREF_ACCOUNT_NAME = "accountName"
+        const val PREF_ACCOUNT_NAME = "accountName"
+
+        /** Global instance of the HTTP transport. */
+        private val HTTP_TRANSPORT = AndroidHttp.newCompatibleTransport()
+        /** Global instance of the JSON factory. */
+        private val JSON_FACTORY = JacksonFactory.getDefaultInstance()
     }
 
     //region ================= Implements Methods =================
@@ -76,24 +92,19 @@ class RootActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks, R
 
         presenter.onAttachView(this)
 
-        if (!emergencyLoad(savedInstanceState, this)) {
+        val callService =  RetrofitService()
 
-            super<ActivityAppRestartCleaner>.onCreate(savedInstanceState)
+        callService.casherApi.getPayments()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe ({
+                    result ->
+                    Log.d("Result", "There are ${result.size} Java developers in Lagos")
+                }, { error ->
+                    error.printStackTrace()
+                })
 
-            bone = RootFinger(MainBone())
-
-            glueWith(bone)
-            bone.isActive = true
-
-            supportFragmentManager
-                    .beginTransaction()
-                    .replace(android.R.id.content, bone.phalanxes.first().sibling as Fragment)
-                    .commit()
-        } else {
-            glueWith(bone)
-        }
-
-        getResultsFromApi()
+//        getResultsFromApi(savedInstanceState)
     }
 
     override fun onStart() {
@@ -152,7 +163,7 @@ class RootActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks, R
                     .getString(PREF_ACCOUNT_NAME, null)
             if (accountName != null) {
                 mCredential.selectedAccountName = accountName
-                getResultsFromApi()
+                getResultsFromApi(null)
             } else {
                 // Start a dialog from which the user can choose an account
                 startActivityForResult(
@@ -173,7 +184,6 @@ class RootActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks, R
 
     //region ================= Request Permissions =================
 
-
     /**
      * Called when an activity launched here (specifically, AccountPicker
      * and authorization) exits, giving you the requestCode you started it with,
@@ -191,13 +201,13 @@ class RootActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks, R
             REQUEST_GOOGLE_PLAY_SERVICES -> if (resultCode != RESULT_OK) {
                 showText("This app requires Google Play Services. Please install " + "Google Play Services on your device and relaunch this app.")
             } else {
-                getResultsFromApi()
+                getResultsFromApi(null)
             }
             REQUEST_ACCOUNT_PICKER -> if (resultCode == RESULT_OK && data != null &&
                     data.extras != null) {
                 val accountName = data.getStringExtra(AccountManager.KEY_ACCOUNT_NAME)
                 if (accountName != null) {
-                    val settings = getPreferences(Context.MODE_PRIVATE)
+                    val settings = PreferenceManager.getDefaultSharedPreferences(applicationContext)
                     val editor = settings.edit()
                     editor.putString(PREF_ACCOUNT_NAME, accountName)
                     editor.apply()
@@ -205,7 +215,7 @@ class RootActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks, R
                 }
             }
             REQUEST_AUTHORIZATION -> if (resultCode == RESULT_OK) {
-                getResultsFromApi()
+                getResultsFromApi(null)
             }
         }
     }
@@ -291,18 +301,18 @@ class RootActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks, R
      * of the preconditions are not satisfied, the app will prompt the user as
      * appropriate.
      */
-    private fun getResultsFromApi() {
-        presenter.requestCredential()
+    private fun getResultsFromApi(savedInstanceState: Bundle?) {
+        presenter.requestCredential(savedInstanceState)
     }
 
     private fun setupAccountNameAndRequestToApi(accountName: String?) {
         mCredential.selectedAccountName = accountName
-        requestToApi(mCredential)
+        requestToApi(mCredential, null)
     }
 
     //region ================= Root View =================
 
-    override fun requestToApi(credential: GoogleAccountCredential) {
+    override fun requestToApi(credential: GoogleAccountCredential, savedInstanceState: Bundle?) {
         mCredential = credential
         if (!isGooglePlayServicesAvailable) {
             acquireGooglePlayServices()
@@ -314,6 +324,23 @@ class RootActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks, R
 //            if (!router.hasRootController()) {
 //                router.setRoot(RouterTransaction.with(MainController()))
 //            }
+            if (!emergencyLoad(savedInstanceState, this)) {
+
+                super<ActivityAppRestartCleaner>.onCreate(savedInstanceState)
+
+                bone = RootFinger(MainBone())
+
+                glueWith(bone)
+                bone.isActive = true
+
+                supportFragmentManager
+                        .beginTransaction()
+                        .replace(android.R.id.content, bone.phalanxes.first().sibling as Fragment)
+                        .commit()
+            } else {
+                glueWith(bone)
+            }
+
         }
     }
 
