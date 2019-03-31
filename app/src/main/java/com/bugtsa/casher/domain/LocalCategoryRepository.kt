@@ -8,5 +8,5 @@ import org.w3c.dom.Comment
 
 interface LocalCategoryRepository {
     fun add(categoryText: String ) : Single<CategoryDto>
-    fun getCategories(): Flowable<List<CategoryEntity>>
+    fun getCategoriesList(): Flowable<List<CategoryEntity>>
 }

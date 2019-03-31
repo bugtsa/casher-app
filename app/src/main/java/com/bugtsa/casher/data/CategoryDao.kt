@@ -16,5 +16,5 @@ interface CategoryDao {
 //    fun delete(categoryText: String)
 //
     @Query("SELECT * FROM category")
-    fun getComments(): Flowable<List<CategoryEntity>>
+    fun getCategories(): Flowable<List<CategoryEntity>>
 }

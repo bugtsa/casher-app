@@ -1,4 +1,4 @@
-package com.bugtsa.casher.utls
+package com.bugtsa.casher.utils
 
 import java.sql.Timestamp
 import java.text.ParseException
@@ -33,6 +33,12 @@ class SoftwareUtils {
 
         fun timeStampToString(timeStamp: Long, locale: Locale): String {
             val dateFormat = SimpleDateFormat("dd.MM.yy, HH:mm", locale)
+            val date = Date(timeStamp * 1000)
+            return dateFormat.format(date)
+        }
+
+        fun modernTimeStampToString(timeStamp: Long, locale: Locale): String {
+            val dateFormat = SimpleDateFormat("dd.MM.yy HH:mm", locale)
             val date = Date(timeStamp * 1000)
             return dateFormat.format(date)
         }

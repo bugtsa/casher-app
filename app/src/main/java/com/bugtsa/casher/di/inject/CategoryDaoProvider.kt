@@ -13,7 +13,7 @@ class CategoryDaoProvider : Provider<CategoryDao> {
     private var categoryDao: CategoryDao
 
     constructor(application: Application) {
-        var database = Room.databaseBuilder(application.applicationContext,
+        val database = Room.databaseBuilder(application.applicationContext,
                 CasherDatabase::class.java, ModelConstants.DB_NAME)
                 .allowMainThreadQueries()
                 .build()

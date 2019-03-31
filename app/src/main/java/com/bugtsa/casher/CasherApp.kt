@@ -1,6 +1,7 @@
 package com.bugtsa.casher
 
 import android.app.Application
+import android.support.multidex.MultiDexApplication
 import com.bugtsa.casher.di.module.CasherApplicationModule
 import com.facebook.stetho.Stetho
 import toothpick.Toothpick
@@ -10,7 +11,7 @@ import toothpick.configuration.Configuration.forProduction
 import toothpick.registries.FactoryRegistryLocator
 import toothpick.registries.MemberInjectorRegistryLocator
 
-class CasherApp : Application() {
+class CasherApp : MultiDexApplication() {
 
     override fun onCreate() {
         super.onCreate()

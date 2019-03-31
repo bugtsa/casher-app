@@ -9,4 +9,9 @@ interface AddPurchaseView {
     fun setSearchText(result: String)
 
     fun setupCategoriesList(categoriesList: List<String>)
+
+    fun setupCurrentDateAndTime(dateAndTimeString: String)
+    fun setupCustomDateAndTime(date: String, time: String)
+    fun showDatePicker()
+    fun showTimePicker()
 }

@@ -1,66 +1,65 @@
 package com.bugtsa.casher.ui.screens.purchases.add_purchase
 
-import android.annotation.SuppressLint
-import android.databinding.DataBindingUtil
+import android.content.Context
 import android.graphics.Color
-import android.graphics.PorterDuff
-import android.graphics.drawable.Drawable
-import android.support.v4.content.ContextCompat
-import android.util.Log
+import android.os.Bundle
+import android.support.v4.app.Fragment
 import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
-import com.bluelinelabs.conductor.Controller
+import android.widget.ArrayAdapter
+import com.borax12.materialdaterangepicker.time.RadialPickerLayout
+import com.borax12.materialdaterangepicker.time.TimePickerDialog
 import com.bugtsa.casher.R
-import com.bugtsa.casher.databinding.ControllerAddPurchaseBinding
-import com.bugtsa.casher.model.CategoryEntity
+import com.maxproj.calendarpicker.Builder
+import kotlinx.android.synthetic.main.controller_add_purchase.*
 import toothpick.Scope
 import toothpick.Toothpick
+import java.util.*
 import javax.inject.Inject
-import android.widget.ArrayAdapter
 
 
 @Suppress("DEPRECATED_IDENTITY_EQUALS")
-class AddPurchaseController : Controller(), AddPurchaseView {
-
-    lateinit var binding: ControllerAddPurchaseBinding
+class AddPurchaseController : Fragment(), AddPurchaseView, TimePickerDialog.OnTimeSetListener {
 
     @Inject
     lateinit var presenter: AddPurchasePresenter
 
-    lateinit private var addPurchaseScope: Scope
+    private lateinit var addPurchaseScope: Scope
 
     //region ================= Implements Methods =================
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup): View {
-        var view: View = inflater.inflate(R.layout.controller_add_purchase, container, false)
-        binding = DataBindingUtil.bind(view)
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        val view: View = inflater.inflate(R.layout.controller_add_purchase, container, false)
 
         setupCategoriesTouchListener()
+        add_date_purchase.setOnClickListener {
+            presenter.checkSetupCustomDateAndTime(add_date_purchase.isChecked)
+        }
 
         addPurchaseScope = Toothpick.openScopes(activity, this)
         Toothpick.inject(this, addPurchaseScope)
         presenter.onAttachView(this)
+        presenter.setupCurrentDate()
         presenter.checkExistCategoriesInDatabase()
 
         return view
     }
 
-    override fun onDestroyView(view: View) {
-        super.onDestroyView(view)
+    override fun onDestroyView() {
+        super.onDestroyView()
         presenter.onViewDestroy()
         Toothpick.closeScope(this)
     }
 
-    override fun onAttach(view: View) {
-        super.onAttach(view)
-
-        binding.savePurchase.setOnClickListener {
-            presenter.addPurchase(binding.pricePurchaseEt.text.toString(),
-                    binding.categoryPurchaseEt.text.toString())
+    override fun onAttach(context: Context?) {
+        super.onAttach(context)
+        save_purchase.setOnClickListener {
+            presenter.addPurchase(price_purchase_et.text.toString(),
+                    category_purchase_et.text.toString())
         }
-        binding.cancelPurchase.setOnClickListener { popCurrentController() }
+        cancel_purchase.setOnClickListener { popCurrentController() }
     }
 
     //endregion
@@ -88,7 +87,47 @@ class AddPurchaseController : Controller(), AddPurchaseView {
                 activity,
                 android.R.layout.simple_dropdown_item_1line,
                 categoriesList)
-        binding.categoryPurchaseEt.setAdapter(adapter)
+        category_purchase_et.setAdapter(adapter)
+    }
+
+    override fun setupCurrentDateAndTime(dateAndTime: String) {
+        date_purchase.text = activity!!.resources.getString(R.string.current_date_and_time) + dateAndTime
+    }
+
+    override fun setupCustomDateAndTime(date: String, time: String) {
+        date_purchase.text = activity!!.resources.getString(R.string.changed_date_and_time) + "$date $time"
+    }
+
+    //endregion
+
+    //region ================= Calendar And Time Picker =================
+
+    override fun showDatePicker() {
+        var builder = Builder(activity, Builder.CalendarPickerOnConfirm { yearMonthDay ->
+            presenter.changeCalendar(yearMonthDay)
+        })
+        builder
+                .setPromptText("Select Date")
+                .setPromptSize(18)
+                .setPromptColor(Color.RED)
+        builder.show()
+    }
+
+    override fun showTimePicker() {
+        val now = Calendar.getInstance()
+        val tpd = TimePickerDialog.newInstance(
+                this,
+                now.get(Calendar.HOUR_OF_DAY),
+                now.get(Calendar.MINUTE),
+                true
+        )
+        tpd.show(activity!!.fragmentManager, "TagTimePickerDialog")
+    }
+
+    override fun onTimeSet(view: RadialPickerLayout?, hourOfDay: Int, minute: Int, hourOfDayEnd: Int, minuteEnd: Int) {
+        val hourString = if (hourOfDay < 10) "0$hourOfDay" else "" + hourOfDay
+        val minuteString = if (minute < 10) "0$minute" else "" + minute
+        presenter.changeTime(hourString, minuteString)
     }
 
     //endregion
@@ -96,24 +135,28 @@ class AddPurchaseController : Controller(), AddPurchaseView {
     //region ================= Categories List Methods =================
 
     private fun setupCategoriesTouchListener() {
-        binding.categoryPurchaseEt.setOnTouchListener({ v, event ->
-            if (event.getAction() === MotionEvent.ACTION_UP) {
-                if (event.getRawX() >= binding.categoryPurchaseEt.getRight() - binding.categoryPurchaseEt.getTotalPaddingRight()) {
+        category_purchase_et.setOnTouchListener { _, event ->
+            if (event.action === MotionEvent.ACTION_UP) {
+                if (event.rawX >= category_purchase_et.right - category_purchase_et.totalPaddingRight) {
                     resetSearchView()
                 }
             }
             false
-        })
+        }
     }
 
     private fun resetSearchView() {
-        binding.categoryPurchaseEt.text.clear()
+        category_purchase_et.text.clear()
     }
 
     //endregion
 
+    //region ================= Private Methods =================
 
     private fun popCurrentController() {
-        router.popCurrentController()
+//        router.popCurrentController()
     }
+
+    //endregion
+
 }

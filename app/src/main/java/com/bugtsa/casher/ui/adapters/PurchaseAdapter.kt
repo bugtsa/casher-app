@@ -23,25 +23,25 @@ class PurchaseAdapter(purchaseList: MutableList<PurchaseDto>,
 
     //region ================= Implements Methods =================
 
-    override fun onBindViewHolder(holder: ViewHolder?, position: Int) {
+    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val purchase: PurchaseDto = purchasesList[position]
         if (datesMap.contains(purchase.date) && datesMap.get(purchase.date) == position) {
             showDateTitle(holder, purchase.date)
         } else {
-            holder?.date?.visibility = GONE
+            holder.date.visibility = GONE
         }
-        holder?.timePurchase?.text = purchase.time
-        holder?.price?.text = purchase.price
-        holder?.category?.text = purchase.category
-        onChangePosition.changePosition(holder?.layoutPosition!!)
+        holder.timePurchase.text = purchase.time
+        holder.price.text = purchase.price
+        holder.category.text = purchase.category
+        onChangePosition.changePosition(holder.layoutPosition)
     }
 
     override fun getItemCount(): Int {
         return purchasesList.size
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup?, viewType: Int): ViewHolder {
-        return ViewHolder(LayoutInflater.from(parent?.context).inflate(R.layout.item_purchase, parent, false))
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
+        return ViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.item_purchase, parent, false))
     }
 
     //endregion

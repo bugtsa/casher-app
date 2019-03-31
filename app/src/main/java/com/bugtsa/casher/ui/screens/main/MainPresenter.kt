@@ -1,49 +1,43 @@
 package com.bugtsa.casher.ui.screens.main
 
-import android.os.AsyncTask
 import android.text.TextUtils
+import android.util.Log
 import com.bugtsa.casher.arch.models.PurchaseModel
 import com.bugtsa.casher.data.LocalCategoryDataStore
 import com.bugtsa.casher.data.dto.PurchaseDto
-import com.bugtsa.casher.model.CategoryEntity
 import com.bugtsa.casher.networking.GoogleSheetService
-import com.bugtsa.casher.utls.ConstantManager.Companion.DELIMITER_BETWEEN_COLUMNS
-import com.bugtsa.casher.utls.ConstantManager.Companion.DELIMITER_BETWEEN_DATE_AND_TIME
-import com.bugtsa.casher.utls.ConstantManager.Companion.END_COLUMN_SHEET
-import com.bugtsa.casher.utls.ConstantManager.Companion.ROW_START_SHEET
-import com.bugtsa.casher.utls.ConstantManager.Companion.START_COLUMN_SHEET
-import com.bugtsa.casher.utls.ConstantManager.Companion.TABLE_NAME_SHEET
-import com.bugtsa.casher.utls.GoogleSheetManager.Companion.OWN_GOOGLE_SHEET_ID
+import com.bugtsa.casher.utils.ConstantManager.Companion.END_COLUMN_SHEET
+import com.bugtsa.casher.utils.ConstantManager.Companion.PURCHASE_TABLE_NAME_SHEET
+import com.bugtsa.casher.utils.ConstantManager.Companion.ROW_START_SHEET
+import com.bugtsa.casher.utils.ConstantManager.Companion.START_COLUMN_SHEET
+import com.bugtsa.casher.utils.GoogleSheetManager.Companion.OWN_GOOGLE_SHEET_ID
+import com.bugtsa.casher.utils.ParentConstantManager.Companion.CATEGORIES_TABLE_NAME_SHEET
+import com.bugtsa.casher.utils.ParentConstantManager.Companion.DELIMITER_BETWEEN_COLUMNS
+import com.bugtsa.casher.utils.ParentConstantManager.Companion.DELIMITER_BETWEEN_DATE_AND_TIME
 import com.google.api.client.googleapis.extensions.android.gms.auth.GooglePlayServicesAvailabilityIOException
 import com.google.api.client.googleapis.extensions.android.gms.auth.UserRecoverableAuthIOException
 import com.google.api.services.sheets.v4.Sheets
+import io.reactivex.Flowable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
-import io.reactivex.functions.Consumer
 import io.reactivex.schedulers.Schedulers
 import timber.log.Timber
-import java.io.IOException
 import javax.inject.Inject
 
-class MainPresenter @Inject constructor(googleSheetService: GoogleSheetService) {
+class MainPresenter @Inject constructor(googleSheetService: GoogleSheetService,
+                                        injectPurchaseModel: PurchaseModel,
+                                        injectLocalCategoryDataStore: LocalCategoryDataStore) {
 
-    private var serviceSheets: Sheets
-
-    val purchasesList = mutableListOf<PurchaseDto>()
+//    private var serviceSheets: Sheets = googleSheetService.mService
+    private var purchaseModel: PurchaseModel = injectPurchaseModel
+    private var localCategoryDataStore: LocalCategoryDataStore = injectLocalCategoryDataStore
 
     private var isScrollPurchasesList: Boolean
 
-    @Inject
-    lateinit var purchaseModel: PurchaseModel
-    @Inject
-    lateinit var localCategoryDataStore: LocalCategoryDataStore
-
-    lateinit var mainView: MainView
     private val disposableSubscriptions: CompositeDisposable = CompositeDisposable()
-
+    lateinit var mainView: MainView
 
     init {
-        this.serviceSheets = googleSheetService.mService
         isScrollPurchasesList = false
     }
 
@@ -56,37 +50,71 @@ class MainPresenter @Inject constructor(googleSheetService: GoogleSheetService) 
     }
 
     fun processData() {
-        checkExistCategoriesInDatabase()
-
-        MakeRequestTask().execute()
+//        performCheckStorageCategoriesList()
+//        getPurchasesList(serviceSheets)
     }
+
+    //region ================= Compare Storage and Network Categories =================
+
+    private fun performCheckStorageCategoriesList() {
+//        disposableSubscriptions.add(
+//                localCategoryDataStore.getCategoriesList()
+//                        .subscribeOn(Schedulers.io())
+//                        .map { it.mapNotNull { it.name } }
+//                        .observeOn(AndroidSchedulers.mainThread())
+//                        .doOnNext { storageCategoriesList: List<String> ->
+//                            disposableSubscriptions.add(getServerCategoriesList(serviceSheets)!!
+//                                    .subscribe({ networkCategoriesList ->
+//                                        checkNetworkCategoriesListInDatabase(networkCategoriesList, storageCategoriesList)
+//                                    },
+//                                            { t -> Log.e("MainPresenter", "error at check exist categories $t") }))
+//                        }
+//                        .subscribe({ _: List<String> ->
+//                        },
+//                                { t -> Log.e("MainPresenter", "error at check exist categories $t") }))
+    }
+
+//    private fun getServerCategoriesList(service: Sheets): Flowable<List<String>>? {
+//        val range = CATEGORIES_TABLE_NAME_SHEET + START_COLUMN_SHEET + ROW_START_SHEET
+////        +                DELIMITER_BETWEEN_COLUMNS + START_COLUMN_SHEET
+//
+//        return Flowable.just("")
+//                .subscribeOn(Schedulers.newThread())
+//                .flatMap { _ ->
+//                    Flowable.just(service.spreadsheets().values()
+//                            .get(OWN_GOOGLE_SHEET_ID, range)
+//                            .execute()
+//                            .getValues()
+//                            .map { rowList: MutableList<Any>? -> rowList!!.lastOrNull().toString() })
+//                }
+//                .observeOn(AndroidSchedulers.mainThread())
+//    }
+//
+//    private fun checkNetworkCategoriesListInDatabase(networkCategoriesList: List<String>,
+//                                                     storageCategoriesList: List<String>) {
+//        val isListsHasSameContent: Boolean? = networkCategoriesList sameContentWith storageCategoriesList
+//
+//        if (!networkCategoriesList.isEmpty() && !isListsHasSameContent!!) {
+//
+//            networkCategoriesList
+//                    .filter { networkCategory -> !storageCategoriesList.contains(networkCategory) }
+//                    .forEach { networkCategory -> addCategoryToDatabase(networkCategory) }
+//
+////            for (category in networkCategoriesList) {
+////                if (!storageCategoriesList.contains(category)) {
+////                    addCategoryToDatabase(category)
+////                }
+////            }
+//        }
+//    }
+
+    private infix fun <T> Collection<T>.sameContentWith(collection: Collection<T>?) = collection?.let { this.size == it.size && this.containsAll(it) }
+
+    //endregion
 
     //region ================= DataBase =================
 
-    private fun saveAllFieldsToDatabase() {
-        addFieldToDatabase("спорт. кроссфит")
-        addFieldToDatabase("спорт. обувь")
-        addFieldToDatabase("услуги. моб связь")
-        addFieldToDatabase("товары. дом")
-        addFieldToDatabase("еда. продукты")
-        addFieldToDatabase("еда. обед")
-        addFieldToDatabase("еда. кафе")
-        addFieldToDatabase("еда. фастфуд")
-        addFieldToDatabase("здоровье. аптека")
-        addFieldToDatabase("развлечения. театр")
-        addFieldToDatabase("развлечения. антикафе")
-        addFieldToDatabase("развлечения. батут")
-        addFieldToDatabase("развлечения. кино")
-        addFieldToDatabase("развлечения. хобби")
-        addFieldToDatabase("развлечения. экскурсия")
-        addFieldToDatabase("развлечения. аттракцион")
-        addFieldToDatabase("транспорт. маршрутка")
-        addFieldToDatabase("транспорт. электричка")
-        addFieldToDatabase("транспорт. такси")
-        addFieldToDatabase("транспорт. самолет")
-    }
-
-    private fun addFieldToDatabase(category: String) {
+    private fun addCategoryToDatabase(category: String) {
         disposableSubscriptions.add(
                 localCategoryDataStore.add(category)
                         .subscribeOn(Schedulers.io())
@@ -95,145 +123,67 @@ class MainPresenter @Inject constructor(googleSheetService: GoogleSheetService) 
                                 { t -> Timber.e(t, "add categories to database error") }))
     }
 
-    private fun checkExistCategoriesInDatabase() {
-        disposableSubscriptions.add(
-                localCategoryDataStore.getCategories()
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe({ categoriesList: List<CategoryEntity> ->
-                            if (categoriesList.isEmpty()) {
-                                saveAllFieldsToDatabase()
-                                Timber.d("save all categories")
-                            }
-                        },
-                                { t -> Timber.e(t, "error at check exist categories") }))
-    }
-
     //endregion
 
+    //region ================= Replace Task to Rx functions =================
 
-    //region ================= Request Tasks =================
-
-    /**
-     * An asynchronous task that handles the Google Sheets API call.
-     * Placing the API calls in their own task ensures the UI stays responsive.
-     */
-    private inner class MakeRequestTask internal constructor() : AsyncTask<Void, Void, MutableList<PurchaseDto>>() {
-        private var mLastError: Exception? = null
-
-        /**
-         * Fetch a list of names and majors of students in a sample spreadsheet:
-         * @return List of names and majors
-         * @throws IOException
-         */
-        private val dataFromApi: MutableList<PurchaseDto>
-            @Throws(IOException::class)
-            get() {
-                val range = TABLE_NAME_SHEET + START_COLUMN_SHEET + ROW_START_SHEET +
-                        DELIMITER_BETWEEN_COLUMNS + END_COLUMN_SHEET
-                val response = serviceSheets.spreadsheets().values()
-                        .get(OWN_GOOGLE_SHEET_ID, range)
-                        .execute()
-                val values = response.getValues()
-                purchaseModel.sizePurchaseList = values.size
-                if (values != null) {
-                    for (row in values) {
-                        var purchase = processPurchaseDto(row[0].toString(), row[1].toString(), row[2].toString())
-                        purchasesList.add(purchase)
+    private fun getPurchasesList(service: Sheets) {
+        val range = PURCHASE_TABLE_NAME_SHEET + START_COLUMN_SHEET + ROW_START_SHEET +
+                DELIMITER_BETWEEN_COLUMNS + END_COLUMN_SHEET
+        mainView.showProgressBar()
+        disposableSubscriptions.add(Flowable.just("")
+                .subscribeOn(Schedulers.newThread())
+                .flatMap { _ ->
+                    Flowable.just(service.spreadsheets().values()
+                            .get(OWN_GOOGLE_SHEET_ID, range)
+                            .execute())
+                            .map { rawList -> rawList.getValues() }
+                            .map { values ->
+                                val purchasesList = mutableListOf<PurchaseDto>()
+                                purchaseModel.sizePurchaseList = values.size
+                                for (row in values) {
+                                    val purchase = processPurchaseDto(row[0].toString(), row[1].toString(), row[2].toString())
+                                    purchasesList.add(purchase)
+                                }
+                                purchasesList
+                            }
+                }
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe({ purchases ->
+                    mainView.hideProgressBar()
+                    if (purchases.isEmpty()) {
+                        mainView.setupStatusText("No results returned.")
+                    } else {
+                        mainView.setupPurchaseList(purchases, processDateMap(purchases))
                     }
-                }
-                return purchasesList
+                },
+                        { throwable ->
+                            mainView.hideProgressBar()
+                            if (throwable is GooglePlayServicesAvailabilityIOException) {
+
+                            } else if (throwable is UserRecoverableAuthIOException) {
+                                mainView.startIntent(throwable)
+                            } else {
+                                mainView.setupStatusText("The following error occurred:\n" + throwable.message)
+                            }
+                            Timber.e(throwable, "error at check exist categories")
+                        }))
+    }
+
+    private fun processPurchaseDto(price: String, dateOfSheet: String, category: String): PurchaseDto {
+        when (dateOfSheet.contains(DELIMITER_BETWEEN_DATE_AND_TIME)) {
+            true -> {
+                val index = dateOfSheet.indexOf(DELIMITER_BETWEEN_DATE_AND_TIME)
+                val date = dateOfSheet.substring(0, index)
+                val time = dateOfSheet.substring(index + DELIMITER_BETWEEN_DATE_AND_TIME.length, dateOfSheet.length)
+                return PurchaseDto(price, date, time, category)
             }
-
-        fun processPurchaseDto(price: String, dateOfSheet: String, category: String): PurchaseDto {
-            when (dateOfSheet.contains(DELIMITER_BETWEEN_DATE_AND_TIME)) {
-                true -> {
-                    val index = dateOfSheet.indexOf(DELIMITER_BETWEEN_DATE_AND_TIME)
-                    val date = dateOfSheet.substring(0, index)
-                    val time = dateOfSheet.substring(index + DELIMITER_BETWEEN_DATE_AND_TIME.length, dateOfSheet.length)
-                    return PurchaseDto(price, date, time, category)
-                }
-                false -> return PurchaseDto(price, dateOfSheet, category)
-            }
-//            if (dateOfSheet.contains(DELIMITER_BETWEEN_DATE_AND_TIME)) {
-//                val index = dateOfSheet.indexOf(DELIMITER_BETWEEN_DATE_AND_TIME)
-//                val date = dateOfSheet.substring(0, index)
-//                val time = dateOfSheet.substring(index + DELIMITER_BETWEEN_DATE_AND_TIME.length, dateOfSheet.length)
-//                return PurchaseDto(price, date, time, category)
-//            } else {
-//                return PurchaseDto(price, dateOfSheet, category)
-//            }
-        }
-
-        /**
-         * Background task to call Google Sheets API.
-         * @param params no parameters needed for this task.
-         */
-        override fun doInBackground(vararg params: Void): MutableList<PurchaseDto>? {
-            try {
-                return dataFromApi
-            } catch (e: Exception) {
-                mLastError = e
-                cancel(true)
-                return null
-            }
-
-        }
-
-        override fun onPreExecute() {
-            mainView.showProgressBar()
-        }
-
-        override fun onPostExecute(purchaseList: MutableList<PurchaseDto>?) {
-            mainView.hideProgressBar()
-            if (purchaseList == null || purchaseList.isEmpty()) {
-                mainView.setupStatusText("No results returned.")
-            } else {
-                mainView.setupPurchaseList(purchaseList, processDateMap(purchaseList))
-            }
-        }
-
-        override fun onCancelled() {
-            mainView.hideProgressBar()
-            if (mLastError != null) {
-                if (mLastError is GooglePlayServicesAvailabilityIOException) {
-//                    showGooglePlayServicesAvailabilityErrorDialog(
-//                            (mLastError as GooglePlayServicesAvailabilityIOException)
-//                                    .connectionStatusCode)
-                } else if (mLastError is UserRecoverableAuthIOException) {
-                    mainView.startIntent(mLastError)
-                } else {
-                    mainView.setupStatusText("The following error occurred:\n" + mLastError!!.message)
-                }
-            } else {
-                mainView.setupStatusText("Request cancelled.")
-            }
+            false -> return PurchaseDto(price, dateOfSheet, category)
         }
     }
 
-//    private fun processDateMap(purchaseList: MutableList<PurchaseDto>): Map<String, Int> {
-////        var dateMap: MutableMap<String, Int> = mutableMapOf()
-//
-//        return purchaseList
-//                .filter { purchase -> !TextUtils.isEmpty(purchase.date) }
-////                .flatMap { purchase -> purchase }
-////                .filter { purchase -> !dateMap.contains(purchase.date) }
-//                .map { purchase ->
-//                    //                    if (!dateMap.contains(purchase.date)) {
-////                        dateMap.put(purchase.date, purchaseList.indexOf(purchase))
-////                    }
-//                    return mutableMapOf(Pair(purchase.date, purchase))
-//                }
-//                .filter { purchase ->  }
-////                .filter { purchase ->  }
-////                .toMap()
-////                .filter {  }
-////                .toMap()
-////        return dateMap
-//    }
-
     private fun processDateMap(purchaseList: MutableList<PurchaseDto>): MutableMap<String, Int> {
-        var dateMap: MutableMap<String, Int> = mutableMapOf()
+        val dateMap: MutableMap<String, Int> = mutableMapOf()
 
         purchaseList
                 .filter { purchase -> !TextUtils.isEmpty(purchase.date) }
@@ -245,12 +195,16 @@ class MainPresenter @Inject constructor(googleSheetService: GoogleSheetService) 
         return dateMap
     }
 
+    //endregion
+
+    //region ================= Scroll Function =================
+
     fun requestScrollToDown() {
-        mainView.scrollToPosition(purchasesList.size - 1)
+        mainView.scrollToPosition(purchaseModel.sizePurchaseList - 1)
     }
 
     fun checkPositionAdapter(position: Int) {
-        if (position <= purchasesList.size - 10 && isScrollPurchasesList()) {
+        if (position <= purchaseModel.sizePurchaseList - 10 && isScrollPurchasesList()) {
             mainView.showBottomScroll()
         } else {
             mainView.hideBottomScroll()
