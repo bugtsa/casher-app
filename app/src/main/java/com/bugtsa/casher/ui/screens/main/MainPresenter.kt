@@ -1,17 +1,15 @@
 package com.bugtsa.casher.ui.screens.main
 
 import android.text.TextUtils
-import android.util.Log
 import com.bugtsa.casher.arch.models.PurchaseModel
-import com.bugtsa.casher.data.LocalCategoryDataStore
+import com.bugtsa.casher.domain.local.database.LocalCategoryDataStore
 import com.bugtsa.casher.data.dto.PurchaseDto
-import com.bugtsa.casher.networking.GoogleSheetService
+import com.bugtsa.casher.di.inject.PreferenceProvider
 import com.bugtsa.casher.utils.ConstantManager.Companion.END_COLUMN_SHEET
 import com.bugtsa.casher.utils.ConstantManager.Companion.PURCHASE_TABLE_NAME_SHEET
 import com.bugtsa.casher.utils.ConstantManager.Companion.ROW_START_SHEET
 import com.bugtsa.casher.utils.ConstantManager.Companion.START_COLUMN_SHEET
 import com.bugtsa.casher.utils.GoogleSheetManager.Companion.OWN_GOOGLE_SHEET_ID
-import com.bugtsa.casher.utils.ParentConstantManager.Companion.CATEGORIES_TABLE_NAME_SHEET
 import com.bugtsa.casher.utils.ParentConstantManager.Companion.DELIMITER_BETWEEN_COLUMNS
 import com.bugtsa.casher.utils.ParentConstantManager.Companion.DELIMITER_BETWEEN_DATE_AND_TIME
 import com.google.api.client.googleapis.extensions.android.gms.auth.GooglePlayServicesAvailabilityIOException
@@ -24,11 +22,12 @@ import io.reactivex.schedulers.Schedulers
 import timber.log.Timber
 import javax.inject.Inject
 
-class MainPresenter @Inject constructor(googleSheetService: GoogleSheetService,
+class MainPresenter @Inject constructor(preferenceProvider: PreferenceProvider,
                                         injectPurchaseModel: PurchaseModel,
-                                        injectLocalCategoryDataStore: LocalCategoryDataStore) {
+                                        injectLocalCategoryDataStore: LocalCategoryDataStore
+) {
 
-//    private var serviceSheets: Sheets = googleSheetService.mService
+//    private var serviceSheets: Sheets = preferenceProvider.mService
     private var purchaseModel: PurchaseModel = injectPurchaseModel
     private var localCategoryDataStore: LocalCategoryDataStore = injectLocalCategoryDataStore
 

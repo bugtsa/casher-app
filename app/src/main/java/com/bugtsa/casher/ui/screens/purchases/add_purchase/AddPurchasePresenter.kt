@@ -1,10 +1,8 @@
 package com.bugtsa.casher.ui.screens.purchases.add_purchase
 
-import android.text.TextUtils.substring
 import com.bugtsa.casher.arch.models.PurchaseModel
-import com.bugtsa.casher.data.LocalCategoryDataStore
+import com.bugtsa.casher.domain.local.database.LocalCategoryDataStore
 import com.bugtsa.casher.data.dto.PurchaseDto
-import com.bugtsa.casher.networking.GoogleSheetService
 import com.bugtsa.casher.utils.ConstantManager.Companion.END_COLUMN_SHEET
 import com.bugtsa.casher.utils.ConstantManager.Companion.PURCHASE_TABLE_NAME_SHEET
 import com.bugtsa.casher.utils.ConstantManager.Companion.START_COLUMN_SHEET
@@ -33,7 +31,8 @@ import javax.inject.Inject
 
 class AddPurchasePresenter @Inject constructor(compositeDisposable: CompositeDisposable,
                                                injectPurchaseModel: PurchaseModel,
-                                               injectCategoryDataStore: LocalCategoryDataStore) {
+                                               injectCategoryDataStore: LocalCategoryDataStore
+) {
 
 //    private var serviceSheets: Sheets = googleSheetService.mService
     private var disposableSubscriptions: CompositeDisposable = compositeDisposable

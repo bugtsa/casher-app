@@ -1,13 +1,13 @@
-package com.bugtsa.casher.data
+package com.bugtsa.casher.domain.local.database
 
 import com.bugtsa.casher.data.dto.CategoryDto
-import com.bugtsa.casher.domain.LocalCategoryRepository
 import com.bugtsa.casher.model.CategoryEntity
 import io.reactivex.Flowable
 import io.reactivex.Single
 import javax.inject.Inject
 
-class LocalCategoryDataStore @Inject constructor(categoryDao: CategoryDao) : LocalCategoryRepository {
+class LocalCategoryDataStore @Inject constructor(categoryDao: CategoryDao) :
+    LocalCategoryRepository {
 
     var categoryDao: CategoryDao
 

@@ -1,18 +1,30 @@
 package com.bugtsa.casher.ui.activities
 
-import android.os.Bundle
-import com.bugtsa.casher.networking.CasherApi
-import javax.inject.Inject
+import android.text.*
+import com.bugtsa.casher.di.inject.*
+import com.bugtsa.casher.networking.*
+import javax.inject.*
 
-class RootPresenter @Inject constructor(val casherRestApi:   CasherApi) {
+class RootPresenter @Inject constructor(
+	private val casherRestApi: CasherApi,
+	private val preferenceProvider: PreferenceProvider
+) {
 
-    lateinit var rootView : RootView
+	lateinit var rootView: RootView
 
-    fun onAttachView(rootView: RootView) {
-        this.rootView = rootView
-    }
+	fun onAttachView(rootView: RootView) {
+		this.rootView = rootView
+	}
 
-    fun requestCredential() {
-        rootView.getPayments(casherRestApi.getPayments())
-    }
+	fun requestAccountName() {
+		if (!TextUtils.isEmpty(preferenceProvider.getAccoutnName())) {
+			rootView.showMainController()
+		} else {
+			rootView.requestAccountName()
+		}
+	}
+
+	fun saveAccountName(accountName: String) {
+		preferenceProvider.saveAccountName(accountName)
+	}
 }

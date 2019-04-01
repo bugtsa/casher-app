@@ -1,384 +1,279 @@
 package com.bugtsa.casher.ui.activities
 
-import android.Manifest
-import android.accounts.AccountManager
-import android.content.Context
-import android.content.Intent
-import android.net.ConnectivityManager
-import android.os.Bundle
-import android.preference.PreferenceManager
-import android.support.v4.app.Fragment
-import android.support.v7.app.AppCompatActivity
-import android.util.Log
+import android.accounts.*
+import android.content.*
+import android.net.*
+import android.os.*
+import android.support.v7.app.*
+import android.util.*
 import android.view.View.VISIBLE
-import com.bugtsa.casher.R
-import com.bugtsa.casher.data.dto.PaymentRes
-import com.bugtsa.casher.ui.screens.main.MainBone
-import com.crashlytics.android.Crashlytics
-import com.google.android.gms.common.ConnectionResult
-import com.google.android.gms.common.GoogleApiAvailability
-import com.google.api.client.extensions.android.http.AndroidHttp
-import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential
-import com.google.api.client.json.jackson2.JacksonFactory
-import io.fabric.sdk.android.Fabric
-import io.reactivex.Observable
+import com.bugtsa.casher.data.dto.*
+import com.crashlytics.android.*
+import com.google.android.gms.auth.*
+import com.google.android.gms.common.*
+import com.google.api.client.googleapis.extensions.android.gms.auth.*
+import io.fabric.sdk.android.*
+import io.reactivex.*
+import io.reactivex.android.schedulers.*
+import io.reactivex.schedulers.*
 import kotlinx.android.synthetic.main.activity_root.*
-import pro.horovodovodo4ka.bones.Bone
-import pro.horovodovodo4ka.bones.Finger
-import pro.horovodovodo4ka.bones.extensions.glueWith
-import pro.horovodovodo4ka.bones.extensions.processBackPress
-import pro.horovodovodo4ka.bones.persistance.BonePersisterInterface
-import pro.horovodovodo4ka.bones.statesstore.EmergencyPersister
-import pro.horovodovodo4ka.bones.statesstore.EmergencyPersisterInterface
-import pro.horovodovodo4ka.bones.ui.FingerNavigatorInterface
-import pro.horovodovodo4ka.bones.ui.delegates.FingerNavigator
-import pro.horovodovodo4ka.bones.ui.helpers.ActivityAppRestartCleaner
-import pub.devrel.easypermissions.AfterPermissionGranted
-import pub.devrel.easypermissions.EasyPermissions
+import pro.horovodovodo4ka.bones.*
+import pro.horovodovodo4ka.bones.extensions.*
+import pro.horovodovodo4ka.bones.persistance.*
+import pro.horovodovodo4ka.bones.statesstore.*
+import pro.horovodovodo4ka.bones.ui.*
+import pro.horovodovodo4ka.bones.ui.delegates.*
+import pro.horovodovodo4ka.bones.ui.helpers.*
+import toothpick.*
 import toothpick.Scope
-import toothpick.Toothpick
-import javax.inject.Inject
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.disposables.CompositeDisposable
-import io.reactivex.schedulers.Schedulers
-import timber.log.Timber
+import javax.inject.*
 
 
 class RootFinger(root: Bone) : Finger(root) {
-    init {
-        persistSibling = true
-    }
+	init {
+		persistSibling = true
+	}
 }
 
-class RootActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks, RootView,
-        FingerNavigatorInterface<RootFinger> by FingerNavigator(android.R.id.content),
-        BonePersisterInterface<RootFinger>,
-        EmergencyPersisterInterface<RootActivity> by EmergencyPersister(), ActivityAppRestartCleaner {
-    private lateinit var mCredential: GoogleAccountCredential
+class RootActivity : AppCompatActivity(), RootView,
+	FingerNavigatorInterface<RootFinger> by FingerNavigator(android.R.id.content),
+	BonePersisterInterface<RootFinger>,
+	EmergencyPersisterInterface<RootActivity> by EmergencyPersister(), ActivityAppRestartCleaner {
+	private lateinit var mCredential: GoogleAccountCredential
 
-    private lateinit var activityScope: Scope
-    @Inject
-    lateinit var presenter: RootPresenter
+	private lateinit var activityScope: Scope
+	@Inject
+	lateinit var presenter: RootPresenter
 
-    companion object {
+	companion object {
+		private const val REQUEST_CODE_EMAIL = 1001
+		private const val REQUEST_GOOGLE_PLAY_SERVICES = 1002
+	}
 
-        internal val REQUEST_ACCOUNT_PICKER = 1000
-        internal val REQUEST_AUTHORIZATION = 1001
-        internal val REQUEST_GOOGLE_PLAY_SERVICES = 1002
-        internal const val REQUEST_PERMISSION_GET_ACCOUNTS = 1003
-        internal const val REQUEST_CONTACTS = 1005
+	//region ================= Implements Methods =================
 
-        const val PREF_ACCOUNT_NAME = "accountName"
+	/**
+	 * Create the main activity.
+	 * @param savedInstanceState previously saved instance data.
+	 */
+	override fun onCreate(savedInstanceState: Bundle?) {
+		super<AppCompatActivity>.onCreate(savedInstanceState)
+		Fabric.with(this, Crashlytics())
+		activityScope = Toothpick.openScopes(application, this)
+		Toothpick.inject(this, activityScope)
 
-        /** Global instance of the HTTP transport. */
-        private val HTTP_TRANSPORT = AndroidHttp.newCompatibleTransport()
-        /** Global instance of the JSON factory. */
-        private val JSON_FACTORY = JacksonFactory.getDefaultInstance()
-    }
+		setContentView(com.bugtsa.casher.R.layout.activity_root)
 
-    //region ================= Implements Methods =================
+		presenter.onAttachView(this)
+		presenter.requestAccountName()
+	}
 
-    /**
-     * Create the main activity.
-     * @param savedInstanceState previously saved instance data.
-     */
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super<AppCompatActivity>.onCreate(savedInstanceState)
-        Fabric.with(this, Crashlytics())
-        activityScope = Toothpick.openScopes(application, this)
-        Toothpick.inject(this, activityScope)
+	override fun onStart() {
+		super.onStart()
+		toolbar.title = getString(com.bugtsa.casher.R.string.app_name)
+	}
 
-        setContentView(R.layout.activity_root)
+	override fun onBackPressed() {
+		if (bone.processBackPress()) {
+			finish()
+		}
+	}
 
-        presenter.onAttachView(this)
+	override fun onResume() {
+		super.onResume()
+		emergencyRemovePin()
+	}
 
-        presenter.requestCredential()
-    }
+	override fun onSaveInstanceState(outState: Bundle) {
+		super<AppCompatActivity>.onSaveInstanceState(outState)
+		emergencyPin(outState)
+	}
 
-    override fun onStart() {
-        super.onStart()
-        toolbar.title = getString(R.string.app_name)
-    }
+	override fun onDestroy() {
+		super.onDestroy()
 
-    override fun onBackPressed() {
-        if (bone.processBackPress()) {
-            finish()
-        }
-    }
+		with(bone) {
+			sibling = null
+			emergencySave {
+				it.bone = this
+			}
+		}
+	}
 
-    override fun onResume() {
-        super.onResume()
-        emergencyRemovePin()
+	//endregion
 
-    }
+	//region ================= Request Permissions =================
 
-    override fun onSaveInstanceState(outState: Bundle) {
-        super<AppCompatActivity>.onSaveInstanceState(outState)
-        emergencyPin(outState)
-    }
+	override fun onActivityResult(
+		requestCode: Int, resultCode: Int, data: Intent?
+	) {
+		super.onActivityResult(requestCode, resultCode, data)
+		if (resultCode == RESULT_OK) {
+			when (requestCode) {
+				REQUEST_GOOGLE_PLAY_SERVICES -> if (resultCode != RESULT_OK) {
+					showText("This app requires Google Play Services. Please install " + "Google Play Services on your device and relaunch this app.")
+				} else {
+					getResultsFromApi(null)
+				}
+				REQUEST_CODE_EMAIL -> if (data != null && data.extras != null) {
+					presenter.saveAccountName(data.getStringExtra(AccountManager.KEY_ACCOUNT_NAME))
+				}
+			}
+		}
+	}
 
-    //    @SuppressLint("MissingSuperCall")
-    override fun onDestroy() {
-        super.onDestroy()
+	//endregion
 
-        with(bone) {
-            sibling = null
-            emergencySave {
-                it.bone = this
-            }
-        }
-    }
+	override fun showMainController() {
+		TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+	}
 
-    //endregion
+	/**
+	 * Attempt to resolve a missing, out-of-date, invalid or disabled Google
+	 * Play Services installation via a user dialog, if possible.
+	 */
+	override fun requestAccountName() {
+		val apiAvailability = GoogleApiAvailability.getInstance()
+		val connectionStatusCode = apiAvailability.isGooglePlayServicesAvailable(this)
+		if (apiAvailability.isUserResolvableError(connectionStatusCode)) {
+			showGooglePlayServicesAvailabilityErrorDialog(connectionStatusCode)
+		} else {
+			accountNameIntent()
+		}
+	}
 
-    //region ================= Request Get Account =================
+	//region ================= Request Play Services =================
 
-    /**
-     * Attempts to set the account used with the API credentials. If an account
-     * name was previously saved it will use that one; otherwise an account
-     * picker dialog will be shown to the user. Note that the setting the
-     * account to use with the credentials object requires the app to have the
-     * GET_ACCOUNTS permission, which is requested here if it is not already
-     * present. The AfterPermissionGranted annotation indicates that this
-     * function will be rerun automatically whenever the GET_ACCOUNTS permission
-     * is granted.
-     */
-    @AfterPermissionGranted(REQUEST_PERMISSION_GET_ACCOUNTS)
-    private fun chooseAccount() {
-        if (EasyPermissions.hasPermissions(
-                        this, Manifest.permission.GET_ACCOUNTS)) {
-            val accountName = getPreferences(Context.MODE_PRIVATE)
-                    .getString(PREF_ACCOUNT_NAME, null)
-            if (accountName != null) {
-                mCredential.selectedAccountName = accountName
-                getResultsFromApi(null)
-            } else {
-                // Start a dialog from which the user can choose an account
-                startActivityForResult(
-                        mCredential.newChooseAccountIntent(),
-                        REQUEST_ACCOUNT_PICKER)
-            }
-        } else {
-            // Request the GET_ACCOUNTS permission via a user dialog
-            EasyPermissions.requestPermissions(
-                    this,
-                    "This app needs to access your Google account (via Contacts).",
-                    REQUEST_PERMISSION_GET_ACCOUNTS,
-                    Manifest.permission.GET_ACCOUNTS)
-        }
-    }
+	private fun accountNameIntent() {
+		try {
+			val intent = AccountPicker.newChooseAccountIntent(
+				null, null,
+				arrayOf(GoogleAuthUtil.GOOGLE_ACCOUNT_TYPE), false, null, null, null, null
+			)
+			startActivityForResult(intent, REQUEST_CODE_EMAIL)
+		} catch (e: ActivityNotFoundException) {
+			Log.e("RootActivity", e.toString())
+		}
+	}
 
-    //endregion
+	/**
+	 * Display an error dialog showing that Google Play Services is missing
+	 * or out of date.
+	 * @param connectionStatusCode code describing the presence (or lack of)
+	 * Google Play Services on this device.
+	 */
+	internal fun showGooglePlayServicesAvailabilityErrorDialog(
+		connectionStatusCode: Int
+	) {
+		val apiAvailability = GoogleApiAvailability.getInstance()
+		val dialog = apiAvailability.getErrorDialog(
+			this@RootActivity,
+			connectionStatusCode,
+			REQUEST_GOOGLE_PLAY_SERVICES
+		)
+		dialog.show()
+	}
 
-    //region ================= Request Permissions =================
-
-    /**
-     * Called when an activity launched here (specifically, AccountPicker
-     * and authorization) exits, giving you the requestCode you started it with,
-     * the resultCode it returned, and any additional data from it.
-     * @param requestCode code indicating which activity result is incoming.
-     * @param resultCode code indicating the result of the incoming
-     * activity result.
-     * @param data Intent (containing result data) returned by incoming
-     * activity result.
-     */
-    override fun onActivityResult(
-            requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        when (requestCode) {
-            REQUEST_GOOGLE_PLAY_SERVICES -> if (resultCode != RESULT_OK) {
-                showText("This app requires Google Play Services. Please install " + "Google Play Services on your device and relaunch this app.")
-            } else {
-                getResultsFromApi(null)
-            }
-            REQUEST_ACCOUNT_PICKER -> if (resultCode == RESULT_OK && data != null &&
-                    data.extras != null) {
-                val accountName = data.getStringExtra(AccountManager.KEY_ACCOUNT_NAME)
-                if (accountName != null) {
-                    val settings = PreferenceManager.getDefaultSharedPreferences(applicationContext)
-                    val editor = settings.edit()
-                    editor.putString(PREF_ACCOUNT_NAME, accountName)
-                    editor.apply()
-                    setupAccountNameAndRequestToApi(accountName)
-                }
-            }
-            REQUEST_AUTHORIZATION -> if (resultCode == RESULT_OK) {
-                getResultsFromApi(null)
-            }
-        }
-    }
-
-    /**
-     * Respond to requests for permissions at runtime for API 23 and above.
-     * @param requestCode The request code passed in
-     * requestPermissions(android.app.Activity, String, int, String[])
-     * @param permissions The requested permissions. Never null.
-     * @param grantResults The grant results for the corresponding permissions
-     * which is either PERMISSION_GRANTED or PERMISSION_DENIED. Never null.
-     */
-    override fun onRequestPermissionsResult(requestCode: Int,
-                                            permissions: Array<String>,
-                                            grantResults: IntArray) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        EasyPermissions.onRequestPermissionsResult(
-                requestCode, permissions, grantResults, this)
-    }
-
-    /**
-     * Callback for when a permission is granted using the EasyPermissions
-     * library.
-     * @param requestCode The request code associated with the requested
-     * permission
-     * @param list The requested permission list. Never null.
-     */
-    override fun onPermissionsGranted(requestCode: Int, list: List<String>) {
-        // Do nothing.
-    }
-
-    /**
-     * Callback for when a permission is denied using the EasyPermissions
-     * library.
-     * @param requestCode The request code associated with the requested
-     * permission
-     * @param list The requested permission list. Never null.
-     */
-    override fun onPermissionsDenied(requestCode: Int, list: List<String>) {
-        // Do nothing.
-    }
-
-    //endregion
-
-    //region ================= Request Play Services =================
-
-    /**
-     * Attempt to resolve a missing, out-of-date, invalid or disabled Google
-     * Play Services installation via a user dialog, if possible.
-     */
-    private fun acquireGooglePlayServices() {
-        val apiAvailability = GoogleApiAvailability.getInstance()
-        val connectionStatusCode = apiAvailability.isGooglePlayServicesAvailable(this)
-        if (apiAvailability.isUserResolvableError(connectionStatusCode)) {
-            showGooglePlayServicesAvailabilityErrorDialog(connectionStatusCode)
-        }
-    }
+	//endregion
 
 
-    /**
-     * Display an error dialog showing that Google Play Services is missing
-     * or out of date.
-     * @param connectionStatusCode code describing the presence (or lack of)
-     * Google Play Services on this device.
-     */
-    internal fun showGooglePlayServicesAvailabilityErrorDialog(
-            connectionStatusCode: Int) {
-        val apiAvailability = GoogleApiAvailability.getInstance()
-        val dialog = apiAvailability.getErrorDialog(
-                this@RootActivity,
-                connectionStatusCode,
-                REQUEST_GOOGLE_PLAY_SERVICES)
-        dialog.show()
-    }
+	/**
+	 * Attempt to call the API, after verifying that all the preconditions are
+	 * satisfied. The preconditions are: Google Play Services installed, an
+	 * account was selected and the device currently has online access. If any
+	 * of the preconditions are not satisfied, the app will prompt the user as
+	 * appropriate.
+	 */
+	private fun getResultsFromApi(savedInstanceState: Bundle?) {
+		Log.d("Result", "There are Java developers in Lagos")
+	}
 
-    //endregion
+	private fun setupAccountNameAndRequestToApi(accountName: String?) {
+		mCredential.selectedAccountName = accountName
+	}
 
+	//region ================= Root View =================
 
-    /**
-     * Attempt to call the API, after verifying that all the preconditions are
-     * satisfied. The preconditions are: Google Play Services installed, an
-     * account was selected and the device currently has online access. If any
-     * of the preconditions are not satisfied, the app will prompt the user as
-     * appropriate.
-     */
-    private fun getResultsFromApi(savedInstanceState: Bundle?) {
-    }
+	override fun getPayments(allPayments: Observable<java.util.List<PaymentRes>>) {
+		allPayments
+			.subscribeOn(Schedulers.io())
+			.observeOn(AndroidSchedulers.mainThread())
+			.subscribe({ result ->
+				Log.d("Result", "There are ${result.size} Java developers in Lagos")
+			}, { error ->
+				error.printStackTrace()
+			})
+	}
 
-    private fun setupAccountNameAndRequestToApi(accountName: String?) {
-        mCredential.selectedAccountName = accountName
-    }
-
-    //region ================= Root View =================
-
-    override fun getPayments(allPayments: Observable<java.util.List<PaymentRes>>) {
-        allPayments
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe ({
-                    result ->
-                    Log.d("Result", "There are ${result.size} Java developers in Lagos")
-                }, { error ->
-                    error.printStackTrace()
-                })
-    }
-
-//    override fun requestToApi(credential: GoogleAccountCredential, savedInstanceState: Bundle?) {
-//        mCredential = credential
-//        if (!isGooglePlayServicesAvailable) {
-//            acquireGooglePlayServices()
-//        } else if (mCredential.selectedAccountName == null) {
-//            chooseAccount()
-//        } else if (!isDeviceOnline) {
-//            showText("No network connection available.")
-//        } else {
-//            if (!router.hasRootController()) {
-//                router.setRoot(RouterTransaction.with(MainController()))
-//            }
-//            if (!emergencyLoad(savedInstanceState, this)) {
+//	fun processLogin(credential: GoogleAccountCredential, savedInstanceState: Bundle?) {
+//		mCredential = credential
+//		if (!isGooglePlayServicesAvailable) {
+//			accountNameIntent()
+//		} else if (mCredential.selectedAccountName == null) {
+//			chooseAccount()
+//		} else if (!isDeviceOnline) {
+//			showText("No network connection available.")
+//		} else {
+////            if (!router.hasRootController()) {
+////                router.setRoot(RouterTransaction.with(MainController()))
+////            }
+//			if (!emergencyLoad(savedInstanceState, this)) {
 //
-//                super<ActivityAppRestartCleaner>.onCreate(savedInstanceState)
+//				super<ActivityAppRestartCleaner>.onCreate(savedInstanceState)
 //
-//                bone = RootFinger(MainBone())
+//				bone = RootFinger(MainBone())
 //
-//                glueWith(bone)
-//                bone.isActive = true
+//				glueWith(bone)
+//				bone.isActive = true
 //
-//                supportFragmentManager
-//                        .beginTransaction()
-//                        .replace(android.R.id.content, bone.phalanxes.first().sibling as Fragment)
-//                        .commit()
-//            } else {
-//                glueWith(bone)
-//            }
+//				supportFragmentManager
+//					.beginTransaction()
+//					.replace(android.R.id.content, bone.phalanxes.first().sibling as Fragment)
+//					.commit()
+//			} else {
+//				glueWith(bone)
+//			}
 //
-//        }
-//    }
+//		}
+//	}
 
-    //endregion
+	//endregion
 
-    //region ================= Setup Ui =================
+	//region ================= Setup Ui =================
 
-    private fun showText(caption: String) {
-        status_tv.text = caption
-        status_tv.visibility = VISIBLE
-    }
+	private fun showText(caption: String) {
+		status_tv.text = caption
+		status_tv.visibility = VISIBLE
+	}
 
-    //endregion
+	//endregion
 
 
-    //region ================= Utils Methods =================
+	//region ================= Utils Methods =================
 
-    /**
-     * Checks whether the device currently has a network connection.
-     * @return true if the device has a network connection, false otherwise.
-     */
-    private val isDeviceOnline: Boolean
-        get() {
-            val connMgr = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-            val networkInfo = connMgr.activeNetworkInfo
-            return networkInfo != null && networkInfo.isConnected
-        }
+	/**
+	 * Checks whether the device currently has a network connection.
+	 * @return true if the device has a network connection, false otherwise.
+	 */
+	private val isDeviceOnline: Boolean
+		get() {
+			val connMgr = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+			val networkInfo = connMgr.activeNetworkInfo
+			return networkInfo != null && networkInfo.isConnected
+		}
 
-    /**
-     * Check that Google Play services APK is installed and up to date.
-     * @return true if Google Play Services is available and up to
-     * date on this device; false otherwise.
-     */
-    private val isGooglePlayServicesAvailable: Boolean
-        get() {
-            val apiAvailability = GoogleApiAvailability.getInstance()
-            val connectionStatusCode = apiAvailability.isGooglePlayServicesAvailable(this)
-            return connectionStatusCode == ConnectionResult.SUCCESS
-        }
+	/**
+	 * Check that Google Play services APK is installed and up to date.
+	 * @return true if Google Play Services is available and up to
+	 * date on this device; false otherwise.
+	 */
+	private val isGooglePlayServicesAvailable: Boolean
+		get() {
+			val apiAvailability = GoogleApiAvailability.getInstance()
+			val connectionStatusCode = apiAvailability.isGooglePlayServicesAvailable(this)
+			return connectionStatusCode == ConnectionResult.SUCCESS
+		}
 
-    //endregion
+	//endregion
 
 }

@@ -1,4 +1,4 @@
-package com.bugtsa.casher.data
+package com.bugtsa.casher.domain.local.database
 
 import android.arch.persistence.room.*
 import com.bugtsa.casher.model.CategoryEntity
