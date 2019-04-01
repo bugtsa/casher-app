@@ -13,7 +13,6 @@ import android.util.Log
 import android.view.View.VISIBLE
 import com.bugtsa.casher.R
 import com.bugtsa.casher.data.dto.PaymentRes
-import com.bugtsa.casher.networking.RetrofitService
 import com.bugtsa.casher.ui.screens.main.MainBone
 import com.crashlytics.android.Crashlytics
 import com.google.android.gms.common.ConnectionResult
@@ -22,6 +21,7 @@ import com.google.api.client.extensions.android.http.AndroidHttp
 import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential
 import com.google.api.client.json.jackson2.JacksonFactory
 import io.fabric.sdk.android.Fabric
+import io.reactivex.Observable
 import kotlinx.android.synthetic.main.activity_root.*
 import pro.horovodovodo4ka.bones.Bone
 import pro.horovodovodo4ka.bones.Finger
@@ -92,19 +92,7 @@ class RootActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks, R
 
         presenter.onAttachView(this)
 
-        val callService =  RetrofitService()
-
-        callService.casherApi.getPayments()
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe ({
-                    result ->
-                    Log.d("Result", "There are ${result.size} Java developers in Lagos")
-                }, { error ->
-                    error.printStackTrace()
-                })
-
-//        getResultsFromApi(savedInstanceState)
+        presenter.requestCredential()
     }
 
     override fun onStart() {
@@ -302,47 +290,57 @@ class RootActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks, R
      * appropriate.
      */
     private fun getResultsFromApi(savedInstanceState: Bundle?) {
-        presenter.requestCredential(savedInstanceState)
     }
 
     private fun setupAccountNameAndRequestToApi(accountName: String?) {
         mCredential.selectedAccountName = accountName
-        requestToApi(mCredential, null)
     }
 
     //region ================= Root View =================
 
-    override fun requestToApi(credential: GoogleAccountCredential, savedInstanceState: Bundle?) {
-        mCredential = credential
-        if (!isGooglePlayServicesAvailable) {
-            acquireGooglePlayServices()
-        } else if (mCredential.selectedAccountName == null) {
-            chooseAccount()
-        } else if (!isDeviceOnline) {
-            showText("No network connection available.")
-        } else {
+    override fun getPayments(allPayments: Observable<java.util.List<PaymentRes>>) {
+        allPayments
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe ({
+                    result ->
+                    Log.d("Result", "There are ${result.size} Java developers in Lagos")
+                }, { error ->
+                    error.printStackTrace()
+                })
+    }
+
+//    override fun requestToApi(credential: GoogleAccountCredential, savedInstanceState: Bundle?) {
+//        mCredential = credential
+//        if (!isGooglePlayServicesAvailable) {
+//            acquireGooglePlayServices()
+//        } else if (mCredential.selectedAccountName == null) {
+//            chooseAccount()
+//        } else if (!isDeviceOnline) {
+//            showText("No network connection available.")
+//        } else {
 //            if (!router.hasRootController()) {
 //                router.setRoot(RouterTransaction.with(MainController()))
 //            }
-            if (!emergencyLoad(savedInstanceState, this)) {
-
-                super<ActivityAppRestartCleaner>.onCreate(savedInstanceState)
-
-                bone = RootFinger(MainBone())
-
-                glueWith(bone)
-                bone.isActive = true
-
-                supportFragmentManager
-                        .beginTransaction()
-                        .replace(android.R.id.content, bone.phalanxes.first().sibling as Fragment)
-                        .commit()
-            } else {
-                glueWith(bone)
-            }
-
-        }
-    }
+//            if (!emergencyLoad(savedInstanceState, this)) {
+//
+//                super<ActivityAppRestartCleaner>.onCreate(savedInstanceState)
+//
+//                bone = RootFinger(MainBone())
+//
+//                glueWith(bone)
+//                bone.isActive = true
+//
+//                supportFragmentManager
+//                        .beginTransaction()
+//                        .replace(android.R.id.content, bone.phalanxes.first().sibling as Fragment)
+//                        .commit()
+//            } else {
+//                glueWith(bone)
+//            }
+//
+//        }
+//    }
 
     //endregion
 

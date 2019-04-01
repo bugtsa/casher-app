@@ -1,24 +1,18 @@
 package com.bugtsa.casher.ui.activities
 
 import android.os.Bundle
-import com.bugtsa.casher.networking.GoogleSheetService
-import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential
+import com.bugtsa.casher.networking.CasherApi
 import javax.inject.Inject
 
-class RootPresenter @Inject constructor(googleSheetService : GoogleSheetService) {
+class RootPresenter @Inject constructor(val casherRestApi:   CasherApi) {
 
     lateinit var rootView : RootView
 
-//    private var credential: GoogleAccountCredential
-
-    init {
-//        this.credential = googleSheetService.mCredential
-    }
     fun onAttachView(rootView: RootView) {
         this.rootView = rootView
     }
 
-    fun requestCredential(savedInstanceState: Bundle?) {
-//        rootView.requestToApi(credential, savedInstanceState)
+    fun requestCredential() {
+        rootView.getPayments(casherRestApi.getPayments())
     }
 }
