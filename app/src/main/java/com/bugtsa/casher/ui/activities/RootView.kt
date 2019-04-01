@@ -1,7 +1,9 @@
 package com.bugtsa.casher.ui.activities
 
-import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential
+import com.bugtsa.casher.data.dto.PaymentRes
+import io.reactivex.Observable
+import java.util.List
 
 interface RootView {
-    fun requestToApi(credential: GoogleAccountCredential)
+    fun getPayments(allPayments: Observable<List<PaymentRes>>)
 }

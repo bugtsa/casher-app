@@ -1,42 +1,41 @@
 package com.bugtsa.casher.ui.screens.purchases.add_purchase
 
+import android.text.TextUtils.substring
 import com.bugtsa.casher.arch.models.PurchaseModel
+import com.bugtsa.casher.data.LocalCategoryDataStore
 import com.bugtsa.casher.data.dto.PurchaseDto
 import com.bugtsa.casher.networking.GoogleSheetService
 import com.bugtsa.casher.utils.ConstantManager.Companion.END_COLUMN_SHEET
-import com.bugtsa.casher.utils.ConstantManager.Companion.START_COLUMN_SHEET
 import com.bugtsa.casher.utils.ConstantManager.Companion.PURCHASE_TABLE_NAME_SHEET
+import com.bugtsa.casher.utils.ConstantManager.Companion.START_COLUMN_SHEET
 import com.bugtsa.casher.utils.GoogleSheetManager.Companion.OWN_GOOGLE_SHEET_ID
+import com.bugtsa.casher.utils.ParentConstantManager.Companion.CATEGORIES_TABLE_NAME_SHEET
+import com.bugtsa.casher.utils.ParentConstantManager.Companion.DELIMITER_BETWEEN_COLUMNS
+import com.bugtsa.casher.utils.ParentConstantManager.Companion.MAJOR_DIMENSION
+import com.bugtsa.casher.utils.ParentConstantManager.Companion.VALUE_INPUT_OPTION
 import com.bugtsa.casher.utils.SoftwareUtils
 import com.bugtsa.casher.utils.SoftwareUtils.Companion.getCurrentTimeStamp
 import com.google.api.services.sheets.v4.Sheets
 import com.google.api.services.sheets.v4.model.BatchUpdateValuesRequest
 import com.google.api.services.sheets.v4.model.BatchUpdateValuesResponse
 import com.google.api.services.sheets.v4.model.ValueRange
+import com.maxproj.calendarpicker.Models.YearMonthDay
+import io.reactivex.Flowable
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
-import java.util.*
-import javax.inject.Inject
-import com.bugtsa.casher.data.LocalCategoryDataStore
-import com.bugtsa.casher.utils.ParentConstantManager.Companion.CATEGORIES_TABLE_NAME_SHEET
-import com.bugtsa.casher.utils.ParentConstantManager.Companion.DELIMITER_BETWEEN_COLUMNS
-import com.bugtsa.casher.utils.ParentConstantManager.Companion.MAJOR_DIMENSION
-import com.bugtsa.casher.utils.ParentConstantManager.Companion.VALUE_INPUT_OPTION
-import com.maxproj.calendarpicker.Models.YearMonthDay
-import io.reactivex.Flowable
-
 import timber.log.Timber
+import java.util.*
 import java.util.concurrent.TimeUnit
+import javax.inject.Inject
 
 
-class AddPurchasePresenter @Inject constructor(googleSheetService: GoogleSheetService,
-                                               compositeDisposable: CompositeDisposable,
+class AddPurchasePresenter @Inject constructor(compositeDisposable: CompositeDisposable,
                                                injectPurchaseModel: PurchaseModel,
                                                injectCategoryDataStore: LocalCategoryDataStore) {
 
-    private var serviceSheets: Sheets = googleSheetService.mService
+//    private var serviceSheets: Sheets = googleSheetService.mService
     private var disposableSubscriptions: CompositeDisposable = compositeDisposable
     private var purchaseModel: PurchaseModel = injectPurchaseModel
     private var localCategoryDataStore: LocalCategoryDataStore = injectCategoryDataStore
@@ -88,14 +87,14 @@ class AddPurchasePresenter @Inject constructor(googleSheetService: GoogleSheetSe
 
     fun addPurchase(pricePurchase: String, categoryPurchase: String) {
         addPurchaseView.showProgressBar()
-        disposableSubscriptions.add(
-                addPurchaseSubscriber(serviceSheets,
-                        PurchaseDto(pricePurchase,
-                                getActualDateAndTime(),
-                                categoryPurchase))!!
-                        .subscribe(this::onBatchPurchasesCollected,
-                                this::onBatchPurchasesCollectionFailure))
-        performCheckStorageCategoriesList(categoryPurchase)
+//        disposableSubscriptions.add(
+//                addPurchaseSubscriber(serviceSheets,
+//                        PurchaseDto(pricePurchase,
+//                                getActualDateAndTime(),
+//                                categoryPurchase))!!
+//                        .subscribe(this::onBatchPurchasesCollected,
+//                                this::onBatchPurchasesCollectionFailure))
+//        performCheckStorageCategoriesList(categoryPurchase)
     }
 
     //endregion
@@ -103,18 +102,18 @@ class AddPurchasePresenter @Inject constructor(googleSheetService: GoogleSheetSe
     //region ================= Add & Check Server Categories List =================
 
     private fun performCheckStorageCategoriesList(currentCategory: String) {
-        disposableSubscriptions.add(
-                localCategoryDataStore.getCategoriesList()
-                        .subscribeOn(Schedulers.io())
-                        .map { it.mapNotNull { it.name } }
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe({ storageCategoriesList: List<String> ->
-                            if (!isContainsCurrentCategoryInDatabase(currentCategory, storageCategoriesList)) {
-                                addCategoryToDatabase(currentCategory)
-                                addCategoryToServer(serviceSheets, currentCategory, storageCategoriesList.size + 1)
-                            }
-                        },
-                                { t -> Timber.e(t, "error at check exist categories") }))
+//        disposableSubscriptions.add(
+//                localCategoryDataStore.getCategoriesList()
+//                        .subscribeOn(Schedulers.io())
+//                        .map { it.mapNotNull { it.name } }
+//                        .observeOn(AndroidSchedulers.mainThread())
+//                        .subscribe({ storageCategoriesList: List<String> ->
+//                            if (!isContainsCurrentCategoryInDatabase(currentCategory, storageCategoriesList)) {
+//                                addCategoryToDatabase(currentCategory)
+//                                addCategoryToServer(serviceSheets, currentCategory, storageCategoriesList.size + 1)
+//                            }
+//                        },
+//                                { t -> Timber.e(t, "error at check exist categories") }))
     }
 
     private fun isContainsCurrentCategoryInDatabase(currentCategory: String, storageCategoriesList: List<String>): Boolean {
@@ -137,7 +136,7 @@ class AddPurchasePresenter @Inject constructor(googleSheetService: GoogleSheetSe
                                 { t -> Timber.e(t, "add category to database error") }))
     }
 
-    private fun addCategoryToServer(service: Sheets, currentCategory: String, firstEmptyRow: Int){
+    private fun addCategoryToServer(service: Sheets, currentCategory: String, firstEmptyRow: Int) {
         val data: MutableList<Any> = mutableListOf(currentCategory)
         val arrayData = mutableListOf(data)
 
@@ -230,7 +229,7 @@ class AddPurchasePresenter @Inject constructor(googleSheetService: GoogleSheetSe
         }
     }
 
-    private fun getActualDateAndTime() : String{
+    private fun getActualDateAndTime(): String {
         return if (checkedCustomDateTime) {
             "$customDate, $customTime"
         } else {

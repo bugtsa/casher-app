@@ -1,28 +1,27 @@
 package com.bugtsa.casher.ui.screens.purchases.add_purchase
 
-import android.databinding.DataBindingUtil
+import android.content.Context
 import android.graphics.Color
+import android.os.Bundle
+import android.support.v4.app.Fragment
 import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
-import com.bluelinelabs.conductor.Controller
+import android.widget.ArrayAdapter
+import com.borax12.materialdaterangepicker.time.RadialPickerLayout
+import com.borax12.materialdaterangepicker.time.TimePickerDialog
 import com.bugtsa.casher.R
-import com.bugtsa.casher.databinding.ControllerAddPurchaseBinding
+import com.maxproj.calendarpicker.Builder
+import kotlinx.android.synthetic.main.controller_add_purchase.*
 import toothpick.Scope
 import toothpick.Toothpick
-import javax.inject.Inject
-import android.widget.ArrayAdapter
-import com.borax12.materialdaterangepicker.time.TimePickerDialog
-import com.maxproj.calendarpicker.Builder
 import java.util.*
-import com.borax12.materialdaterangepicker.time.RadialPickerLayout
+import javax.inject.Inject
 
 
 @Suppress("DEPRECATED_IDENTITY_EQUALS")
-class AddPurchaseController : Controller(), AddPurchaseView, TimePickerDialog.OnTimeSetListener {
-
-    lateinit var binding: ControllerAddPurchaseBinding
+class AddPurchaseController : Fragment(), AddPurchaseView, TimePickerDialog.OnTimeSetListener {
 
     @Inject
     lateinit var presenter: AddPurchasePresenter
@@ -31,14 +30,13 @@ class AddPurchaseController : Controller(), AddPurchaseView, TimePickerDialog.On
 
     //region ================= Implements Methods =================
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup): View {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val view: View = inflater.inflate(R.layout.controller_add_purchase, container, false)
-        binding = DataBindingUtil.bind(view)!!
 
         setupCategoriesTouchListener()
-        binding.addDatePurchase.setOnClickListener({ viewAddDatePurchase ->
-            presenter.checkSetupCustomDateAndTime(binding.addDatePurchase.isChecked)
-        })
+        add_date_purchase.setOnClickListener {
+            presenter.checkSetupCustomDateAndTime(add_date_purchase.isChecked)
+        }
 
         addPurchaseScope = Toothpick.openScopes(activity, this)
         Toothpick.inject(this, addPurchaseScope)
@@ -49,20 +47,19 @@ class AddPurchaseController : Controller(), AddPurchaseView, TimePickerDialog.On
         return view
     }
 
-    override fun onDestroyView(view: View) {
-        super.onDestroyView(view)
+    override fun onDestroyView() {
+        super.onDestroyView()
         presenter.onViewDestroy()
         Toothpick.closeScope(this)
     }
 
-    override fun onAttach(view: View) {
-        super.onAttach(view)
-
-        binding.savePurchase.setOnClickListener {
-            presenter.addPurchase(binding.pricePurchaseEt.text.toString(),
-                    binding.categoryPurchaseEt.text.toString())
+    override fun onAttach(context: Context?) {
+        super.onAttach(context)
+        save_purchase.setOnClickListener {
+            presenter.addPurchase(price_purchase_et.text.toString(),
+                    category_purchase_et.text.toString())
         }
-        binding.cancelPurchase.setOnClickListener { popCurrentController() }
+        cancel_purchase.setOnClickListener { popCurrentController() }
     }
 
     //endregion
@@ -90,15 +87,15 @@ class AddPurchaseController : Controller(), AddPurchaseView, TimePickerDialog.On
                 activity,
                 android.R.layout.simple_dropdown_item_1line,
                 categoriesList)
-        binding.categoryPurchaseEt.setAdapter(adapter)
+        category_purchase_et.setAdapter(adapter)
     }
 
     override fun setupCurrentDateAndTime(dateAndTime: String) {
-        binding.datePurchase.text = activity!!.resources.getString(R.string.current_date_and_time) + dateAndTime
+        date_purchase.text = activity!!.resources.getString(R.string.current_date_and_time) + dateAndTime
     }
 
     override fun setupCustomDateAndTime(date: String, time: String) {
-        binding.datePurchase.text = activity!!.resources.getString(R.string.changed_date_and_time) + "$date $time"
+        date_purchase.text = activity!!.resources.getString(R.string.changed_date_and_time) + "$date $time"
     }
 
     //endregion
@@ -138,18 +135,18 @@ class AddPurchaseController : Controller(), AddPurchaseView, TimePickerDialog.On
     //region ================= Categories List Methods =================
 
     private fun setupCategoriesTouchListener() {
-        binding.categoryPurchaseEt.setOnTouchListener({ v, event ->
-            if (event.getAction() === MotionEvent.ACTION_UP) {
-                if (event.getRawX() >= binding.categoryPurchaseEt.getRight() - binding.categoryPurchaseEt.getTotalPaddingRight()) {
+        category_purchase_et.setOnTouchListener { _, event ->
+            if (event.action === MotionEvent.ACTION_UP) {
+                if (event.rawX >= category_purchase_et.right - category_purchase_et.totalPaddingRight) {
                     resetSearchView()
                 }
             }
             false
-        })
+        }
     }
 
     private fun resetSearchView() {
-        binding.categoryPurchaseEt.text.clear()
+        category_purchase_et.text.clear()
     }
 
     //endregion
@@ -157,7 +154,7 @@ class AddPurchaseController : Controller(), AddPurchaseView, TimePickerDialog.On
     //region ================= Private Methods =================
 
     private fun popCurrentController() {
-        router.popCurrentController()
+//        router.popCurrentController()
     }
 
     //endregion

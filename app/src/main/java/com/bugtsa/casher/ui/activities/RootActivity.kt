@@ -1,42 +1,80 @@
 package com.bugtsa.casher.ui.activities
 
 import android.Manifest
-import android.os.Bundle
-import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential
-import com.google.android.gms.common.GoogleApiAvailability
-import com.google.android.gms.common.ConnectionResult
-import android.net.ConnectivityManager
-import pub.devrel.easypermissions.EasyPermissions
 import android.accounts.AccountManager
-import android.content.Intent
-import pub.devrel.easypermissions.AfterPermissionGranted
-import com.google.api.services.sheets.v4.SheetsScopes
-import android.app.Activity
 import android.content.Context
-import android.databinding.DataBindingUtil
+import android.content.Intent
+import android.net.ConnectivityManager
+import android.os.Bundle
+import android.preference.PreferenceManager
+import android.support.v4.app.Fragment
+import android.support.v7.app.AppCompatActivity
+import android.util.Log
 import android.view.View.VISIBLE
-import com.bluelinelabs.conductor.Conductor
-import com.bluelinelabs.conductor.Router
-import com.bluelinelabs.conductor.RouterTransaction
 import com.bugtsa.casher.R
-import com.bugtsa.casher.databinding.ActivityRootBinding
-import com.bugtsa.casher.di.inject.CategoryDaoProvider
-import com.bugtsa.casher.ui.screens.main.MainController
+import com.bugtsa.casher.data.dto.PaymentRes
+import com.bugtsa.casher.ui.screens.main.MainBone
 import com.crashlytics.android.Crashlytics
+import com.google.android.gms.common.ConnectionResult
+import com.google.android.gms.common.GoogleApiAvailability
+import com.google.api.client.extensions.android.http.AndroidHttp
+import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential
+import com.google.api.client.json.jackson2.JacksonFactory
 import io.fabric.sdk.android.Fabric
+import io.reactivex.Observable
+import kotlinx.android.synthetic.main.activity_root.*
+import pro.horovodovodo4ka.bones.Bone
+import pro.horovodovodo4ka.bones.Finger
+import pro.horovodovodo4ka.bones.extensions.glueWith
+import pro.horovodovodo4ka.bones.extensions.processBackPress
+import pro.horovodovodo4ka.bones.persistance.BonePersisterInterface
+import pro.horovodovodo4ka.bones.statesstore.EmergencyPersister
+import pro.horovodovodo4ka.bones.statesstore.EmergencyPersisterInterface
+import pro.horovodovodo4ka.bones.ui.FingerNavigatorInterface
+import pro.horovodovodo4ka.bones.ui.delegates.FingerNavigator
+import pro.horovodovodo4ka.bones.ui.helpers.ActivityAppRestartCleaner
+import pub.devrel.easypermissions.AfterPermissionGranted
+import pub.devrel.easypermissions.EasyPermissions
 import toothpick.Scope
 import toothpick.Toothpick
 import javax.inject.Inject
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.schedulers.Schedulers
+import timber.log.Timber
 
 
-class RootActivity : Activity(), EasyPermissions.PermissionCallbacks, RootView {
+class RootFinger(root: Bone) : Finger(root) {
+    init {
+        persistSibling = true
+    }
+}
+
+class RootActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks, RootView,
+        FingerNavigatorInterface<RootFinger> by FingerNavigator(android.R.id.content),
+        BonePersisterInterface<RootFinger>,
+        EmergencyPersisterInterface<RootActivity> by EmergencyPersister(), ActivityAppRestartCleaner {
     private lateinit var mCredential: GoogleAccountCredential
-    private lateinit var binding: ActivityRootBinding
 
-    private lateinit var router: Router
+    private lateinit var activityScope: Scope
+    @Inject
+    lateinit var presenter: RootPresenter
 
-    lateinit private var activityScope : Scope
-    @Inject lateinit var presenter : RootPresenter
+    companion object {
+
+        internal val REQUEST_ACCOUNT_PICKER = 1000
+        internal val REQUEST_AUTHORIZATION = 1001
+        internal val REQUEST_GOOGLE_PLAY_SERVICES = 1002
+        internal const val REQUEST_PERMISSION_GET_ACCOUNTS = 1003
+        internal const val REQUEST_CONTACTS = 1005
+
+        const val PREF_ACCOUNT_NAME = "accountName"
+
+        /** Global instance of the HTTP transport. */
+        private val HTTP_TRANSPORT = AndroidHttp.newCompatibleTransport()
+        /** Global instance of the JSON factory. */
+        private val JSON_FACTORY = JacksonFactory.getDefaultInstance()
+    }
 
     //region ================= Implements Methods =================
 
@@ -45,23 +83,49 @@ class RootActivity : Activity(), EasyPermissions.PermissionCallbacks, RootView {
      * @param savedInstanceState previously saved instance data.
      */
     override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
+        super<AppCompatActivity>.onCreate(savedInstanceState)
         Fabric.with(this, Crashlytics())
         activityScope = Toothpick.openScopes(application, this)
         Toothpick.inject(this, activityScope)
 
-        binding = DataBindingUtil.setContentView(this, R.layout.activity_root)
+        setContentView(R.layout.activity_root)
 
         presenter.onAttachView(this)
 
-        router = Conductor.attachRouter(this, binding.controllerContainer, savedInstanceState)
+        presenter.requestCredential()
+    }
 
-        getResultsFromApi()
+    override fun onStart() {
+        super.onStart()
+        toolbar.title = getString(R.string.app_name)
     }
 
     override fun onBackPressed() {
-        if (!router.handleBack()) {
-            super.onBackPressed()
+        if (bone.processBackPress()) {
+            finish()
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        emergencyRemovePin()
+
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super<AppCompatActivity>.onSaveInstanceState(outState)
+        emergencyPin(outState)
+    }
+
+    //    @SuppressLint("MissingSuperCall")
+    override fun onDestroy() {
+        super.onDestroy()
+
+        with(bone) {
+            sibling = null
+            emergencySave {
+                it.bone = this
+            }
         }
     }
 
@@ -82,12 +146,12 @@ class RootActivity : Activity(), EasyPermissions.PermissionCallbacks, RootView {
     @AfterPermissionGranted(REQUEST_PERMISSION_GET_ACCOUNTS)
     private fun chooseAccount() {
         if (EasyPermissions.hasPermissions(
-                this, Manifest.permission.GET_ACCOUNTS)) {
+                        this, Manifest.permission.GET_ACCOUNTS)) {
             val accountName = getPreferences(Context.MODE_PRIVATE)
                     .getString(PREF_ACCOUNT_NAME, null)
             if (accountName != null) {
                 mCredential.selectedAccountName = accountName
-                getResultsFromApi()
+                getResultsFromApi(null)
             } else {
                 // Start a dialog from which the user can choose an account
                 startActivityForResult(
@@ -108,7 +172,6 @@ class RootActivity : Activity(), EasyPermissions.PermissionCallbacks, RootView {
 
     //region ================= Request Permissions =================
 
-
     /**
      * Called when an activity launched here (specifically, AccountPicker
      * and authorization) exits, giving you the requestCode you started it with,
@@ -124,15 +187,15 @@ class RootActivity : Activity(), EasyPermissions.PermissionCallbacks, RootView {
         super.onActivityResult(requestCode, resultCode, data)
         when (requestCode) {
             REQUEST_GOOGLE_PLAY_SERVICES -> if (resultCode != RESULT_OK) {
-                showText( "This app requires Google Play Services. Please install " + "Google Play Services on your device and relaunch this app.")
+                showText("This app requires Google Play Services. Please install " + "Google Play Services on your device and relaunch this app.")
             } else {
-                getResultsFromApi()
+                getResultsFromApi(null)
             }
             REQUEST_ACCOUNT_PICKER -> if (resultCode == RESULT_OK && data != null &&
                     data.extras != null) {
                 val accountName = data.getStringExtra(AccountManager.KEY_ACCOUNT_NAME)
                 if (accountName != null) {
-                    val settings = getPreferences(Context.MODE_PRIVATE)
+                    val settings = PreferenceManager.getDefaultSharedPreferences(applicationContext)
                     val editor = settings.edit()
                     editor.putString(PREF_ACCOUNT_NAME, accountName)
                     editor.apply()
@@ -140,7 +203,7 @@ class RootActivity : Activity(), EasyPermissions.PermissionCallbacks, RootView {
                 }
             }
             REQUEST_AUTHORIZATION -> if (resultCode == RESULT_OK) {
-                getResultsFromApi()
+                getResultsFromApi(null)
             }
         }
     }
@@ -226,51 +289,66 @@ class RootActivity : Activity(), EasyPermissions.PermissionCallbacks, RootView {
      * of the preconditions are not satisfied, the app will prompt the user as
      * appropriate.
      */
-    private fun getResultsFromApi() {
-        presenter.requestCredential()
+    private fun getResultsFromApi(savedInstanceState: Bundle?) {
     }
 
     private fun setupAccountNameAndRequestToApi(accountName: String?) {
         mCredential.selectedAccountName = accountName
-        requestToApi(mCredential)
     }
 
     //region ================= Root View =================
 
-    override fun requestToApi(credential: GoogleAccountCredential) {
-        mCredential = credential
-        if (!isGooglePlayServicesAvailable) {
-            acquireGooglePlayServices()
-        } else if (mCredential.selectedAccountName == null) {
-            chooseAccount()
-        } else if (!isDeviceOnline) {
-            showText("No network connection available.")
-        } else {
-            if (!router.hasRootController()) {
-                router.setRoot(RouterTransaction.with(MainController()))
-            }
-        }
+    override fun getPayments(allPayments: Observable<java.util.List<PaymentRes>>) {
+        allPayments
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe ({
+                    result ->
+                    Log.d("Result", "There are ${result.size} Java developers in Lagos")
+                }, { error ->
+                    error.printStackTrace()
+                })
     }
+
+//    override fun requestToApi(credential: GoogleAccountCredential, savedInstanceState: Bundle?) {
+//        mCredential = credential
+//        if (!isGooglePlayServicesAvailable) {
+//            acquireGooglePlayServices()
+//        } else if (mCredential.selectedAccountName == null) {
+//            chooseAccount()
+//        } else if (!isDeviceOnline) {
+//            showText("No network connection available.")
+//        } else {
+//            if (!router.hasRootController()) {
+//                router.setRoot(RouterTransaction.with(MainController()))
+//            }
+//            if (!emergencyLoad(savedInstanceState, this)) {
+//
+//                super<ActivityAppRestartCleaner>.onCreate(savedInstanceState)
+//
+//                bone = RootFinger(MainBone())
+//
+//                glueWith(bone)
+//                bone.isActive = true
+//
+//                supportFragmentManager
+//                        .beginTransaction()
+//                        .replace(android.R.id.content, bone.phalanxes.first().sibling as Fragment)
+//                        .commit()
+//            } else {
+//                glueWith(bone)
+//            }
+//
+//        }
+//    }
 
     //endregion
 
-    companion object {
-
-        internal val REQUEST_ACCOUNT_PICKER = 1000
-        internal val REQUEST_AUTHORIZATION = 1001
-        internal val REQUEST_GOOGLE_PLAY_SERVICES = 1002
-        internal const val REQUEST_PERMISSION_GET_ACCOUNTS = 1003
-
-        private val BUTTON_TEXT = "Call Google Sheets API"
-        private val PREF_ACCOUNT_NAME = "accountName"
-        private val SCOPES = mutableListOf(SheetsScopes.DRIVE)
-    }
-
     //region ================= Setup Ui =================
 
-    private fun showText(caption : String) {
-        binding.statusTv.text = caption
-        binding.statusTv.visibility = VISIBLE
+    private fun showText(caption: String) {
+        status_tv.text = caption
+        status_tv.visibility = VISIBLE
     }
 
     //endregion

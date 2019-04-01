@@ -1,15 +1,15 @@
 <resources>
     <string name="app_name">Casher</string>
-    <string name="price_caption">Сумма</string>
-    <string name="time_caption">Дата</string>
-    <string name="category_caption">На что</string>
+    <string name="price_caption">Sum</string>
+    <string name="time_caption">Date</string>
+    <string name="category_caption">Category</string>
 
-    <string name="price_purchase">Цена траты</string>
-    <string name="category_purchase">На что потрачено</string>
-    <string name="cancel_caption">Отмена</string>
-    <string name="add_caption">Добавить</string>
-    <string name="date_purchase">установить дату самостоятельно</string>
-    <string name="current_date_and_time">"Текущая дата и время: "</string>
-    <string name="changed_date_and_time">"Установленные дата и время: "</string>
+    <string name="price_purchase">Price purchase</string>
+    <string name="category_purchase">Category purchase</string>
+    <string name="cancel_caption">Cancel</string>
+    <string name="add_caption">Add</string>
+    <string name="date_purchase">setup date yourself</string>
+    <string name="current_date_and_time">"Current time and date: "</string>
+    <string name="changed_date_and_time">"Setup time and date: "</string>
 
 </resources>

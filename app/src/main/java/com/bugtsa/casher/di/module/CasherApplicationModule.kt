@@ -6,6 +6,7 @@ import com.bugtsa.casher.data.CasherDatabase
 import com.bugtsa.casher.data.CategoryDao
 import com.bugtsa.casher.data.LocalCategoryDataStore
 import com.bugtsa.casher.di.inject.*
+import com.bugtsa.casher.networking.CasherApi
 import io.reactivex.disposables.CompositeDisposable
 import toothpick.config.Module
 
@@ -13,6 +14,7 @@ class CasherApplicationModule : Module {
 
     constructor(application: Application) {
         bind(CompositeDisposable::class.java).toProviderInstance(CompositeDisposableProvider())
+        bind(CasherApi::class.java).toProviderInstance(CasherRestApiProvider())
 
         bind(Application::class.java).toProviderInstance(ApplicationProvider(application))
         bind(PurchaseModel::class.java).toProviderInstance(PurchaseModelProvider())
