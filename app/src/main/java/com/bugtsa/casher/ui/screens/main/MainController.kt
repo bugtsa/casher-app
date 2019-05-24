@@ -1,8 +1,9 @@
 package com.bugtsa.casher.ui.screens.main
 
+import android.annotation.SuppressLint
 import android.os.*
-import android.support.v4.app.*
-import android.support.v7.widget.*
+import androidx.core.app.*
+import androidx.appcompat.widget.*
 import android.view.*
 import android.view.View.GONE
 import android.view.View.VISIBLE
@@ -34,7 +35,8 @@ class MainBone : Phalanx() {
 	override val seed = { MainController() }
 }
 
-class MainController : Fragment(), MainView,
+@SuppressLint("MissingSuperCall")
+class MainController : androidx.fragment.app.Fragment(), MainView,
 	ScreenInterface<MainBone> by Page(), BonePersisterInterface<MainBone> {
 
 	@Inject
@@ -55,7 +57,7 @@ class MainController : Fragment(), MainView,
 	override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
 		super.onViewCreated(view, savedInstanceState)
 
-		val linearLayoutManager = LinearLayoutManager(activity)
+		val linearLayoutManager = androidx.recyclerview.widget.LinearLayoutManager(activity)
 		purchases.layoutManager = linearLayoutManager
 		setupScrollListener()
 
@@ -78,12 +80,12 @@ class MainController : Fragment(), MainView,
 
 	override fun onSaveInstanceState(outState: Bundle) {
 		super<BonePersisterInterface>.onSaveInstanceState(outState)
-		super<Fragment>.onSaveInstanceState(outState)
+		super<androidx.fragment.app.Fragment>.onSaveInstanceState(outState)
 	}
 
 	override fun onCreate(savedInstanceState: Bundle?) {
 		super<BonePersisterInterface>.onCreate(savedInstanceState)
-		super<Fragment>.onCreate(savedInstanceState)
+		super<androidx.fragment.app.Fragment>.onCreate(savedInstanceState)
 	}
 
 	//endregion
@@ -103,8 +105,8 @@ class MainController : Fragment(), MainView,
 	}
 
 	private fun setupScrollListener() {
-		purchases.addOnScrollListener(object : RecyclerView.OnScrollListener() {
-			override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+		purchases.addOnScrollListener(object : androidx.recyclerview.widget.RecyclerView.OnScrollListener() {
+			override fun onScrolled(recyclerView: androidx.recyclerview.widget.RecyclerView, dx: Int, dy: Int) {
 				super.onScrolled(recyclerView, dx, dy)
 			}
 

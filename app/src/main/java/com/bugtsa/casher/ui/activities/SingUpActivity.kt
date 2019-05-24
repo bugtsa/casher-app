@@ -1,32 +1,36 @@
 package com.bugtsa.casher.ui.activities
 
-import android.accounts.*
-import android.content.*
-import android.net.*
-import android.os.*
-import android.support.v7.app.*
-import android.util.*
+import android.accounts.AccountManager
+import android.annotation.SuppressLint
+import android.content.ActivityNotFoundException
+import android.content.Context
+import android.content.Intent
+import android.net.ConnectivityManager
+import android.os.Bundle
+import android.util.Log
 import android.view.View.VISIBLE
-import com.bugtsa.casher.data.dto.*
-import com.crashlytics.android.*
-import com.google.android.gms.auth.*
-import com.google.android.gms.common.*
-import com.google.api.client.googleapis.extensions.android.gms.auth.*
-import io.fabric.sdk.android.*
-import io.reactivex.*
-import io.reactivex.android.schedulers.*
-import io.reactivex.schedulers.*
+import androidx.appcompat.app.AppCompatActivity
+import com.bugtsa.casher.ui.screens.singIn.SingUpView
+import com.crashlytics.android.Crashlytics
+import com.google.android.gms.auth.GoogleAuthUtil
+import com.google.android.gms.common.AccountPicker
+import com.google.android.gms.common.ConnectionResult
+import com.google.android.gms.common.GoogleApiAvailability
+import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential
+import io.fabric.sdk.android.Fabric
 import kotlinx.android.synthetic.main.activity_root.*
-import pro.horovodovodo4ka.bones.*
-import pro.horovodovodo4ka.bones.extensions.*
-import pro.horovodovodo4ka.bones.persistance.*
-import pro.horovodovodo4ka.bones.statesstore.*
-import pro.horovodovodo4ka.bones.ui.*
-import pro.horovodovodo4ka.bones.ui.delegates.*
-import pro.horovodovodo4ka.bones.ui.helpers.*
-import toothpick.*
+import pro.horovodovodo4ka.bones.Bone
+import pro.horovodovodo4ka.bones.Finger
+import pro.horovodovodo4ka.bones.extensions.processBackPress
+import pro.horovodovodo4ka.bones.persistance.BonePersisterInterface
+import pro.horovodovodo4ka.bones.statesstore.EmergencyPersister
+import pro.horovodovodo4ka.bones.statesstore.EmergencyPersisterInterface
+import pro.horovodovodo4ka.bones.ui.FingerNavigatorInterface
+import pro.horovodovodo4ka.bones.ui.delegates.FingerNavigator
+import pro.horovodovodo4ka.bones.ui.helpers.ActivityAppRestartCleaner
 import toothpick.Scope
-import javax.inject.*
+import toothpick.Toothpick
+import javax.inject.Inject
 
 
 class RootFinger(root: Bone) : Finger(root) {
@@ -35,10 +39,11 @@ class RootFinger(root: Bone) : Finger(root) {
 	}
 }
 
-class RootActivity : AppCompatActivity(), RootView,
+@SuppressLint("MissingSuperCall")
+class SingUpActivity : AppCompatActivity(), SingUpView,
 	FingerNavigatorInterface<RootFinger> by FingerNavigator(android.R.id.content),
 	BonePersisterInterface<RootFinger>,
-	EmergencyPersisterInterface<RootActivity> by EmergencyPersister(), ActivityAppRestartCleaner {
+	EmergencyPersisterInterface<SingUpActivity> by EmergencyPersister(), ActivityAppRestartCleaner {
 	private lateinit var mCredential: GoogleAccountCredential
 
 	private lateinit var activityScope: Scope
@@ -64,8 +69,8 @@ class RootActivity : AppCompatActivity(), RootView,
 
 		setContentView(com.bugtsa.casher.R.layout.activity_root)
 
-		presenter.onAttachView(this)
-		presenter.requestAccountName()
+//		presenter.onAttachView(this)
+//		presenter.requestAccountName()
 	}
 
 	override fun onStart() {
@@ -125,7 +130,22 @@ class RootActivity : AppCompatActivity(), RootView,
 	//endregion
 
 	override fun showMainController() {
-		TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+//		if (!emergencyLoad(savedInstanceState, this)) {
+//
+//			super<ActivityAppRestartCleaner>.onCreate(savedInstanceState)
+//
+//			bone = RootFinger(MainBone())
+//
+//			glueWith(bone)
+//			bone.isActive = true
+//
+//			supportFragmentManager
+//					.beginTransaction()
+//					.replace(android.R.id.content, bone.phalanxes.first().sibling as androidx.fragment.app.Fragment)
+//					.commit()
+//		} else {
+//			glueWith(bone)
+//		}
 	}
 
 	/**
@@ -152,7 +172,7 @@ class RootActivity : AppCompatActivity(), RootView,
 			)
 			startActivityForResult(intent, REQUEST_CODE_EMAIL)
 		} catch (e: ActivityNotFoundException) {
-			Log.e("RootActivity", e.toString())
+			Log.e("SingUpActivity", e.toString())
 		}
 	}
 
@@ -167,7 +187,7 @@ class RootActivity : AppCompatActivity(), RootView,
 	) {
 		val apiAvailability = GoogleApiAvailability.getInstance()
 		val dialog = apiAvailability.getErrorDialog(
-			this@RootActivity,
+			this@SingUpActivity,
 			connectionStatusCode,
 			REQUEST_GOOGLE_PLAY_SERVICES
 		)
@@ -194,16 +214,16 @@ class RootActivity : AppCompatActivity(), RootView,
 
 	//region ================= Root View =================
 
-	override fun getPayments(allPayments: Observable<java.util.List<PaymentRes>>) {
-		allPayments
-			.subscribeOn(Schedulers.io())
-			.observeOn(AndroidSchedulers.mainThread())
-			.subscribe({ result ->
-				Log.d("Result", "There are ${result.size} Java developers in Lagos")
-			}, { error ->
-				error.printStackTrace()
-			})
-	}
+//	override fun getPayments(allPayments: Observable<java.util.List<PaymentRes>>) {
+//		allPayments
+//			.subscribeOn(Schedulers.io())
+//			.observeOn(AndroidSchedulers.mainThread())
+//			.subscribe({ result ->
+//				Log.d("Result", "There are ${result.size} Java developers in Lagos")
+//			}, { error ->
+//				error.printStackTrace()
+//			})
+//	}
 
 //	fun processLogin(credential: GoogleAccountCredential, savedInstanceState: Bundle?) {
 //		mCredential = credential

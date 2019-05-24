@@ -1,7 +1,7 @@
 package com.bugtsa.casher.di.inject
 
 import android.app.Application
-import android.arch.persistence.room.Room
+import androidx.room.Room
 import com.bugtsa.casher.domain.local.database.CasherDatabase
 import com.bugtsa.casher.domain.local.database.CategoryDao
 import com.bugtsa.casher.model.ModelConstants

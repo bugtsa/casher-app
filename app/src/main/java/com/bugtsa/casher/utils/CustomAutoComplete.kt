@@ -1,10 +1,10 @@
 package com.bugtsa.casher.utils
 
 import android.content.Context
-import android.support.v7.content.res.AppCompatResources
+import androidx.appcompat.content.res.AppCompatResources
 import android.os.Build
 import android.graphics.drawable.Drawable
-import android.support.v7.widget.AppCompatAutoCompleteTextView
+import androidx.appcompat.widget.AppCompatAutoCompleteTextView
 import android.util.AttributeSet
 import com.bugtsa.casher.R
 
