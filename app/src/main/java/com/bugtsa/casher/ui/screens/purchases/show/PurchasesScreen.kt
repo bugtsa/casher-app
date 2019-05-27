@@ -1,9 +1,7 @@
-package com.bugtsa.casher.ui.screens.main
+package com.bugtsa.casher.ui.screens.purchases.show
 
 import android.annotation.SuppressLint
 import android.os.*
-import androidx.core.app.*
-import androidx.appcompat.widget.*
 import android.view.*
 import android.view.View.GONE
 import android.view.View.VISIBLE
@@ -22,7 +20,7 @@ import toothpick.Scope
 import javax.inject.*
 
 
-class MainBone : Phalanx() {
+class PurchasesScreen : Phalanx() {
 
 	fun showRootView() {
 		val bot = closest<Finger>()?.phalanxes?.first()
@@ -37,7 +35,7 @@ class MainBone : Phalanx() {
 
 @SuppressLint("MissingSuperCall")
 class MainController : androidx.fragment.app.Fragment(), MainView,
-	ScreenInterface<MainBone> by Page(), BonePersisterInterface<MainBone> {
+	ScreenInterface<PurchasesScreen> by Page(), BonePersisterInterface<PurchasesScreen> {
 
 	@Inject
 	lateinit var presenter: MainPresenter

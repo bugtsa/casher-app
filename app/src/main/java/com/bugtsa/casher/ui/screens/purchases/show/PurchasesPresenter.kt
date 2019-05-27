@@ -1,4 +1,4 @@
-package com.bugtsa.casher.ui.screens.main
+package com.bugtsa.casher.ui.screens.purchases.show
 
 import android.text.TextUtils
 import com.bugtsa.casher.arch.models.PurchaseModel
