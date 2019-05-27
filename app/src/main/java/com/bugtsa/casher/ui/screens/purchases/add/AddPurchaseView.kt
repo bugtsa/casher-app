@@ -1,4 +1,4 @@
-package com.bugtsa.casher.ui.screens.purchases.add_purchase
+package com.bugtsa.casher.ui.screens.purchases.add
 
 interface AddPurchaseView {
     fun completedAddPurchase()

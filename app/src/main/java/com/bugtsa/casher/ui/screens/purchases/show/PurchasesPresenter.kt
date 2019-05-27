@@ -1,15 +1,17 @@
 package com.bugtsa.casher.ui.screens.purchases.show
 
 import android.text.TextUtils
+import android.util.Log
 import com.bugtsa.casher.arch.models.PurchaseModel
-import com.bugtsa.casher.domain.local.database.LocalCategoryDataStore
 import com.bugtsa.casher.data.dto.PurchaseDto
 import com.bugtsa.casher.di.inject.PreferenceProvider
+import com.bugtsa.casher.domain.local.database.LocalCategoryDataStore
 import com.bugtsa.casher.utils.ConstantManager.Companion.END_COLUMN_SHEET
 import com.bugtsa.casher.utils.ConstantManager.Companion.PURCHASE_TABLE_NAME_SHEET
 import com.bugtsa.casher.utils.ConstantManager.Companion.ROW_START_SHEET
 import com.bugtsa.casher.utils.ConstantManager.Companion.START_COLUMN_SHEET
 import com.bugtsa.casher.utils.GoogleSheetManager.Companion.OWN_GOOGLE_SHEET_ID
+import com.bugtsa.casher.utils.ParentConstantManager.Companion.CATEGORIES_TABLE_NAME_SHEET
 import com.bugtsa.casher.utils.ParentConstantManager.Companion.DELIMITER_BETWEEN_COLUMNS
 import com.bugtsa.casher.utils.ParentConstantManager.Companion.DELIMITER_BETWEEN_DATE_AND_TIME
 import com.google.api.client.googleapis.extensions.android.gms.auth.GooglePlayServicesAvailabilityIOException
@@ -22,90 +24,88 @@ import io.reactivex.schedulers.Schedulers
 import timber.log.Timber
 import javax.inject.Inject
 
-class MainPresenter @Inject constructor(preferenceProvider: PreferenceProvider,
-                                        injectPurchaseModel: PurchaseModel,
-                                        injectLocalCategoryDataStore: LocalCategoryDataStore
+class PurchasesPresenter @Inject constructor(preferenceProvider: PreferenceProvider,
+                                             injectPurchaseModel: PurchaseModel,
+                                             injectLocalCategoryDataStore: LocalCategoryDataStore
 ) {
 
-//    private var serviceSheets: Sheets = preferenceProvider.mService
     private var purchaseModel: PurchaseModel = injectPurchaseModel
     private var localCategoryDataStore: LocalCategoryDataStore = injectLocalCategoryDataStore
 
     private var isScrollPurchasesList: Boolean
 
-    private val disposableSubscriptions: CompositeDisposable = CompositeDisposable()
-    lateinit var mainView: MainView
+    private val bug: CompositeDisposable = CompositeDisposable()
+    lateinit var purchasesView: PurchasesView
 
     init {
         isScrollPurchasesList = false
     }
 
-    fun onAttachView(landingView: MainView) {
-        this.mainView = landingView
+    fun onAttachView(landingView: PurchasesView) {
+        this.purchasesView = landingView
     }
 
     fun onViewDestroy() {
-        disposableSubscriptions.dispose()
+        bug.dispose()
     }
 
     fun processData() {
-//        performCheckStorageCategoriesList()
+        performCheckStorageCategoriesList()
 //        getPurchasesList(serviceSheets)
     }
 
     //region ================= Compare Storage and Network Categories =================
 
     private fun performCheckStorageCategoriesList() {
-//        disposableSubscriptions.add(
-//                localCategoryDataStore.getCategoriesList()
-//                        .subscribeOn(Schedulers.io())
-//                        .map { it.mapNotNull { it.name } }
-//                        .observeOn(AndroidSchedulers.mainThread())
-//                        .doOnNext { storageCategoriesList: List<String> ->
-//                            disposableSubscriptions.add(getServerCategoriesList(serviceSheets)!!
+        bug.add(localCategoryDataStore.getCategoriesList()
+                .subscribeOn(Schedulers.io())
+                .map { it.mapNotNull { it.name } }
+                .observeOn(AndroidSchedulers.mainThread())
+                .doOnNext { storageCategoriesList: List<String> ->
+                    //                            bug.add(getServerCategoriesList(serviceSheets)!!
 //                                    .subscribe({ networkCategoriesList ->
 //                                        checkNetworkCategoriesListInDatabase(networkCategoriesList, storageCategoriesList)
 //                                    },
-//                                            { t -> Log.e("MainPresenter", "error at check exist categories $t") }))
-//                        }
-//                        .subscribe({ _: List<String> ->
-//                        },
-//                                { t -> Log.e("MainPresenter", "error at check exist categories $t") }))
+//                                            { t -> Log.e("PurchasesPresenter", "error at check exist categories $t") }))
+                }
+                .subscribe({ _: List<String> ->
+                },
+                        { t -> Log.e("PurchasesPresenter", "error at check exist categories $t") }))
     }
 
-//    private fun getServerCategoriesList(service: Sheets): Flowable<List<String>>? {
-//        val range = CATEGORIES_TABLE_NAME_SHEET + START_COLUMN_SHEET + ROW_START_SHEET
-////        +                DELIMITER_BETWEEN_COLUMNS + START_COLUMN_SHEET
-//
-//        return Flowable.just("")
-//                .subscribeOn(Schedulers.newThread())
-//                .flatMap { _ ->
-//                    Flowable.just(service.spreadsheets().values()
-//                            .get(OWN_GOOGLE_SHEET_ID, range)
-//                            .execute()
-//                            .getValues()
-//                            .map { rowList: MutableList<Any>? -> rowList!!.lastOrNull().toString() })
+    private fun getServerCategoriesList(service: Sheets): Flowable<List<String>>? {
+        val range = CATEGORIES_TABLE_NAME_SHEET + START_COLUMN_SHEET + ROW_START_SHEET
+//        +                DELIMITER_BETWEEN_COLUMNS + START_COLUMN_SHEET
+
+        return Flowable.just("")
+                .subscribeOn(Schedulers.newThread())
+                .flatMap { _ ->
+                    Flowable.just(service.spreadsheets().values()
+                            .get(OWN_GOOGLE_SHEET_ID, range)
+                            .execute()
+                            .getValues()
+                            .map { rowList: MutableList<Any>? -> rowList!!.lastOrNull().toString() })
+                }
+                .observeOn(AndroidSchedulers.mainThread())
+    }
+
+    private fun checkNetworkCategoriesListInDatabase(networkCategoriesList: List<String>,
+                                                     storageCategoriesList: List<String>) {
+        val isListsHasSameContent: Boolean? = networkCategoriesList sameContentWith storageCategoriesList
+
+        if (!networkCategoriesList.isEmpty() && !isListsHasSameContent!!) {
+
+            networkCategoriesList
+                    .filter { networkCategory -> !storageCategoriesList.contains(networkCategory) }
+                    .forEach { networkCategory -> addCategoryToDatabase(networkCategory) }
+
+//            for (category in networkCategoriesList) {
+//                if (!storageCategoriesList.contains(category)) {
+//                    addCategoryToDatabase(category)
 //                }
-//                .observeOn(AndroidSchedulers.mainThread())
-//    }
-//
-//    private fun checkNetworkCategoriesListInDatabase(networkCategoriesList: List<String>,
-//                                                     storageCategoriesList: List<String>) {
-//        val isListsHasSameContent: Boolean? = networkCategoriesList sameContentWith storageCategoriesList
-//
-//        if (!networkCategoriesList.isEmpty() && !isListsHasSameContent!!) {
-//
-//            networkCategoriesList
-//                    .filter { networkCategory -> !storageCategoriesList.contains(networkCategory) }
-//                    .forEach { networkCategory -> addCategoryToDatabase(networkCategory) }
-//
-////            for (category in networkCategoriesList) {
-////                if (!storageCategoriesList.contains(category)) {
-////                    addCategoryToDatabase(category)
-////                }
-////            }
-//        }
-//    }
+//            }
+        }
+    }
 
     private infix fun <T> Collection<T>.sameContentWith(collection: Collection<T>?) = collection?.let { this.size == it.size && this.containsAll(it) }
 
@@ -114,7 +114,7 @@ class MainPresenter @Inject constructor(preferenceProvider: PreferenceProvider,
     //region ================= DataBase =================
 
     private fun addCategoryToDatabase(category: String) {
-        disposableSubscriptions.add(
+        bug.add(
                 localCategoryDataStore.add(category)
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
@@ -129,8 +129,8 @@ class MainPresenter @Inject constructor(preferenceProvider: PreferenceProvider,
     private fun getPurchasesList(service: Sheets) {
         val range = PURCHASE_TABLE_NAME_SHEET + START_COLUMN_SHEET + ROW_START_SHEET +
                 DELIMITER_BETWEEN_COLUMNS + END_COLUMN_SHEET
-        mainView.showProgressBar()
-        disposableSubscriptions.add(Flowable.just("")
+        purchasesView.showProgressBar()
+        bug.add(Flowable.just("")
                 .subscribeOn(Schedulers.newThread())
                 .flatMap { _ ->
                     Flowable.just(service.spreadsheets().values()
@@ -149,21 +149,21 @@ class MainPresenter @Inject constructor(preferenceProvider: PreferenceProvider,
                 }
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({ purchases ->
-                    mainView.hideProgressBar()
+                    purchasesView.hideProgressBar()
                     if (purchases.isEmpty()) {
-                        mainView.setupStatusText("No results returned.")
+                        purchasesView.setupStatusText("No results returned.")
                     } else {
-                        mainView.setupPurchaseList(purchases, processDateMap(purchases))
+                        purchasesView.setupPurchaseList(purchases, processDateMap(purchases))
                     }
                 },
                         { throwable ->
-                            mainView.hideProgressBar()
+                            purchasesView.hideProgressBar()
                             if (throwable is GooglePlayServicesAvailabilityIOException) {
 
                             } else if (throwable is UserRecoverableAuthIOException) {
-                                mainView.startIntent(throwable)
+                                purchasesView.startIntent(throwable)
                             } else {
-                                mainView.setupStatusText("The following error occurred:\n" + throwable.message)
+                                purchasesView.setupStatusText("The following error occurred:\n" + throwable.message)
                             }
                             Timber.e(throwable, "error at check exist categories")
                         }))
@@ -199,14 +199,14 @@ class MainPresenter @Inject constructor(preferenceProvider: PreferenceProvider,
     //region ================= Scroll Function =================
 
     fun requestScrollToDown() {
-        mainView.scrollToPosition(purchaseModel.sizePurchaseList - 1)
+        purchasesView.scrollToPosition(purchaseModel.sizePurchaseList - 1)
     }
 
     fun checkPositionAdapter(position: Int) {
         if (position <= purchaseModel.sizePurchaseList - 10 && isScrollPurchasesList()) {
-            mainView.showBottomScroll()
+            purchasesView.showBottomScroll()
         } else {
-            mainView.hideBottomScroll()
+            purchasesView.hideBottomScroll()
         }
     }
 

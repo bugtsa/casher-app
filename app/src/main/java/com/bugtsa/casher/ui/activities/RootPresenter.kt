@@ -9,12 +9,12 @@ class RootPresenter @Inject constructor(
 	private val preferenceProvider: PreferenceProvider
 ) {
 
-//	lateinit var rootView: SingUpView
-//
-//	fun onAttachView(rootView: SingUpView) {
-//		this.rootView = rootView
-//	}
-//
+	lateinit var rootView: RootView
+
+	fun onAttachView(rootView: RootView) {
+		this.rootView = rootView
+	}
+
 //	fun requestAccountName() {
 //		if (!TextUtils.isEmpty(preferenceProvider.getAccoutnName())) {
 //			rootView.showMainController()
@@ -23,7 +23,7 @@ class RootPresenter @Inject constructor(
 //		}
 //	}
 //
-//	fun saveAccountName(accountName: String) {
-//		preferenceProvider.saveAccountName(accountName)
-//	}
+	fun saveAccountName(accountName: String) {
+		preferenceProvider.saveAccountName(accountName)
+	}
 }

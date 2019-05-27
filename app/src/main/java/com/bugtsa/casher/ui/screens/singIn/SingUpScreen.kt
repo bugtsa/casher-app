@@ -8,18 +8,23 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import com.bugtsa.casher.R
 import com.bugtsa.casher.navigation.NavigationStackPresentable
 import com.bugtsa.casher.ui.activities.MainActivity
+import com.bugtsa.casher.ui.screens.purchases.show.PurchasesScreen
 import com.google.android.gms.auth.GoogleAuthUtil
 import com.google.android.gms.common.AccountPicker
 import com.google.android.gms.common.GoogleApiAvailability
 import pro.horovodovodo4ka.bones.Phalanx
+import pro.horovodovodo4ka.bones.extensions.present
 import pro.horovodovodo4ka.bones.persistance.BonePersisterInterface
 import pro.horovodovodo4ka.bones.ui.FragmentSibling
 import pro.horovodovodo4ka.bones.ui.delegates.Page
+import toothpick.Scope
+import toothpick.Toothpick
 import javax.inject.Inject
 
-class SingUpScreen: Phalanx(), NavigationStackPresentable {
+class SingUpScreen : Phalanx(), NavigationStackPresentable {
     override val seed = { SingUpFragment() }
 
     override val fragmentTitle: String
@@ -30,17 +35,22 @@ class SingUpScreen: Phalanx(), NavigationStackPresentable {
 class SingUpFragment : Fragment(),
         BonePersisterInterface<SingUpScreen>,
         FragmentSibling<SingUpScreen> by Page(),
-        SingUpView{
+        SingUpView {
 
     @Inject
     lateinit var presenter: SingUpPresenter
 
+    private lateinit var singUpScreenScope: Scope
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        return super.onCreateView(inflater, container, savedInstanceState)
+        return inflater.inflate(R.layout.fragment_phalanx_test, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        singUpScreenScope = Toothpick.openScopes(activity, this)
+        Toothpick.inject(this, singUpScreenScope)
 
         presenter.onAttachView(this)
         presenter.requestAccountName()
@@ -75,7 +85,7 @@ class SingUpFragment : Fragment(),
     //region ================= Request Play Services =================
 
     override fun showMainController() {
-//        bone.
+        bone.present(PurchasesScreen())
     }
 
     private fun accountNameIntent() {

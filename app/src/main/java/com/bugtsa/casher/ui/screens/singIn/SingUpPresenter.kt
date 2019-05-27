@@ -6,7 +6,7 @@ import javax.inject.Inject
 
 class SingUpPresenter @Inject constructor(
         private val preferenceProvider: PreferenceProvider
-){
+) {
     lateinit var singUpView: SingUpView
 
     fun onAttachView(singUpView: SingUpView) {

@@ -8,6 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import com.bugtsa.casher.R
 import com.bugtsa.casher.ui.screens.TestScreen
+import com.bugtsa.casher.ui.screens.singIn.SingUpScreen
 import kotlinx.android.synthetic.main.fragment_navigation_stack.*
 import pro.horovodovodo4ka.bones.Bone
 import pro.horovodovodo4ka.bones.Finger
@@ -51,7 +52,7 @@ open class NavigationStackFragment : androidx.fragment.app.Fragment(),
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        bone.present(TestScreen())
+        bone.present(SingUpScreen())
 
 
         push_button.setOnClickListener {

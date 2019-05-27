@@ -1,9 +1,8 @@
-package com.bugtsa.casher.ui.screens.purchases.add_purchase
+package com.bugtsa.casher.ui.screens.purchases.add
 
 import android.content.Context
 import android.graphics.Color
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View

@@ -1,15 +1,20 @@
 package com.bugtsa.casher.ui.activities
 
+import android.accounts.AccountManager
 import android.annotation.SuppressLint
+import android.content.Intent
 import android.os.Bundle
+import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.bugtsa.casher.navigation.NavigationStack
 import com.bugtsa.casher.navigation.TabBar
 import com.bugtsa.casher.ui.screens.TestForm
 import com.bugtsa.casher.ui.screens.TestScreen
+import com.bugtsa.casher.ui.screens.purchases.show.PurchasesScreen
 import com.crashlytics.android.Crashlytics
 import io.fabric.sdk.android.Fabric
+import kotlinx.android.synthetic.main.activity_root.*
 import pro.horovodovodo4ka.bones.Bone
 import pro.horovodovodo4ka.bones.Finger
 import pro.horovodovodo4ka.bones.Spine
@@ -24,15 +29,16 @@ import pro.horovodovodo4ka.bones.ui.delegates.SpineNavigator
 import pro.horovodovodo4ka.bones.ui.helpers.ActivityAppRestartCleaner
 import toothpick.Scope
 import toothpick.Toothpick
+import javax.inject.Inject
 
 /**
  * Demo bone. Realize support of exiting from app and back presses.
  */
 class RootBone(root: Bone) :
-    Spine(root),
-    Wrist.Listener,
-    Finger.Listener,
-    Spine.Listener {
+        Spine(root),
+        Wrist.Listener,
+        Finger.Listener,
+        Spine.Listener {
 
     init {
         persistSibling = true
@@ -71,9 +77,10 @@ class RootBone(root: Bone) :
  */
 @SuppressLint("MissingSuperCall")
 class MainActivity : AppCompatActivity(),
-    SpineNavigatorInterface<RootBone> by SpineNavigator(),
-    EmergencyPersisterInterface<MainActivity> by EmergencyPersister(),
-    ActivityAppRestartCleaner {
+        SpineNavigatorInterface<RootBone> by SpineNavigator(),
+        EmergencyPersisterInterface<MainActivity> by EmergencyPersister(),
+        ActivityAppRestartCleaner,
+        RootView {
 
     init {
         managerProvider = ::getSupportFragmentManager
@@ -83,6 +90,9 @@ class MainActivity : AppCompatActivity(),
         const val REQUEST_CODE_EMAIL = 1001
         const val REQUEST_GOOGLE_PLAY_SERVICES = 1002
     }
+
+    @Inject
+    lateinit var presenter: RootPresenter
 
     private lateinit var activityScope: Scope
 
@@ -107,16 +117,18 @@ class MainActivity : AppCompatActivity(),
         activityScope = Toothpick.openScopes(application, this)
         Toothpick.inject(this, activityScope)
 
+        presenter.onAttachView(this)
+
         if (!emergencyLoad(savedInstanceState, this)) {
 
             super<ActivityAppRestartCleaner>.onCreate(savedInstanceState)
 
             bone = RootBone(
-                TabBar(
-                    NavigationStack(TestScreen()),
-                    TestForm(),
-                        TestScreen()
-                )
+                    TabBar(
+                            NavigationStack(TestScreen()),
+                            TestForm(),
+                            TestScreen()
+                    )
             )
 
             glueWith(bone)
@@ -143,4 +155,36 @@ class MainActivity : AppCompatActivity(),
             }
         }
     }
+
+    //region ================= Request Permissions =================
+
+    override fun onActivityResult(
+            requestCode: Int, resultCode: Int, data: Intent?
+    ) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (resultCode == RESULT_OK) {
+            when (requestCode) {
+                REQUEST_GOOGLE_PLAY_SERVICES -> if (resultCode != RESULT_OK) {
+                    showText("This app requires Google Play Services. Please install " + "Google Play Services on your device and relaunch this app.")
+                } else {
+                    bone.present(PurchasesScreen())
+                }
+                REQUEST_CODE_EMAIL -> if (data != null && data.extras != null) {
+                    presenter.saveAccountName(data.getStringExtra(AccountManager.KEY_ACCOUNT_NAME))
+                }
+            }
+        }
+    }
+
+    //endregion
+
+    //region ================= Setup Ui =================
+
+    private fun showText(caption: String) {
+        status_tv.text = caption
+        status_tv.visibility = View.VISIBLE
+    }
+
+    //endregion
+
 }

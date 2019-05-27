@@ -1,23 +1,27 @@
 package com.bugtsa.casher.ui.screens.purchases.show
 
 import android.annotation.SuppressLint
-import android.os.*
-import android.view.*
+import android.os.Bundle
+import android.view.LayoutInflater
+import android.view.View
 import android.view.View.GONE
 import android.view.View.VISIBLE
+import android.view.ViewGroup
+import androidx.fragment.app.Fragment
 import com.bugtsa.casher.R
-import com.bugtsa.casher.data.dto.*
-import com.bugtsa.casher.ui.*
-import com.bugtsa.casher.ui.adapters.*
+import com.bugtsa.casher.data.dto.PurchaseDto
+import com.bugtsa.casher.ui.OnChangePosition
+import com.bugtsa.casher.ui.adapters.PurchaseAdapter
 import kotlinx.android.synthetic.main.controller_main.*
-import pro.horovodovodo4ka.bones.*
-import pro.horovodovodo4ka.bones.extensions.*
-import pro.horovodovodo4ka.bones.persistance.*
-import pro.horovodovodo4ka.bones.ui.*
-import pro.horovodovodo4ka.bones.ui.delegates.*
-import toothpick.*
+import pro.horovodovodo4ka.bones.Finger
+import pro.horovodovodo4ka.bones.Phalanx
+import pro.horovodovodo4ka.bones.extensions.closest
+import pro.horovodovodo4ka.bones.persistance.BonePersisterInterface
+import pro.horovodovodo4ka.bones.ui.ScreenInterface
+import pro.horovodovodo4ka.bones.ui.delegates.Page
 import toothpick.Scope
-import javax.inject.*
+import toothpick.Toothpick
+import javax.inject.Inject
 
 
 class PurchasesScreen : Phalanx() {
@@ -30,15 +34,15 @@ class PurchasesScreen : Phalanx() {
 //        closest<Finger>()?.replace(bot, dlg)
 	}
 
-	override val seed = { MainController() }
+	override val seed = { PurchasesFragment() }
 }
 
 @SuppressLint("MissingSuperCall")
-class MainController : androidx.fragment.app.Fragment(), MainView,
+class PurchasesFragment : Fragment(), PurchasesView,
 	ScreenInterface<PurchasesScreen> by Page(), BonePersisterInterface<PurchasesScreen> {
 
 	@Inject
-	lateinit var presenter: MainPresenter
+	lateinit var presenter: PurchasesPresenter
 
 	private lateinit var mainControllerScope: Scope
 
@@ -66,8 +70,9 @@ class MainController : androidx.fragment.app.Fragment(), MainView,
 		Toothpick.inject(this, mainControllerScope)
 
 		presenter.onAttachView(this)
-
 		presenter.processData()
+
+		refreshUI()
 	}
 
 	override fun onDestroyView() {

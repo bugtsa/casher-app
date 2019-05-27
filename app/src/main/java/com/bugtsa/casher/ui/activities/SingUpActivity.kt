@@ -1,15 +1,14 @@
 package com.bugtsa.casher.ui.activities
 
-import android.accounts.AccountManager
 import android.annotation.SuppressLint
 import android.content.ActivityNotFoundException
 import android.content.Context
-import android.content.Intent
 import android.net.ConnectivityManager
 import android.os.Bundle
 import android.util.Log
-import android.view.View.VISIBLE
 import androidx.appcompat.app.AppCompatActivity
+import com.bugtsa.casher.ui.activities.MainActivity.Companion.REQUEST_CODE_EMAIL
+import com.bugtsa.casher.ui.activities.MainActivity.Companion.REQUEST_GOOGLE_PLAY_SERVICES
 import com.bugtsa.casher.ui.screens.singIn.SingUpView
 import com.crashlytics.android.Crashlytics
 import com.google.android.gms.auth.GoogleAuthUtil
@@ -30,7 +29,6 @@ import pro.horovodovodo4ka.bones.ui.delegates.FingerNavigator
 import pro.horovodovodo4ka.bones.ui.helpers.ActivityAppRestartCleaner
 import toothpick.Scope
 import toothpick.Toothpick
-import javax.inject.Inject
 
 
 class RootFinger(root: Bone) : Finger(root) {
@@ -47,13 +45,6 @@ class SingUpActivity : AppCompatActivity(), SingUpView,
 	private lateinit var mCredential: GoogleAccountCredential
 
 	private lateinit var activityScope: Scope
-	@Inject
-	lateinit var presenter: RootPresenter
-
-	companion object {
-		private const val REQUEST_CODE_EMAIL = 1001
-		private const val REQUEST_GOOGLE_PLAY_SERVICES = 1002
-	}
 
 	//region ================= Implements Methods =================
 
@@ -69,8 +60,7 @@ class SingUpActivity : AppCompatActivity(), SingUpView,
 
 		setContentView(com.bugtsa.casher.R.layout.activity_root)
 
-//		presenter.onAttachView(this)
-//		presenter.requestAccountName()
+
 	}
 
 	override fun onStart() {
@@ -107,34 +97,14 @@ class SingUpActivity : AppCompatActivity(), SingUpView,
 
 	//endregion
 
-	//region ================= Request Permissions =================
 
-	override fun onActivityResult(
-		requestCode: Int, resultCode: Int, data: Intent?
-	) {
-		super.onActivityResult(requestCode, resultCode, data)
-		if (resultCode == RESULT_OK) {
-			when (requestCode) {
-				REQUEST_GOOGLE_PLAY_SERVICES -> if (resultCode != RESULT_OK) {
-					showText("This app requires Google Play Services. Please install " + "Google Play Services on your device and relaunch this app.")
-				} else {
-					getResultsFromApi(null)
-				}
-				REQUEST_CODE_EMAIL -> if (data != null && data.extras != null) {
-					presenter.saveAccountName(data.getStringExtra(AccountManager.KEY_ACCOUNT_NAME))
-				}
-			}
-		}
-	}
-
-	//endregion
 
 	override fun showMainController() {
 //		if (!emergencyLoad(savedInstanceState, this)) {
 //
 //			super<ActivityAppRestartCleaner>.onCreate(savedInstanceState)
 //
-//			bone = RootFinger(MainBone())
+//			bone = RootFinger(PurchasesScreen())
 //
 //			glueWith(bone)
 //			bone.isActive = true
@@ -235,13 +205,13 @@ class SingUpActivity : AppCompatActivity(), SingUpView,
 //			showText("No network connection available.")
 //		} else {
 ////            if (!router.hasRootController()) {
-////                router.setRoot(RouterTransaction.with(MainController()))
+////                router.setRoot(RouterTransaction.with(PurchasesFragment()))
 ////            }
 //			if (!emergencyLoad(savedInstanceState, this)) {
 //
 //				super<ActivityAppRestartCleaner>.onCreate(savedInstanceState)
 //
-//				bone = RootFinger(MainBone())
+//				bone = RootFinger(PurchasesScreen())
 //
 //				glueWith(bone)
 //				bone.isActive = true
@@ -258,16 +228,6 @@ class SingUpActivity : AppCompatActivity(), SingUpView,
 //	}
 
 	//endregion
-
-	//region ================= Setup Ui =================
-
-	private fun showText(caption: String) {
-		status_tv.text = caption
-		status_tv.visibility = VISIBLE
-	}
-
-	//endregion
-
 
 	//region ================= Utils Methods =================
 
