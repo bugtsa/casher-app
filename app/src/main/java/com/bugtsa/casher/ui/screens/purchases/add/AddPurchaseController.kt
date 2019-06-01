@@ -1,9 +1,8 @@
-package com.bugtsa.casher.ui.screens.purchases.add_purchase
+package com.bugtsa.casher.ui.screens.purchases.add
 
 import android.content.Context
 import android.graphics.Color
 import android.os.Bundle
-import android.support.v4.app.Fragment
 import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
@@ -21,7 +20,7 @@ import javax.inject.Inject
 
 
 @Suppress("DEPRECATED_IDENTITY_EQUALS")
-class AddPurchaseController : Fragment(), AddPurchaseView, TimePickerDialog.OnTimeSetListener {
+class AddPurchaseController : androidx.fragment.app.Fragment(), AddPurchaseView, TimePickerDialog.OnTimeSetListener {
 
     @Inject
     lateinit var presenter: AddPurchasePresenter

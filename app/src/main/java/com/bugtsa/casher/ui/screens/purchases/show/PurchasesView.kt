@@ -1,8 +1,8 @@
-package com.bugtsa.casher.ui.screens.main
+package com.bugtsa.casher.ui.screens.purchases.show
 
 import com.bugtsa.casher.data.dto.PurchaseDto
 
-interface MainView {
+interface PurchasesView {
 
     fun showProgressBar()
     fun hideProgressBar()

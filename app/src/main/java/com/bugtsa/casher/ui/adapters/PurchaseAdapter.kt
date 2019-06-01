@@ -1,6 +1,6 @@
 package com.bugtsa.casher.ui.adapters
 
-import android.support.v7.widget.RecyclerView
+import androidx.recyclerview.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.View.GONE
@@ -15,7 +15,7 @@ import kotlinx.android.synthetic.main.item_purchase.view.*
 class PurchaseAdapter(purchaseList: MutableList<PurchaseDto>,
                       dateMap: MutableMap<String, Int>,
                       onChangePosition: OnChangePosition)
-    : RecyclerView.Adapter<PurchaseAdapter.ViewHolder>() {
+    : androidx.recyclerview.widget.RecyclerView.Adapter<PurchaseAdapter.ViewHolder>() {
 
     var purchasesList: MutableList<PurchaseDto> = purchaseList
     var datesMap: MutableMap<String, Int> = dateMap
@@ -48,7 +48,7 @@ class PurchaseAdapter(purchaseList: MutableList<PurchaseDto>,
 
     //region ================= View Holder =================
 
-    class ViewHolder(item: View) : RecyclerView.ViewHolder(item) {
+    class ViewHolder(item: View) : androidx.recyclerview.widget.RecyclerView.ViewHolder(item) {
         var date: TextView = item.date_purchase
         var timePurchase: TextView = item.time_purchase
         var price: TextView = item.price_purchase

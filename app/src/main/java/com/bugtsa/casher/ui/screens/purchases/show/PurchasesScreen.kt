@@ -1,44 +1,44 @@
-package com.bugtsa.casher.ui.screens.main
+package com.bugtsa.casher.ui.screens.purchases.show
 
-import android.os.*
-import android.support.v4.app.*
-import android.support.v7.widget.*
-import android.view.*
+import android.annotation.SuppressLint
+import android.os.Bundle
+import android.view.LayoutInflater
+import android.view.View
 import android.view.View.GONE
 import android.view.View.VISIBLE
+import android.view.ViewGroup
+import androidx.fragment.app.Fragment
 import com.bugtsa.casher.R
-import com.bugtsa.casher.data.dto.*
-import com.bugtsa.casher.ui.*
-import com.bugtsa.casher.ui.adapters.*
-import kotlinx.android.synthetic.main.controller_main.*
-import pro.horovodovodo4ka.bones.*
-import pro.horovodovodo4ka.bones.extensions.*
-import pro.horovodovodo4ka.bones.persistance.*
-import pro.horovodovodo4ka.bones.ui.*
-import pro.horovodovodo4ka.bones.ui.delegates.*
-import toothpick.*
+import com.bugtsa.casher.data.dto.PurchaseDto
+import com.bugtsa.casher.ui.OnChangePosition
+import com.bugtsa.casher.ui.adapters.PurchaseAdapter
+import kotlinx.android.synthetic.main.fragment_purchases.*
+import pro.horovodovodo4ka.bones.Finger
+import pro.horovodovodo4ka.bones.Phalanx
+import pro.horovodovodo4ka.bones.extensions.closest
+import pro.horovodovodo4ka.bones.persistance.BonePersisterInterface
+import pro.horovodovodo4ka.bones.ui.ScreenInterface
+import pro.horovodovodo4ka.bones.ui.delegates.Page
 import toothpick.Scope
-import javax.inject.*
+import toothpick.Toothpick
+import javax.inject.Inject
 
 
-class MainBone : Phalanx() {
+class PurchasesScreen : Phalanx() {
 
 	fun showRootView() {
 		val bot = closest<Finger>()?.phalanxes?.first()
-//        val dlg = RootSpineBone(TabBarBone(NavigationStackBone(CardListBone()),
-//                ProfileNavigationStack(),
-//                NavigationStackBone(UploadPhotoBone())))
-//        closest<Finger>()?.replace(bot, dlg)
 	}
 
-	override val seed = { MainController() }
+	override val seed = { PurchasesFragment() }
 }
 
-class MainController : Fragment(), MainView,
-	ScreenInterface<MainBone> by Page(), BonePersisterInterface<MainBone> {
+@SuppressLint("MissingSuperCall")
+class PurchasesFragment : Fragment(), PurchasesView,
+	ScreenInterface<PurchasesScreen> by Page(), BonePersisterInterface<PurchasesScreen> {
 
 	@Inject
-	lateinit var presenter: MainPresenter
+	lateinit var presenter: PurchasesPresenter
 
 	private lateinit var mainControllerScope: Scope
 
@@ -49,13 +49,13 @@ class MainController : Fragment(), MainView,
 		container: ViewGroup?,
 		savedInstanceState: Bundle?
 	): View? {
-		return inflater.inflate(R.layout.controller_main, container, false)
+		return inflater.inflate(R.layout.fragment_purchases, container, false)
 	}
 
 	override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
 		super.onViewCreated(view, savedInstanceState)
 
-		val linearLayoutManager = LinearLayoutManager(activity)
+		val linearLayoutManager = androidx.recyclerview.widget.LinearLayoutManager(activity)
 		purchases.layoutManager = linearLayoutManager
 		setupScrollListener()
 
@@ -66,8 +66,9 @@ class MainController : Fragment(), MainView,
 		Toothpick.inject(this, mainControllerScope)
 
 		presenter.onAttachView(this)
-
 		presenter.processData()
+
+		refreshUI()
 	}
 
 	override fun onDestroyView() {
@@ -78,12 +79,12 @@ class MainController : Fragment(), MainView,
 
 	override fun onSaveInstanceState(outState: Bundle) {
 		super<BonePersisterInterface>.onSaveInstanceState(outState)
-		super<Fragment>.onSaveInstanceState(outState)
+		super<androidx.fragment.app.Fragment>.onSaveInstanceState(outState)
 	}
 
 	override fun onCreate(savedInstanceState: Bundle?) {
 		super<BonePersisterInterface>.onCreate(savedInstanceState)
-		super<Fragment>.onCreate(savedInstanceState)
+		super<androidx.fragment.app.Fragment>.onCreate(savedInstanceState)
 	}
 
 	//endregion
@@ -103,8 +104,8 @@ class MainController : Fragment(), MainView,
 	}
 
 	private fun setupScrollListener() {
-		purchases.addOnScrollListener(object : RecyclerView.OnScrollListener() {
-			override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+		purchases.addOnScrollListener(object : androidx.recyclerview.widget.RecyclerView.OnScrollListener() {
+			override fun onScrolled(recyclerView: androidx.recyclerview.widget.RecyclerView, dx: Int, dy: Int) {
 				super.onScrolled(recyclerView, dx, dy)
 			}
 

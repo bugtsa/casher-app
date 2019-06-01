@@ -1,4 +1,4 @@
-package com.bugtsa.casher.ui.screens.purchases.add_purchase
+package com.bugtsa.casher.ui.screens.purchases.add
 
 import com.bugtsa.casher.arch.models.PurchaseModel
 import com.bugtsa.casher.domain.local.database.LocalCategoryDataStore

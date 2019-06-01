@@ -1,6 +1,6 @@
 package com.bugtsa.casher.domain.local.database
 
-import android.arch.persistence.room.*
+import androidx.room.*
 import com.bugtsa.casher.model.CategoryEntity
 import io.reactivex.Flowable
 
