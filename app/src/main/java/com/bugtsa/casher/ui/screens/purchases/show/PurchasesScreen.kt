@@ -12,7 +12,7 @@ import com.bugtsa.casher.R
 import com.bugtsa.casher.data.dto.PurchaseDto
 import com.bugtsa.casher.ui.OnChangePosition
 import com.bugtsa.casher.ui.adapters.PurchaseAdapter
-import kotlinx.android.synthetic.main.controller_main.*
+import kotlinx.android.synthetic.main.fragment_purchases.*
 import pro.horovodovodo4ka.bones.Finger
 import pro.horovodovodo4ka.bones.Phalanx
 import pro.horovodovodo4ka.bones.extensions.closest
@@ -28,10 +28,6 @@ class PurchasesScreen : Phalanx() {
 
 	fun showRootView() {
 		val bot = closest<Finger>()?.phalanxes?.first()
-//        val dlg = RootSpineBone(TabBarBone(NavigationStackBone(CardListBone()),
-//                ProfileNavigationStack(),
-//                NavigationStackBone(UploadPhotoBone())))
-//        closest<Finger>()?.replace(bot, dlg)
 	}
 
 	override val seed = { PurchasesFragment() }
@@ -53,7 +49,7 @@ class PurchasesFragment : Fragment(), PurchasesView,
 		container: ViewGroup?,
 		savedInstanceState: Bundle?
 	): View? {
-		return inflater.inflate(R.layout.controller_main, container, false)
+		return inflater.inflate(R.layout.fragment_purchases, container, false)
 	}
 
 	override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

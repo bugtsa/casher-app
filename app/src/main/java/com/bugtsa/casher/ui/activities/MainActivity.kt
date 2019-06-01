@@ -2,17 +2,22 @@ package com.bugtsa.casher.ui.activities
 
 import android.accounts.AccountManager
 import android.annotation.SuppressLint
+import android.content.Context
 import android.content.Intent
+import android.net.ConnectivityManager
 import android.os.Bundle
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import com.bugtsa.casher.navigation.NavigationStack
-import com.bugtsa.casher.navigation.TabBar
-import com.bugtsa.casher.ui.screens.TestForm
+import com.bugtsa.casher.ui.navigation.NavigationStack
+import com.bugtsa.casher.ui.navigation.PurchasesStack
+import com.bugtsa.casher.ui.navigation.TabBar
 import com.bugtsa.casher.ui.screens.TestScreen
 import com.bugtsa.casher.ui.screens.purchases.show.PurchasesScreen
+import com.bugtsa.casher.ui.screens.singIn.SingUpScreen
 import com.crashlytics.android.Crashlytics
+import com.google.android.gms.common.ConnectionResult
+import com.google.android.gms.common.GoogleApiAvailability
 import io.fabric.sdk.android.Fabric
 import kotlinx.android.synthetic.main.activity_root.*
 import pro.horovodovodo4ka.bones.Bone
@@ -80,19 +85,19 @@ class MainActivity : AppCompatActivity(),
         SpineNavigatorInterface<RootBone> by SpineNavigator(),
         EmergencyPersisterInterface<MainActivity> by EmergencyPersister(),
         ActivityAppRestartCleaner,
-        RootView {
+        MainView {
 
     init {
         managerProvider = ::getSupportFragmentManager
     }
 
     companion object {
-        const val REQUEST_CODE_EMAIL = 1001
+        const val REQUEST_CODE_EMAIL = 11110
         const val REQUEST_GOOGLE_PLAY_SERVICES = 1002
     }
 
     @Inject
-    lateinit var presenter: RootPresenter
+    lateinit var presenter: MainPresenter
 
     private lateinit var activityScope: Scope
 
@@ -125,10 +130,9 @@ class MainActivity : AppCompatActivity(),
 
             bone = RootBone(
                     TabBar(
-                            NavigationStack(TestScreen()),
-                            TestForm(),
-                            TestScreen()
-                    )
+                            PurchasesStack(SingUpScreen()),
+                            TestScreen(),
+                            NavigationStack(TestScreen()))
             )
 
             glueWith(bone)
@@ -169,7 +173,7 @@ class MainActivity : AppCompatActivity(),
                 } else {
                     bone.present(PurchasesScreen())
                 }
-                REQUEST_CODE_EMAIL -> if (data != null && data.extras != null) {
+                65536 + REQUEST_CODE_EMAIL -> if (data != null && data.extras != null) {
                     presenter.saveAccountName(data.getStringExtra(AccountManager.KEY_ACCOUNT_NAME))
                 }
             }
@@ -184,6 +188,39 @@ class MainActivity : AppCompatActivity(),
         status_tv.text = caption
         status_tv.visibility = View.VISIBLE
     }
+
+    //endregion
+
+    //region ================= Utils Methods =================
+
+    private val isDeviceOnline: Boolean
+        get() {
+            val connMgr = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+            val networkInfo = connMgr.activeNetworkInfo
+            return networkInfo != null && networkInfo.isConnected
+        }
+
+    private val isGooglePlayServicesAvailable: Boolean
+        get() {
+            val apiAvailability = GoogleApiAvailability.getInstance()
+            val connectionStatusCode = apiAvailability.isGooglePlayServicesAvailable(this)
+            return connectionStatusCode == ConnectionResult.SUCCESS
+        }
+
+    //endregion
+
+    //region ================= Root View =================
+
+//	override fun getPayments(allPayments: Observable<java.util.List<PaymentRes>>) {
+//		allPayments
+//			.subscribeOn(Schedulers.io())
+//			.observeOn(AndroidSchedulers.mainThread())
+//			.subscribe({ result ->
+//				Log.d("Result", "There are ${result.size} Java developers in Lagos")
+//			}, { error ->
+//				error.printStackTrace()
+//			})
+//	}
 
     //endregion
 

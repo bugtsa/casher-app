@@ -9,12 +9,13 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import com.bugtsa.casher.R
-import com.bugtsa.casher.navigation.NavigationStackPresentable
 import com.bugtsa.casher.ui.activities.MainActivity
+import com.bugtsa.casher.ui.navigation.NavigationStackPresentable
 import com.bugtsa.casher.ui.screens.purchases.show.PurchasesScreen
 import com.google.android.gms.auth.GoogleAuthUtil
 import com.google.android.gms.common.AccountPicker
 import com.google.android.gms.common.GoogleApiAvailability
+import kotlinx.android.synthetic.main.fragment_phalanx_test.*
 import pro.horovodovodo4ka.bones.Phalanx
 import pro.horovodovodo4ka.bones.extensions.present
 import pro.horovodovodo4ka.bones.persistance.BonePersisterInterface
@@ -54,6 +55,7 @@ class SingUpFragment : Fragment(),
 
         presenter.onAttachView(this)
         presenter.requestAccountName()
+        test_label.text = getString(R.string.sing_up_in_app)
 
         refreshUI()
     }

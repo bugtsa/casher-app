@@ -4,7 +4,10 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.bugtsa.casher.ui.activities.SingUpActivity">
+    android:clickable="true"
+    android:focusableInTouchMode="true"
+    android:focusable="true"
+    android:background="@color/colorGray">
 
     <TextView
         android:id="@+id/time_purchase"
@@ -16,7 +19,6 @@
         app:layout_constraintHorizontal_weight="1"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toLeftOf="@+id/price_purchase"
-        app:layout_constraintTop_toBottomOf="@id/date_purchase"
         app:layout_constraintVertical_weight="1" />
 
     <TextView
@@ -28,7 +30,6 @@
         app:layout_constraintHorizontal_weight="1"
         app:layout_constraintLeft_toRightOf="@+id/time_purchase"
         app:layout_constraintRight_toLeftOf="@+id/category_purchase"
-        app:layout_constraintTop_toBottomOf="@id/date_purchase"
         app:layout_constraintVertical_weight="1" />
 
     <TextView
@@ -40,7 +41,6 @@
         app:layout_constraintHorizontal_weight="2"
         app:layout_constraintLeft_toRightOf="@+id/price_purchase"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/date_purchase"
         app:layout_constraintVertical_weight="1" />
 
     <androidx.recyclerview.widget.RecyclerView

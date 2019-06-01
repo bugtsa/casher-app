@@ -1,4 +1,4 @@
-package com.bugtsa.casher.navigation
+package com.bugtsa.casher.ui.navigation
 
 import android.annotation.SuppressLint
 import android.content.Context

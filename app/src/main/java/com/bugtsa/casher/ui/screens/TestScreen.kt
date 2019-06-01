@@ -7,7 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.bugtsa.casher.R
-import com.bugtsa.casher.navigation.NavigationStackPresentable
+import com.bugtsa.casher.ui.navigation.NavigationStackPresentable
 import kotlinx.android.synthetic.main.fragment_phalanx_test.*
 import pro.horovodovodo4ka.bones.Finger
 import pro.horovodovodo4ka.bones.Phalanx

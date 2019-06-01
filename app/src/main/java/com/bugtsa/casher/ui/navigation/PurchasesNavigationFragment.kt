@@ -1,4 +1,4 @@
-package com.bugtsa.casher.navigation
+package com.bugtsa.casher.ui.navigation
 
 import android.annotation.SuppressLint
 import android.content.Context
@@ -6,33 +6,30 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.Fragment
 import com.bugtsa.casher.R
-import com.bugtsa.casher.ui.screens.TestScreen
 import com.bugtsa.casher.ui.screens.singIn.SingUpScreen
 import kotlinx.android.synthetic.main.fragment_navigation_stack.*
 import pro.horovodovodo4ka.bones.Bone
 import pro.horovodovodo4ka.bones.Finger
-import pro.horovodovodo4ka.bones.extensions.present
 import pro.horovodovodo4ka.bones.persistance.BonePersisterInterface
 import pro.horovodovodo4ka.bones.ui.FingerNavigatorInterface
 import pro.horovodovodo4ka.bones.ui.delegates.FingerNavigator
 import pro.horovodovodo4ka.bones.ui.extensions.addNavigationToToolbar
 import pro.horovodovodo4ka.bones.ui.extensions.removeNavigationFromToolbar
 
-interface NavigationStackPresentable {
+interface PurchasesStackPresentable {
     val fragmentTitle: String
 }
 
-open class NavigationStack(rootPhalanx: Bone? = null) : Finger(rootPhalanx) {
-    override val seed = { NavigationStackFragment() }
+open class PurchasesStack(rootPhalanx: Bone? = null) : Finger(rootPhalanx) {
+    override val seed = { PurchasesNavigationFragment() }
 }
 
 @SuppressLint("MissingSuperCall")
-open class NavigationStackFragment : androidx.fragment.app.Fragment(),
-    BonePersisterInterface<NavigationStack>,
-    FingerNavigatorInterface<NavigationStack> by FingerNavigator(R.id.stack_fragment_container) {
-
-    // region ContainerFragmentSibling
+open class PurchasesNavigationFragment : Fragment(),
+    BonePersisterInterface<PurchasesStack>,
+    FingerNavigatorInterface<PurchasesStack> by FingerNavigator(R.id.stack_fragment_container){
 
     override fun onAttach(context: Context?) {
         super.onAttach(context)
@@ -44,38 +41,13 @@ open class NavigationStackFragment : androidx.fragment.app.Fragment(),
         managerProvider = null
     }
 
-    // endregion
-
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? =
-        inflater.inflate(R.layout.fragment_navigation_stack, container, false)
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        return inflater.inflate(R.layout.fragment_purchases_navigation, container, false)
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        bone.present(SingUpScreen())
-
-
-        push_button.setOnClickListener {
-            bone.push(TestScreen())
-        }
-
-        pop_button.setOnClickListener {
-            bone.pop()
-        }
-
-        to_root_button.setOnClickListener {
-            bone.popToRoot()
-        }
-
-        replace_button.setOnClickListener {
-            bone.replace(with = TestScreen())
-        }
-
-        modal_button.setOnClickListener {
-            bone.present(TestScreen())
-        }
-
-        refreshUI()
+        bone.push(SingUpScreen())
     }
 
     override fun onRefresh() {
@@ -83,7 +55,7 @@ open class NavigationStackFragment : androidx.fragment.app.Fragment(),
 
         if (view == null) return
 
-        val title = (bone.fingertip as? NavigationStackPresentable)?.fragmentTitle
+        val title = (bone.fingertip as? PurchasesStackPresentable)?.fragmentTitle
         when (title) {
             null -> toolbar.visibility = View.GONE
             else -> {
@@ -96,8 +68,6 @@ open class NavigationStackFragment : androidx.fragment.app.Fragment(),
         }
     }
 
-    // region BonePersisterInterface
-
     override fun onSaveInstanceState(outState: Bundle) {
         super<BonePersisterInterface>.onSaveInstanceState(outState)
         super<androidx.fragment.app.Fragment>.onSaveInstanceState(outState)
@@ -108,5 +78,4 @@ open class NavigationStackFragment : androidx.fragment.app.Fragment(),
         super<androidx.fragment.app.Fragment>.onCreate(savedInstanceState)
     }
 
-    // endregion
 }
