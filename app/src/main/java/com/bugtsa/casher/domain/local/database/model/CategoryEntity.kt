@@ -1,7 +1,6 @@
-package com.bugtsa.casher.model
+package com.bugtsa.casher.domain.local.database.model
 
 import androidx.room.Entity
-import androidx.room.Ignore
 import androidx.room.PrimaryKey
 
 @Entity(tableName = "category")

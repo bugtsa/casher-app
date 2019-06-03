@@ -1,8 +1,8 @@
 package com.bugtsa.casher.ui.screens.purchases.add
 
-import com.bugtsa.casher.arch.models.PurchaseModel
-import com.bugtsa.casher.domain.local.database.LocalCategoryDataStore
+import com.bugtsa.casher.data.models.PurchaseModel
 import com.bugtsa.casher.data.dto.PurchaseDto
+import com.bugtsa.casher.domain.local.database.LocalCategoryDataStore
 import com.bugtsa.casher.utils.ConstantManager.Companion.END_COLUMN_SHEET
 import com.bugtsa.casher.utils.ConstantManager.Companion.PURCHASE_TABLE_NAME_SHEET
 import com.bugtsa.casher.utils.ConstantManager.Companion.START_COLUMN_SHEET
@@ -69,7 +69,7 @@ class AddPurchasePresenter @Inject constructor(compositeDisposable: CompositeDis
                         .flatMap { categoryList ->
                             val nameList: MutableList<String> = mutableListOf()
                             for (categoryEntity in categoryList) {
-                                nameList.add(categoryEntity.name)
+                                nameList.add(categoryEntity)
                             }
                             Flowable.fromArray(nameList)
                         }

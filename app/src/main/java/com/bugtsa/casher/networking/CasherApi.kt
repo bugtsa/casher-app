@@ -1,10 +1,10 @@
 package com.bugtsa.casher.networking
 
-import retrofit2.http.GET
-
-import java.util.List
-import com.bugtsa.casher.data.dto.*
+import com.bugtsa.casher.data.dto.CategoryRes
+import com.bugtsa.casher.data.dto.PaymentRes
 import io.reactivex.Observable
+import retrofit2.http.GET
+import java.util.List
 
 interface CasherApi {
 

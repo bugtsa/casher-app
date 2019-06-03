@@ -1,6 +1,6 @@
 package com.bugtsa.casher.data.dto
 
-import com.bugtsa.casher.model.CategoryEntity
+import com.bugtsa.casher.domain.local.database.model.CategoryEntity
 
 class CategoryDto {
 

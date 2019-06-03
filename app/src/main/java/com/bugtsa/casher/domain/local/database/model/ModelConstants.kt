@@ -1,4 +1,4 @@
-package com.bugtsa.casher.model
+package com.bugtsa.casher.domain.local.database.model
 
 class ModelConstants {
 

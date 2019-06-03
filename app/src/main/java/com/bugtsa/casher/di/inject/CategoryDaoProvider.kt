@@ -4,7 +4,7 @@ import android.app.Application
 import androidx.room.Room
 import com.bugtsa.casher.domain.local.database.CasherDatabase
 import com.bugtsa.casher.domain.local.database.CategoryDao
-import com.bugtsa.casher.model.ModelConstants
+import com.bugtsa.casher.domain.local.database.model.ModelConstants
 import javax.inject.Provider
 
 class CategoryDaoProvider : Provider<CategoryDao> {
