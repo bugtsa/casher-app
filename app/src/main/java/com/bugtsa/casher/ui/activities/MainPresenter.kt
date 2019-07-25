@@ -7,7 +7,7 @@ class MainPresenter @Inject constructor(
 	private val preferenceProvider: PreferenceProvider
 ) {
 
-	lateinit var mainView: MainView
+	private lateinit var mainView: MainView
 
 	fun onAttachView(mainView: MainView) {
 		this.mainView = mainView

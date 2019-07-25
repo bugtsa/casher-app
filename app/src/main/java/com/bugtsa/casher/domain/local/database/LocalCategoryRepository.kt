@@ -5,6 +5,6 @@ import io.reactivex.Flowable
 import io.reactivex.Single
 
 interface LocalCategoryRepository {
-    fun add(categoryText: String): Single<CategoryDto>
-    fun getCategoriesList(): Flowable<List<String>>
+    fun add(category: CategoryDto): Single<CategoryDto>
+    fun getCategoriesList(): Flowable<List<CategoryDto  >>
 }

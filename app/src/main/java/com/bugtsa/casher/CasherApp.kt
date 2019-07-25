@@ -1,6 +1,5 @@
 package com.bugtsa.casher
 
-import android.app.Application
 import androidx.multidex.MultiDexApplication
 import com.bugtsa.casher.di.module.CasherApplicationModule
 import com.facebook.stetho.Stetho

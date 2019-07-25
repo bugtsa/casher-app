@@ -1,7 +1,7 @@
 package com.bugtsa.casher.ui.screens.purchases.show
 
 import android.text.TextUtils
-import android.util.Log
+import com.bugtsa.casher.data.dto.CategoryDto
 import com.bugtsa.casher.data.dto.PurchaseDto
 import com.bugtsa.casher.data.models.PurchaseModel
 import com.bugtsa.casher.di.inject.PreferenceProvider
@@ -34,7 +34,7 @@ class PurchasesPresenter @Inject constructor(preferenceProvider: PreferenceProvi
     private var isScrollPurchasesList: Boolean
 
     private val bag: CompositeDisposable = CompositeDisposable()
-    lateinit var purchasesView: PurchasesView
+    private lateinit var purchasesView: PurchasesView
 
     init {
         isScrollPurchasesList = false
@@ -50,48 +50,53 @@ class PurchasesPresenter @Inject constructor(preferenceProvider: PreferenceProvi
 
     fun processData() {
         performCheckStorageCategoriesList()
-//        getPurchasesList(serviceSheets)
+//        getPurchasesList()
     }
 
     //region ================= Compare Storage and Network Categories =================
 
     private fun performCheckStorageCategoriesList() {
         bag.add(Flowable
-                .combineLatest(localCategoryDataStore.getCategoriesList(), purchasesModel.getCategoriesStringList(),
-                        BiFunction<List<String>, List<String>, Unit> { local, remote ->
+                .combineLatest(localCategoryDataStore.getCategoriesList(), purchasesModel.getCategoriesList(),
+                        BiFunction<List<CategoryDto>, List<CategoryDto>, Unit> { local, remote ->
                             checkNetworkCategoriesListInDatabase(local, remote)
                         })
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe({ t -> Log.d("PurchasesPresenter", "verify at check exist categories $t") },
-                        { t -> Log.e("PurchasesPresenter", "error at check exist categories $t") }))
+                .subscribe({ t -> Timber.d("PurchasesPresenter", "verify at check exist categories $t") },
+                        { t -> Timber.e("PurchasesPresenter", "error at check exist categories $t") }))
     }
 
-    private fun checkNetworkCategoriesListInDatabase(networkCategoriesList: List<String>,
-                                                     storageCategoriesList: List<String>) {
-        val isListsHasSameContent: Boolean? = networkCategoriesList sameContentWith storageCategoriesList
+    private fun checkNetworkCategoriesListInDatabase(storageCategoriesList: List<CategoryDto>,
+                                                     networkCategoriesList: List<CategoryDto>) {
+        val isListsHasSameContent: Boolean = networkCategoriesList sameContentWith storageCategoriesList ?: false
 
-        if (!networkCategoriesList.isEmpty() && !isListsHasSameContent!!) {
-
+        if (networkCategoriesList.isNotEmpty() && !isListsHasSameContent) {
             networkCategoriesList
-                    .filter { networkCategory -> !storageCategoriesList.contains(networkCategory) }
-                    .forEach { networkCategory -> addCategoryToDatabase(networkCategory) }
-
-//            for (category in networkCategoriesList) {
-//                if (!storageCategoriesList.contains(category)) {
-//                    addCategoryToDatabase(category)
-//                }
-//            }
+                    .forEach { networkCategory ->
+                        if (!storageCategoriesList.equalRemoteCategory(networkCategory)) {
+                            addCategoryToDatabase(networkCategory)
+                        }
+                    }
         }
     }
 
     private infix fun <T> Collection<T>.sameContentWith(collection: Collection<T>?) = collection?.let { this.size == it.size && this.containsAll(it) }
 
+    private fun Collection<CategoryDto>.equalRemoteCategory(remoteCategory: CategoryDto): Boolean {
+        this.forEach {
+            if (it == remoteCategory) {
+                return true
+            }
+        }
+        return false
+    }
+
     //endregion
 
     //region ================= DataBase =================
 
-    private fun addCategoryToDatabase(category: String) {
+    private fun addCategoryToDatabase(category: CategoryDto) {
         bag.add(
                 localCategoryDataStore.add(category)
                         .subscribeOn(Schedulers.io())
@@ -103,6 +108,10 @@ class PurchasesPresenter @Inject constructor(preferenceProvider: PreferenceProvi
     //endregion
 
     //region ================= Replace Task to Rx functions =================
+
+    private fun getPurchasesList() {
+
+    }
 
     private fun getPurchasesList(service: Sheets) {
         val range = PURCHASE_TABLE_NAME_SHEET + START_COLUMN_SHEET + ROW_START_SHEET +
@@ -203,3 +212,4 @@ class PurchasesPresenter @Inject constructor(preferenceProvider: PreferenceProvi
     //endregion
 
 }
+

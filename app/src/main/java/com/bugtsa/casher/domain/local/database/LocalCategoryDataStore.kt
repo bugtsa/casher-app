@@ -9,21 +9,23 @@ import javax.inject.Inject
 class LocalCategoryDataStore @Inject constructor(categoryDao: CategoryDao) :
         LocalCategoryRepository {
 
-    var categoryDao: CategoryDao
+    private val categoryDao: CategoryDao = categoryDao
 
-    init {
-        this.categoryDao = categoryDao
-    }
-
-    override fun add(categoryText: String): Single<CategoryDto> {
-        return Single.fromCallable<CategoryDto> {
-            val rowId = categoryDao.add(CategoryEntity(categoryText))
-            CategoryDto(rowId, categoryText)
+    override fun add(category: CategoryDto): Single<CategoryDto> {
+        return Single.fromCallable {
+            val rowId = categoryDao.add(CategoryEntity(category.id, category.name))
+            CategoryDto(rowId, category.name)
         }
     }
 
-    override fun getCategoriesList(): Flowable<List<String>> {
+    override fun getCategoriesList(): Flowable<List<CategoryDto>> {
         return categoryDao.getCategories()
-                .map { it.mapNotNull { it.name } }
+                .flatMap { list ->
+                    when (list.isEmpty()) {
+                        true -> Flowable.just(listOf())
+                        false -> Flowable.just(list.map { CategoryDto(it) })
+                    }
+                }
+                .firstElement().toFlowable()
     }
 }

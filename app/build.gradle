@@ -108,9 +108,9 @@ dependencies {
     }
 
     // Room Database
-    implementation "androidx.room:room-runtime:2.0.0"
-    implementation "androidx.room:room-rxjava2:2.0.0"
-    kapt "androidx.room:room-compiler:2.0.0"
+    implementation "androidx.room:room-runtime:2.1.0"
+    implementation "androidx.room:room-rxjava2:2.1.0"
+    kapt "androidx.room:room-compiler:2.1.0"
 
     // Timber
     implementation "com.jakewharton.timber:timber:$project.timberVersion"
@@ -120,11 +120,13 @@ dependencies {
     implementation 'com.github.maxyou:CalendarPicker:v1.1.2'
     implementation 'com.borax12.materialdaterangepicker:library:1.9'
 
-    implementation 'androidx.multidex:multidex:2.0.0'
+    implementation 'androidx.multidex:multidex:2.0.1'
 
     implementation('com.crashlytics.sdk.android:crashlytics:2.9.4@aar') {
         transitive = true
     }
+    debugImplementation 'com.idescout.sql:sqlscout-server:4.1'
+    releaseImplementation 'com.idescout.sql:sqlscout-server-noop:4.1'
 }
 
 kapt {

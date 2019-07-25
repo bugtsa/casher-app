@@ -1,6 +1,7 @@
 package com.bugtsa.casher.data.models
 
 import com.bugtsa.casher.data.dto.CategoryDto
+import com.bugtsa.casher.data.dto.PurchaseDto
 import com.bugtsa.casher.networking.CasherApi
 import io.reactivex.Flowable
 import javax.inject.Inject
@@ -28,10 +29,10 @@ class PurchaseModel @Inject constructor(injectCasherRestApi: CasherApi) {
                 .toFlowable()
     }
 
-    fun getCategoriesStringList(): Flowable<List<String>> {
-        return casherRestApi.getCategories()
+    fun getPaymentsList(): Flowable<List<PurchaseDto>> {
+        return casherRestApi.getPayments()
                 .flatMapIterable { res -> res }
-                .map { res -> res.name ?: "" }
+                .map { res -> PurchaseDto(res.price ?: "", res.date ?: "", res.category ?: "") }
                 .toList()
                 .toFlowable()
     }
