@@ -1,6 +1,5 @@
 package com.bugtsa.casher.ui.adapters
 
-import androidx.recyclerview.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.View.GONE
@@ -8,31 +7,31 @@ import android.view.View.VISIBLE
 import android.view.ViewGroup
 import android.widget.TextView
 import com.bugtsa.casher.R
-import com.bugtsa.casher.data.dto.PurchaseDto
+import com.bugtsa.casher.data.dto.PaymentDto
 import com.bugtsa.casher.ui.OnChangePosition
 import kotlinx.android.synthetic.main.item_purchase.view.*
 
-class PurchaseAdapter(purchaseList: MutableList<PurchaseDto>,
+class PurchaseAdapter(paymentList: MutableList<PaymentDto>,
                       dateMap: MutableMap<String, Int>,
                       onChangePosition: OnChangePosition)
     : androidx.recyclerview.widget.RecyclerView.Adapter<PurchaseAdapter.ViewHolder>() {
 
-    var purchasesList: MutableList<PurchaseDto> = purchaseList
+    var purchasesList: MutableList<PaymentDto> = paymentList
     var datesMap: MutableMap<String, Int> = dateMap
     var onChangePosition: OnChangePosition = onChangePosition
 
     //region ================= Implements Methods =================
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val purchase: PurchaseDto = purchasesList[position]
-        if (datesMap.contains(purchase.date) && datesMap.get(purchase.date) == position) {
-            showDateTitle(holder, purchase.date)
+        val payment: PaymentDto = purchasesList[position]
+        if (datesMap.contains(payment.date) && datesMap.get(payment.date) == position) {
+            showDateTitle(holder, payment.date)
         } else {
             holder.date.visibility = GONE
         }
-        holder.timePurchase.text = purchase.time
-        holder.price.text = purchase.price
-        holder.category.text = purchase.category
+        holder.timePurchase.text = payment.time
+        holder.price.text = payment.price
+        holder.category.text = payment.category
         onChangePosition.changePosition(holder.layoutPosition)
     }
 

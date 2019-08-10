@@ -2,7 +2,7 @@ package com.bugtsa.casher.di.inject
 
 import android.app.*
 import android.preference.*
-import com.bugtsa.casher.domain.local.preference.*
+import com.bugtsa.casher.data.local.prefs.LocalSettingsRepository
 import javax.inject.*
 
 class PreferenceProvider @Inject constructor(application: Application) : Provider<LocalSettingsRepository>, LocalSettingsRepository {

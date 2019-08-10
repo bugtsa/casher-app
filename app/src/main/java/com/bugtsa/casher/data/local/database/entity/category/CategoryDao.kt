@@ -1,7 +1,6 @@
-package com.bugtsa.casher.domain.local.database
+package com.bugtsa.casher.data.local.database.entity.category
 
 import androidx.room.*
-import com.bugtsa.casher.domain.local.database.model.CategoryEntity
 import io.reactivex.Flowable
 
 @Dao

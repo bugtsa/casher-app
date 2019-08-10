@@ -9,7 +9,7 @@ import android.view.View.VISIBLE
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import com.bugtsa.casher.R
-import com.bugtsa.casher.data.dto.PurchaseDto
+import com.bugtsa.casher.data.dto.PaymentDto
 import com.bugtsa.casher.ui.OnChangePosition
 import com.bugtsa.casher.ui.adapters.PurchaseAdapter
 import kotlinx.android.synthetic.main.fragment_purchases.*
@@ -135,10 +135,10 @@ class PurchasesFragment : Fragment(), PurchasesView,
 	}
 
 	override fun setupPurchaseList(
-		purchaseList: MutableList<PurchaseDto>,
-		dateMap: MutableMap<String, Int>
+			paymentList: MutableList<PaymentDto>,
+			dateMap: MutableMap<String, Int>
 	) {
-		val purchaseAdapter = PurchaseAdapter(purchaseList, dateMap, object : OnChangePosition {
+		val purchaseAdapter = PurchaseAdapter(paymentList, dateMap, object : OnChangePosition {
 			override fun changePosition(position: Int) {
 				presenter.checkPositionAdapter(position)
 			}

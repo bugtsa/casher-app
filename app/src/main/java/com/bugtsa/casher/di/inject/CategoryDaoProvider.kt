@@ -2,9 +2,9 @@ package com.bugtsa.casher.di.inject
 
 import android.app.Application
 import androidx.room.Room
-import com.bugtsa.casher.domain.local.database.CasherDatabase
-import com.bugtsa.casher.domain.local.database.CategoryDao
-import com.bugtsa.casher.domain.local.database.model.ModelConstants
+import com.bugtsa.casher.data.local.database.CasherDatabase
+import com.bugtsa.casher.data.local.database.CasherDatabase.Companion.DB_NAME
+import com.bugtsa.casher.data.local.database.entity.category.CategoryDao
 import javax.inject.Provider
 
 class CategoryDaoProvider : Provider<CategoryDao> {
@@ -13,7 +13,7 @@ class CategoryDaoProvider : Provider<CategoryDao> {
 
     constructor(application: Application) {
         val database = Room.databaseBuilder(application.applicationContext,
-                CasherDatabase::class.java, ModelConstants.DB_NAME)
+                CasherDatabase::class.java, DB_NAME)
                 .allowMainThreadQueries()
                 .build()
 

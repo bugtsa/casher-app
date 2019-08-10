@@ -4,8 +4,8 @@
     <string name="time_caption">Date</string>
     <string name="category_caption">Category</string>
 
-    <string name="price_purchase">Price purchase</string>
-    <string name="category_purchase">Category purchase</string>
+    <string name="price_purchase">Price payment</string>
+    <string name="category_purchase">Category payment</string>
     <string name="cancel_caption">Cancel</string>
     <string name="add_caption">Add</string>
     <string name="date_purchase">setup date yourself</string>

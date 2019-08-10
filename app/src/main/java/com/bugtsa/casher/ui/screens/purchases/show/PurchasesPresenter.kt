@@ -2,20 +2,10 @@ package com.bugtsa.casher.ui.screens.purchases.show
 
 import android.text.TextUtils
 import com.bugtsa.casher.data.dto.CategoryDto
-import com.bugtsa.casher.data.dto.PurchaseDto
+import com.bugtsa.casher.data.dto.PaymentDto
+import com.bugtsa.casher.data.local.database.entity.category.CategoryDataStore
 import com.bugtsa.casher.data.models.PurchaseModel
 import com.bugtsa.casher.di.inject.PreferenceProvider
-import com.bugtsa.casher.domain.local.database.LocalCategoryDataStore
-import com.bugtsa.casher.utils.ConstantManager.Companion.END_COLUMN_SHEET
-import com.bugtsa.casher.utils.ConstantManager.Companion.PURCHASE_TABLE_NAME_SHEET
-import com.bugtsa.casher.utils.ConstantManager.Companion.ROW_START_SHEET
-import com.bugtsa.casher.utils.ConstantManager.Companion.START_COLUMN_SHEET
-import com.bugtsa.casher.utils.GoogleSheetManager.Companion.OWN_GOOGLE_SHEET_ID
-import com.bugtsa.casher.utils.ParentConstantManager.Companion.DELIMITER_BETWEEN_COLUMNS
-import com.bugtsa.casher.utils.ParentConstantManager.Companion.DELIMITER_BETWEEN_DATE_AND_TIME
-import com.google.api.client.googleapis.extensions.android.gms.auth.GooglePlayServicesAvailabilityIOException
-import com.google.api.client.googleapis.extensions.android.gms.auth.UserRecoverableAuthIOException
-import com.google.api.services.sheets.v4.Sheets
 import io.reactivex.Flowable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
@@ -26,10 +16,10 @@ import javax.inject.Inject
 
 class PurchasesPresenter @Inject constructor(preferenceProvider: PreferenceProvider,
                                              injectPurchaseModel: PurchaseModel,
-                                             injectLocalCategoryDataStore: LocalCategoryDataStore) {
+                                             injectCategoryDataStore: CategoryDataStore) {
 
     private var purchasesModel: PurchaseModel = injectPurchaseModel
-    private var localCategoryDataStore: LocalCategoryDataStore = injectLocalCategoryDataStore
+    private var categoryDataStore: CategoryDataStore = injectCategoryDataStore
 
     private var isScrollPurchasesList: Boolean
 
@@ -50,14 +40,14 @@ class PurchasesPresenter @Inject constructor(preferenceProvider: PreferenceProvi
 
     fun processData() {
         performCheckStorageCategoriesList()
-//        getPurchasesList()
+        getPurchasesList()
     }
 
     //region ================= Compare Storage and Network Categories =================
 
     private fun performCheckStorageCategoriesList() {
         bag.add(Flowable
-                .combineLatest(localCategoryDataStore.getCategoriesList(), purchasesModel.getCategoriesList(),
+                .combineLatest(categoryDataStore.getCategoriesList(), purchasesModel.getCategoriesList(),
                         BiFunction<List<CategoryDto>, List<CategoryDto>, Unit> { local, remote ->
                             checkNetworkCategoriesListInDatabase(local, remote)
                         })
@@ -98,7 +88,7 @@ class PurchasesPresenter @Inject constructor(preferenceProvider: PreferenceProvi
 
     private fun addCategoryToDatabase(category: CategoryDto) {
         bag.add(
-                localCategoryDataStore.add(category)
+                categoryDataStore.add(category)
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe({ Timber.d("add categories to database success") },
@@ -110,72 +100,39 @@ class PurchasesPresenter @Inject constructor(preferenceProvider: PreferenceProvi
     //region ================= Replace Task to Rx functions =================
 
     private fun getPurchasesList() {
-
-    }
-
-    private fun getPurchasesList(service: Sheets) {
-        val range = PURCHASE_TABLE_NAME_SHEET + START_COLUMN_SHEET + ROW_START_SHEET +
-                DELIMITER_BETWEEN_COLUMNS + END_COLUMN_SHEET
-        purchasesView.showProgressBar()
-        bag.add(Flowable.just("")
+        purchasesModel.getPaymentsList()
                 .subscribeOn(Schedulers.newThread())
-                .flatMap { _ ->
-                    Flowable.just(service.spreadsheets().values()
-                            .get(OWN_GOOGLE_SHEET_ID, range)
-                            .execute())
-                            .map { rawList -> rawList.getValues() }
-                            .map { values ->
-                                val purchasesList = mutableListOf<PurchaseDto>()
-                                purchasesModel.sizePurchaseList = values.size
-                                for (row in values) {
-                                    val purchase = processPurchaseDto(row[0].toString(), row[1].toString(), row[2].toString())
-                                    purchasesList.add(purchase)
-                                }
-                                purchasesList
-                            }
-                }
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe({ purchases ->
-                    purchasesView.hideProgressBar()
+                .subscribe{ purchases ->
                     if (purchases.isEmpty()) {
                         purchasesView.setupStatusText("No results returned.")
                     } else {
                         purchasesView.setupPurchaseList(purchases, processDateMap(purchases))
                     }
-                },
-                        { throwable ->
-                            purchasesView.hideProgressBar()
-                            if (throwable is GooglePlayServicesAvailabilityIOException) {
-
-                            } else if (throwable is UserRecoverableAuthIOException) {
-                                purchasesView.startIntent(throwable)
-                            } else {
-                                purchasesView.setupStatusText("The following error occurred:\n" + throwable.message)
-                            }
-                            Timber.e(throwable, "error at check exist categories")
-                        }))
+                }
+                .also { bag.add(it) }
     }
 
-    private fun processPurchaseDto(price: String, dateOfSheet: String, category: String): PurchaseDto {
-        when (dateOfSheet.contains(DELIMITER_BETWEEN_DATE_AND_TIME)) {
-            true -> {
-                val index = dateOfSheet.indexOf(DELIMITER_BETWEEN_DATE_AND_TIME)
-                val date = dateOfSheet.substring(0, index)
-                val time = dateOfSheet.substring(index + DELIMITER_BETWEEN_DATE_AND_TIME.length, dateOfSheet.length)
-                return PurchaseDto(price, date, time, category)
-            }
-            false -> return PurchaseDto(price, dateOfSheet, category)
-        }
-    }
+//    private fun processPurchaseDto(price: String, dateOfSheet: String, category: String): PaymentDto {
+//        when (dateOfSheet.contains(DELIMITER_BETWEEN_DATE_AND_TIME)) {
+//            true -> {
+//                val index = dateOfSheet.indexOf(DELIMITER_BETWEEN_DATE_AND_TIME)
+//                val date = dateOfSheet.substring(0, index)
+//                val time = dateOfSheet.substring(index + DELIMITER_BETWEEN_DATE_AND_TIME.length, dateOfSheet.length)
+//                return PaymentDto(price, date, time, category)
+//            }
+//            false -> return PaymentDto(price, dateOfSheet, category)
+//        }
+//    }
 
-    private fun processDateMap(purchaseList: MutableList<PurchaseDto>): MutableMap<String, Int> {
+    private fun processDateMap(paymentList: MutableList<PaymentDto>): MutableMap<String, Int> {
         val dateMap: MutableMap<String, Int> = mutableMapOf()
 
-        purchaseList
+        paymentList
                 .filter { purchase -> !TextUtils.isEmpty(purchase.date) }
                 .map { purchase ->
                     if (!dateMap.contains(purchase.date)) {
-                        dateMap.put(purchase.date, purchaseList.indexOf(purchase))
+                        dateMap.put(purchase.date, paymentList.indexOf(purchase))
                     }
                 }
         return dateMap

@@ -1,4 +1,4 @@
-package com.bugtsa.casher.domain.local.database.model
+package com.bugtsa.casher.data.local.database.entity.category
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey

@@ -1,4 +1,4 @@
-package com.bugtsa.casher.domain.local.preference
+package com.bugtsa.casher.data.local.prefs
 
 interface LocalSettingsRepository {
 

@@ -1,8 +1,8 @@
 package com.bugtsa.casher.ui.screens.purchases.add
 
-import com.bugtsa.casher.data.dto.PurchaseDto
+import com.bugtsa.casher.data.dto.PaymentDto
 import com.bugtsa.casher.data.models.PurchaseModel
-import com.bugtsa.casher.domain.local.database.LocalCategoryDataStore
+import com.bugtsa.casher.data.local.database.entity.category.CategoryDataStore
 import com.bugtsa.casher.utils.ConstantManager.Companion.END_COLUMN_SHEET
 import com.bugtsa.casher.utils.ConstantManager.Companion.PURCHASE_TABLE_NAME_SHEET
 import com.bugtsa.casher.utils.ConstantManager.Companion.START_COLUMN_SHEET
@@ -31,13 +31,13 @@ import javax.inject.Inject
 
 class AddPurchasePresenter @Inject constructor(compositeDisposable: CompositeDisposable,
                                                injectPurchaseModel: PurchaseModel,
-                                               injectCategoryDataStore: LocalCategoryDataStore
+                                               injectCategoryDataStore: CategoryDataStore
 ) {
 
 //    private var serviceSheets: Sheets = googleSheetService.mService
     private var disposableSubscriptions: CompositeDisposable = compositeDisposable
     private var purchaseModel: PurchaseModel = injectPurchaseModel
-    private var localCategoryDataStore: LocalCategoryDataStore = injectCategoryDataStore
+    private var categoryDataStore: CategoryDataStore = injectCategoryDataStore
 
     private var lastNotEmptyPurchaseRow: Int = 0
     private var customDate: String = ""
@@ -63,7 +63,7 @@ class AddPurchasePresenter @Inject constructor(compositeDisposable: CompositeDis
 
     fun checkExistCategoriesInDatabase() {
 //        disposableSubscriptions.add(
-//                localCategoryDataStore.getCategoriesList()
+//                categoryDataStore.getCategoriesList()
 //                        .subscribeOn(Schedulers.io())
 //                        .observeOn(AndroidSchedulers.mainThread())
 //                        .flatMap { categoryList ->
@@ -88,7 +88,7 @@ class AddPurchasePresenter @Inject constructor(compositeDisposable: CompositeDis
         addPurchaseView.showProgressBar()
 //        disposableSubscriptions.add(
 //                addPurchaseSubscriber(serviceSheets,
-//                        PurchaseDto(pricePurchase,
+//                        PaymentDto(pricePurchase,
 //                                getActualDateAndTime(),
 //                                categoryPurchase))!!
 //                        .subscribe(this::onBatchPurchasesCollected,
@@ -102,7 +102,7 @@ class AddPurchasePresenter @Inject constructor(compositeDisposable: CompositeDis
 
     private fun performCheckStorageCategoriesList(currentCategory: String) {
 //        disposableSubscriptions.add(
-//                localCategoryDataStore.getCategoriesList()
+//                categoryDataStore.getCategoriesList()
 //                        .subscribeOn(Schedulers.io())
 //                        .map { it.mapNotNull { it.name } }
 //                        .observeOn(AndroidSchedulers.mainThread())
@@ -128,7 +128,7 @@ class AddPurchasePresenter @Inject constructor(compositeDisposable: CompositeDis
 
     private fun addCategoryToDatabase(category: String) {
 //        disposableSubscriptions.add(
-//                localCategoryDataStore.add(category)
+//                categoryDataStore.add(category)
 //                        .subscribeOn(Schedulers.io())
 //                        .observeOn(AndroidSchedulers.mainThread())
 //                        .subscribe({ Timber.d("add category to database success") },
@@ -163,8 +163,8 @@ class AddPurchasePresenter @Inject constructor(compositeDisposable: CompositeDis
 
     //region ================= Purchase Subscriber =================
 
-    private fun addPurchaseSubscriber(service: Sheets, purchase: PurchaseDto): Single<BatchUpdateValuesResponse>? {
-        val data: MutableList<Any> = mutableListOf(purchase.price, purchase.time, purchase.category)
+    private fun addPurchaseSubscriber(service: Sheets, payment: PaymentDto): Single<BatchUpdateValuesResponse>? {
+        val data: MutableList<Any> = mutableListOf(payment.price, payment.time, payment.category)
         val arrayData = mutableListOf(data)
         purchaseModel.sizePurchaseList = lastNotEmptyPurchaseRow + 1
         lastNotEmptyPurchaseRow = purchaseModel.sizePurchaseList

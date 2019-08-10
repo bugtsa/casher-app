@@ -1,18 +1,19 @@
 package com.bugtsa.casher.di.inject
 
-import com.bugtsa.casher.domain.local.database.*
+import com.bugtsa.casher.data.local.database.entity.category.CategoryDao
+import com.bugtsa.casher.data.local.database.entity.category.CategoryDataStore
 import javax.inject.*
 
-class LocalCategoryDateStoreProvider: Provider<LocalCategoryDataStore> {
+class LocalCategoryDateStoreProvider: Provider<CategoryDataStore> {
 
-    var localCategoryDataStore: LocalCategoryDataStore
+    var categoryDataStore: CategoryDataStore
 
     constructor(categoryDao: CategoryDao) {
-        this.localCategoryDataStore =
-            LocalCategoryDataStore(categoryDao)
+        this.categoryDataStore =
+                CategoryDataStore(categoryDao)
     }
 
-    override fun get(): LocalCategoryDataStore {
-        return this.localCategoryDataStore
+    override fun get(): CategoryDataStore {
+        return this.categoryDataStore
     }
 }
