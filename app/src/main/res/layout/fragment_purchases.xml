@@ -18,11 +18,11 @@
         app:layout_constraintBottom_toTopOf="@+id/purchases"
         app:layout_constraintHorizontal_weight="1"
         app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toLeftOf="@+id/price_purchase"
+        app:layout_constraintRight_toLeftOf="@+id/cost_purchase"
         app:layout_constraintVertical_weight="1" />
 
     <TextView
-        android:id="@+id/price_purchase"
+        android:id="@+id/cost_purchase"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:padding="@dimen/spacing_xx_small_8"
@@ -39,7 +39,7 @@
         android:padding="@dimen/spacing_xx_small_8"
         android:text="@string/category_caption"
         app:layout_constraintHorizontal_weight="2"
-        app:layout_constraintLeft_toRightOf="@+id/price_purchase"
+        app:layout_constraintLeft_toRightOf="@+id/cost_purchase"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintVertical_weight="1" />
 

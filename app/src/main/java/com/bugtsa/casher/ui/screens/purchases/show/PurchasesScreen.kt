@@ -8,6 +8,7 @@ import android.view.View.GONE
 import android.view.View.VISIBLE
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.RecyclerView
 import com.bugtsa.casher.R
 import com.bugtsa.casher.data.dto.PaymentDto
 import com.bugtsa.casher.ui.OnChangePosition
@@ -107,13 +108,10 @@ class PurchasesFragment : Fragment(), PurchasesView,
 		purchases.addOnScrollListener(object : androidx.recyclerview.widget.RecyclerView.OnScrollListener() {
 			override fun onScrolled(recyclerView: androidx.recyclerview.widget.RecyclerView, dx: Int, dy: Int) {
 				super.onScrolled(recyclerView, dx, dy)
+				if (dy > 0 || dy < 0) {
+                    presenter.setScrollPurchasesList(true)
+                }
 			}
-
-//            override fun onScrolled(recyclerView: RecyclerView?, dx: Int, dy: Int) {
-//                if (dy > 0 || dy < 0) {
-//                    presenter.setScrollPurchasesList(true)
-//                }
-//            }
 		})
 	}
 

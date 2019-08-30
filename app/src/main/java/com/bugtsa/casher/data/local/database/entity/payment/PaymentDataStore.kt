@@ -10,7 +10,7 @@ class PaymentDataStore @Inject constructor(private val paymentDao: PaymentDao) :
     override fun add(payment: PaymentDto): Single<PaymentDto> {
          return Single.fromCallable {
              val rowId = paymentDao.add(payment)
-             PaymentDto(rowId, payment.price, payment.date, payment.time, payment.category)
+             PaymentDto(rowId, payment.cost, payment.date, payment.time, payment.category)
          }
     }
 

@@ -164,7 +164,7 @@ class AddPurchasePresenter @Inject constructor(compositeDisposable: CompositeDis
     //region ================= Purchase Subscriber =================
 
     private fun addPurchaseSubscriber(service: Sheets, payment: PaymentDto): Single<BatchUpdateValuesResponse>? {
-        val data: MutableList<Any> = mutableListOf(payment.price, payment.time, payment.category)
+        val data: MutableList<Any> = mutableListOf(payment.cost, payment.time, payment.category)
         val arrayData = mutableListOf(data)
         purchaseModel.sizePurchaseList = lastNotEmptyPurchaseRow + 1
         lastNotEmptyPurchaseRow = purchaseModel.sizePurchaseList

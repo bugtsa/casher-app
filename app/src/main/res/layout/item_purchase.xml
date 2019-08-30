@@ -17,17 +17,31 @@
         android:text="@string/time_caption"
         app:layout_constraintHorizontal_weight="1"
         app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toLeftOf="@+id/price_purchase"
+        app:layout_constraintRight_toLeftOf="@+id/cost_purchase"
         app:layout_constraintTop_toBottomOf="@id/date_purchase" />
 
     <TextView
-        android:id="@+id/price_purchase"
+        android:id="@+id/cost_purchase"
         android:layout_width="@dimen/zeros"
         android:layout_height="wrap_content"
         android:padding="@dimen/spacing_x_small_4"
         android:text="@string/price_caption"
-        app:layout_constraintHorizontal_weight="1"
+        app:layout_constraintHorizontal_weight=".9"
         app:layout_constraintLeft_toRightOf="@+id/time_purchase"
+        app:layout_constraintRight_toLeftOf="@+id/balance_purchase"
+        app:layout_constraintTop_toBottomOf="@id/date_purchase" />
+
+    <TextView
+        android:id="@+id/balance_purchase"
+        android:layout_width="@dimen/zeros"
+        android:layout_height="wrap_content"
+        android:padding="@dimen/spacing_x_small_4"
+        android:text="@string/balance_caption"
+        android:gravity="center_vertical"
+        android:visibility="gone"
+        tools:visibility="visible"
+        app:layout_constraintHorizontal_weight="1"
+        app:layout_constraintLeft_toRightOf="@+id/cost_purchase"
         app:layout_constraintRight_toLeftOf="@+id/category_purchase"
         app:layout_constraintTop_toBottomOf="@id/date_purchase" />
 
@@ -38,7 +52,7 @@
         android:padding="@dimen/spacing_x_small_4"
         android:text="@string/category_caption"
         app:layout_constraintHorizontal_weight="2"
-        app:layout_constraintLeft_toRightOf="@+id/price_purchase"
+        app:layout_constraintLeft_toRightOf="@+id/balance_purchase"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toBottomOf="@id/date_purchase" />
 
@@ -49,7 +63,7 @@
         android:gravity="center_horizontal"
         android:padding="@dimen/spacing_x_small_4"
         android:visibility="gone"
-        app:layout_constraintBottom_toTopOf="@+id/price_purchase"
+        app:layout_constraintBottom_toTopOf="@+id/cost_purchase"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent"

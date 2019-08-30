@@ -127,9 +127,10 @@ class PurchasesPresenter @Inject constructor(preferenceProvider: PreferenceProvi
                 val index = rawDate.indexOf(DELIMITER_BETWEEN_DATE_AND_TIME)
                 val date = rawDate.substring(0, index)
                 val time = rawDate.substring(index + DELIMITER_BETWEEN_DATE_AND_TIME.length, rawDate.length)
-                PaymentDto(oldPayment.id, oldPayment.price, date, time, oldPayment.category)
+                PaymentDto(id = oldPayment.id, cost = oldPayment.cost, balance = oldPayment.balance,
+                        date = date, time = time, category = oldPayment.category)
             }
-            false -> PaymentDto(oldPayment.id , oldPayment.price, rawDate, oldPayment.category)
+            false -> PaymentDto(oldPayment.id , oldPayment.cost, oldPayment.balance, rawDate, oldPayment.category)
         }
     }
 

@@ -32,12 +32,19 @@ class PurchaseModel @Inject constructor(injectCasherRestApi: CasherApi) {
     fun getPaymentsList(): Flowable<MutableList<PaymentDto>> {
         return casherRestApi.getPayments()
                 .flatMapIterable { res -> res }
-                .map { res -> PaymentDto(
-                        id = res.id?.toLong() ?: 0L,
-                        price = res.price ?: "",
-                        date = res.date ?: "",
-                        category = res.category ?: "") }
+                .map { res ->
+                    PaymentDto(
+                            id = res.id?.toLong() ?: 0L,
+                            cost = res.cost ?: "",
+                            balance = res.balance ?: "",
+                            date = res.date ?: "",
+                            category = res.category ?: "")
+                }
                 .toList()
+                .map { paymentsList ->
+                    sizePurchaseList = paymentsList.size
+                    paymentsList
+                }
                 .toFlowable()
     }
 }

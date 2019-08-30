@@ -3,6 +3,7 @@
     <string name="price_caption">Sum</string>
     <string name="time_caption">Date</string>
     <string name="category_caption">Category</string>
+    <string name="balance_caption">Balance</string>
 
     <string name="price_purchase">Price payment</string>
     <string name="category_purchase">Category payment</string>

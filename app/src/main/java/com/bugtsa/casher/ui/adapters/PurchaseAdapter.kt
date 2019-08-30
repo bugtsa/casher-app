@@ -30,7 +30,11 @@ class PurchaseAdapter(paymentList: MutableList<PaymentDto>,
             holder.date.visibility = GONE
         }
         holder.timePurchase.text = payment.time
-        holder.price.text = payment.price
+        holder.cost.text = payment.cost
+        if (payment.balance.isNotEmpty()) {
+            holder.balance.text = payment.balance
+            holder.balance.visibility = VISIBLE
+        }
         holder.category.text = payment.category
         onChangePosition.changePosition(holder.layoutPosition)
     }
@@ -50,7 +54,8 @@ class PurchaseAdapter(paymentList: MutableList<PaymentDto>,
     class ViewHolder(item: View) : androidx.recyclerview.widget.RecyclerView.ViewHolder(item) {
         var date: TextView = item.date_purchase
         var timePurchase: TextView = item.time_purchase
-        var price: TextView = item.price_purchase
+        var cost: TextView = item.cost_purchase
+        var balance: TextView = item.balance_purchase
         var category: TextView = item.category_purchase
     }
 
