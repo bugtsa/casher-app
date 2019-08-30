@@ -8,7 +8,7 @@ import java.util.List
 
 interface CasherApi {
 
-    @GET("payment")
+    @GET("payment/all")
     fun getPayments(): Flowable<List<PaymentRes>>
 
     @GET("category")

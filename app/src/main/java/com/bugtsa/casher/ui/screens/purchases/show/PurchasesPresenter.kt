@@ -6,6 +6,7 @@ import com.bugtsa.casher.data.dto.PaymentDto
 import com.bugtsa.casher.data.local.database.entity.category.CategoryDataStore
 import com.bugtsa.casher.data.models.PurchaseModel
 import com.bugtsa.casher.di.inject.PreferenceProvider
+import com.bugtsa.casher.utils.ParentConstantManager.Companion.DELIMITER_BETWEEN_DATE_AND_TIME
 import io.reactivex.Flowable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
@@ -46,7 +47,7 @@ class PurchasesPresenter @Inject constructor(preferenceProvider: PreferenceProvi
     //region ================= Compare Storage and Network Categories =================
 
     private fun performCheckStorageCategoriesList() {
-        bag.add(Flowable
+        Flowable
                 .combineLatest(categoryDataStore.getCategoriesList(), purchasesModel.getCategoriesList(),
                         BiFunction<List<CategoryDto>, List<CategoryDto>, Unit> { local, remote ->
                             checkNetworkCategoriesListInDatabase(local, remote)
@@ -54,7 +55,8 @@ class PurchasesPresenter @Inject constructor(preferenceProvider: PreferenceProvi
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({ t -> Timber.d("PurchasesPresenter", "verify at check exist categories $t") },
-                        { t -> Timber.e("PurchasesPresenter", "error at check exist categories $t") }))
+                        { t -> Timber.e("PurchasesPresenter", "error at check exist categories $t") })
+                .also { bag.add(it) }
     }
 
     private fun checkNetworkCategoriesListInDatabase(storageCategoriesList: List<CategoryDto>,
@@ -87,12 +89,12 @@ class PurchasesPresenter @Inject constructor(preferenceProvider: PreferenceProvi
     //region ================= DataBase =================
 
     private fun addCategoryToDatabase(category: CategoryDto) {
-        bag.add(
-                categoryDataStore.add(category)
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe({ Timber.d("add categories to database success") },
-                                { t -> Timber.e(t, "add categories to database error") }))
+        categoryDataStore.add(category)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe({ Timber.d("add categories to database success") },
+                        { t -> Timber.e(t, "add categories to database error") })
+                .also { bag.add(it) }
     }
 
     //endregion
@@ -102,28 +104,34 @@ class PurchasesPresenter @Inject constructor(preferenceProvider: PreferenceProvi
     private fun getPurchasesList() {
         purchasesModel.getPaymentsList()
                 .subscribeOn(Schedulers.newThread())
+                .map { purchases ->
+                    val newPurchases = mutableListOf<PaymentDto>()
+                    purchases.forEach { purchase -> newPurchases.add(processPurchaseDto(purchase)) }
+                    newPurchases
+                }
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe{ purchases ->
+                .subscribe({ purchases ->
                     if (purchases.isEmpty()) {
                         purchasesView.setupStatusText("No results returned.")
                     } else {
                         purchasesView.setupPurchaseList(purchases, processDateMap(purchases))
                     }
-                }
+                }, { t -> Timber.e(t, "getPurchasesList") })
                 .also { bag.add(it) }
     }
 
-//    private fun processPurchaseDto(price: String, dateOfSheet: String, category: String): PaymentDto {
-//        when (dateOfSheet.contains(DELIMITER_BETWEEN_DATE_AND_TIME)) {
-//            true -> {
-//                val index = dateOfSheet.indexOf(DELIMITER_BETWEEN_DATE_AND_TIME)
-//                val date = dateOfSheet.substring(0, index)
-//                val time = dateOfSheet.substring(index + DELIMITER_BETWEEN_DATE_AND_TIME.length, dateOfSheet.length)
-//                return PaymentDto(price, date, time, category)
-//            }
-//            false -> return PaymentDto(price, dateOfSheet, category)
-//        }
-//    }
+    private fun processPurchaseDto(oldPayment: PaymentDto): PaymentDto {
+        val rawDate = oldPayment.date
+        return when (rawDate.contains(DELIMITER_BETWEEN_DATE_AND_TIME)) {
+            true -> {
+                val index = rawDate.indexOf(DELIMITER_BETWEEN_DATE_AND_TIME)
+                val date = rawDate.substring(0, index)
+                val time = rawDate.substring(index + DELIMITER_BETWEEN_DATE_AND_TIME.length, rawDate.length)
+                PaymentDto(oldPayment.id, oldPayment.price, date, time, oldPayment.category)
+            }
+            false -> PaymentDto(oldPayment.id , oldPayment.price, rawDate, oldPayment.category)
+        }
+    }
 
     private fun processDateMap(paymentList: MutableList<PaymentDto>): MutableMap<String, Int> {
         val dateMap: MutableMap<String, Int> = mutableMapOf()
@@ -132,7 +140,7 @@ class PurchasesPresenter @Inject constructor(preferenceProvider: PreferenceProvi
                 .filter { purchase -> !TextUtils.isEmpty(purchase.date) }
                 .map { purchase ->
                     if (!dateMap.contains(purchase.date)) {
-                        dateMap.put(purchase.date, paymentList.indexOf(purchase))
+                        dateMap[purchase.date] = paymentList.indexOf(purchase)
                     }
                 }
         return dateMap
