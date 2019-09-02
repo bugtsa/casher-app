@@ -1,12 +1,9 @@
 package com.bugtsa.casher.ui.screens.purchases.show
 
-import android.text.TextUtils
 import com.bugtsa.casher.data.dto.CategoryDto
-import com.bugtsa.casher.data.dto.PaymentDto
 import com.bugtsa.casher.data.local.database.entity.category.CategoryDataStore
 import com.bugtsa.casher.data.models.PurchaseModel
 import com.bugtsa.casher.di.inject.PreferenceProvider
-import com.bugtsa.casher.utils.ParentConstantManager.Companion.DELIMITER_BETWEEN_DATE_AND_TIME
 import io.reactivex.Flowable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
@@ -41,7 +38,7 @@ class PurchasesPresenter @Inject constructor(preferenceProvider: PreferenceProvi
 
     fun processData() {
         performCheckStorageCategoriesList()
-        getPurchasesList()
+        getPaymentsByDay()
     }
 
     //region ================= Compare Storage and Network Categories =================
@@ -101,50 +98,18 @@ class PurchasesPresenter @Inject constructor(preferenceProvider: PreferenceProvi
 
     //region ================= Replace Task to Rx functions =================
 
-    private fun getPurchasesList() {
-        purchasesModel.getPaymentsList()
+    private fun getPaymentsByDay() {
+        purchasesModel.getPaymentsByDay()
                 .subscribeOn(Schedulers.newThread())
-                .map { purchases ->
-                    val newPurchases = mutableListOf<PaymentDto>()
-                    purchases.forEach { purchase -> newPurchases.add(processPurchaseDto(purchase)) }
-                    newPurchases
-                }
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe({ purchases ->
-                    if (purchases.isEmpty()) {
+                .subscribe({ paymentsList ->
+                    if (paymentsList.isEmpty()) {
                         purchasesView.setupStatusText("No results returned.")
                     } else {
-                        purchasesView.setupPurchaseList(purchases, processDateMap(purchases))
+                        purchasesView.setupPurchaseList(paymentsList)
                     }
                 }, { t -> Timber.e(t, "getPurchasesList") })
                 .also { bag.add(it) }
-    }
-
-    private fun processPurchaseDto(oldPayment: PaymentDto): PaymentDto {
-        val rawDate = oldPayment.date
-        return when (rawDate.contains(DELIMITER_BETWEEN_DATE_AND_TIME)) {
-            true -> {
-                val index = rawDate.indexOf(DELIMITER_BETWEEN_DATE_AND_TIME)
-                val date = rawDate.substring(0, index)
-                val time = rawDate.substring(index + DELIMITER_BETWEEN_DATE_AND_TIME.length, rawDate.length)
-                PaymentDto(id = oldPayment.id, cost = oldPayment.cost, balance = oldPayment.balance,
-                        date = date, time = time, category = oldPayment.category)
-            }
-            false -> PaymentDto(oldPayment.id , oldPayment.cost, oldPayment.balance, rawDate, oldPayment.category)
-        }
-    }
-
-    private fun processDateMap(paymentList: MutableList<PaymentDto>): MutableMap<String, Int> {
-        val dateMap: MutableMap<String, Int> = mutableMapOf()
-
-        paymentList
-                .filter { purchase -> !TextUtils.isEmpty(purchase.date) }
-                .map { purchase ->
-                    if (!dateMap.contains(purchase.date)) {
-                        dateMap[purchase.date] = paymentList.indexOf(purchase)
-                    }
-                }
-        return dateMap
     }
 
     //endregion

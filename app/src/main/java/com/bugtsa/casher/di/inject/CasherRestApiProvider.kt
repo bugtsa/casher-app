@@ -1,12 +1,12 @@
 package com.bugtsa.casher.di.inject
 
 import com.bugtsa.casher.networking.CasherApi
+import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import retrofit2.converter.gson.GsonConverterFactory
-import javax.inject.Provider
-import okhttp3.OkHttpClient
 import java.util.concurrent.TimeUnit
+import javax.inject.Provider
 
 class CasherRestApiProvider: Provider<CasherApi> {
 

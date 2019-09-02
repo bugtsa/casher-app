@@ -1,6 +1,6 @@
 package com.bugtsa.casher.ui.screens.purchases.add
 
-import android.content.Context
+import android.annotation.SuppressLint
 import android.graphics.Color
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -8,19 +8,41 @@ import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
+import androidx.fragment.app.Fragment
 import com.borax12.materialdaterangepicker.time.RadialPickerLayout
 import com.borax12.materialdaterangepicker.time.TimePickerDialog
 import com.bugtsa.casher.R
 import com.maxproj.calendarpicker.Builder
 import kotlinx.android.synthetic.main.controller_add_purchase.*
+import pro.horovodovodo4ka.bones.Finger
+import pro.horovodovodo4ka.bones.Phalanx
+import pro.horovodovodo4ka.bones.extensions.closest
+import pro.horovodovodo4ka.bones.persistance.BonePersisterInterface
+import pro.horovodovodo4ka.bones.ui.ScreenInterface
+import pro.horovodovodo4ka.bones.ui.delegates.Page
 import toothpick.Scope
 import toothpick.Toothpick
 import java.util.*
 import javax.inject.Inject
 
 
+class AddPurchaseScreen : Phalanx() {
+
+    fun showRootView() {
+        val bot = closest<Finger>()?.phalanxes?.first()
+    }
+
+    val color = Random().let {
+        Color.argb(255, it.nextInt(256), it.nextInt(256), it.nextInt(256))
+    }
+
+    override val seed = { AddPurchaseFragment() }
+}
+
 @Suppress("DEPRECATED_IDENTITY_EQUALS")
-class AddPurchaseController : androidx.fragment.app.Fragment(), AddPurchaseView, TimePickerDialog.OnTimeSetListener {
+@SuppressLint("MissingSuperCall")
+class AddPurchaseFragment : Fragment(), AddPurchaseView, TimePickerDialog.OnTimeSetListener,
+        ScreenInterface<AddPurchaseScreen> by Page(), BonePersisterInterface<AddPurchaseScreen> {
 
     @Inject
     lateinit var presenter: AddPurchasePresenter
@@ -30,7 +52,11 @@ class AddPurchaseController : androidx.fragment.app.Fragment(), AddPurchaseView,
     //region ================= Implements Methods =================
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        val view: View = inflater.inflate(R.layout.controller_add_purchase, container, false)
+        return inflater.inflate(R.layout.controller_add_purchase, container, false)
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
 
         setupCategoriesTouchListener()
         add_date_purchase.setOnClickListener {
@@ -43,7 +69,15 @@ class AddPurchaseController : androidx.fragment.app.Fragment(), AddPurchaseView,
         presenter.setupCurrentDate()
         presenter.checkExistCategoriesInDatabase()
 
-        return view
+        save_purchase.setOnClickListener {
+            presenter.checkCategorySaveOnDatabase(price_purchase_et.text.toString(),
+                    category_purchase_et.text.toString())
+        }
+        cancel_purchase.setOnClickListener { popCurrentController() }
+
+        view.setBackgroundColor(bone.color)
+
+        refreshUI()
     }
 
     override fun onDestroyView() {
@@ -52,16 +86,17 @@ class AddPurchaseController : androidx.fragment.app.Fragment(), AddPurchaseView,
         Toothpick.closeScope(this)
     }
 
-    override fun onAttach(context: Context?) {
-        super.onAttach(context)
-        save_purchase.setOnClickListener {
-            presenter.addPurchase(price_purchase_et.text.toString(),
-                    category_purchase_et.text.toString())
-        }
-        cancel_purchase.setOnClickListener { popCurrentController() }
+    //endregion
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super<BonePersisterInterface>.onSaveInstanceState(outState)
+        super<androidx.fragment.app.Fragment>.onSaveInstanceState(outState)
     }
 
-    //endregion
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super<BonePersisterInterface>.onCreate(savedInstanceState)
+        super<androidx.fragment.app.Fragment>.onCreate(savedInstanceState)
+    }
 
     //region ================= Add Purchase View =================
 
@@ -82,7 +117,7 @@ class AddPurchaseController : androidx.fragment.app.Fragment(), AddPurchaseView,
     }
 
     override fun setupCategoriesList(categoriesList: List<String>) {
-        val adapter: ArrayAdapter<String> = ArrayAdapter<String>(
+        val adapter: ArrayAdapter<String> = ArrayAdapter(
                 activity,
                 android.R.layout.simple_dropdown_item_1line,
                 categoriesList)

@@ -1,6 +1,6 @@
 package com.bugtsa.casher.ui.screens.purchases.show
 
-import com.bugtsa.casher.data.dto.PaymentDto
+import com.bugtsa.casher.data.dto.PaymentsByDayRes
 
 interface PurchasesView {
 
@@ -11,8 +11,7 @@ interface PurchasesView {
 
     fun startIntent(mLastError: Exception?)
 
-    fun setupPurchaseList(paymentList: MutableList<PaymentDto>,
-                          dateMap: MutableMap<String, Int>)
+    fun setupPurchaseList(paymentsByDayList: List<PaymentsByDayRes>)
     fun scrollToPosition(position: Int)
 
     fun showBottomScroll()

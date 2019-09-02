@@ -7,40 +7,36 @@ import android.view.View.VISIBLE
 import android.view.ViewGroup
 import android.widget.TextView
 import com.bugtsa.casher.R
-import com.bugtsa.casher.data.dto.PaymentDto
+import com.bugtsa.casher.data.dto.PaymentsByDayRes
 import com.bugtsa.casher.ui.OnChangePosition
 import kotlinx.android.synthetic.main.item_purchase.view.*
 
-class PurchaseAdapter(paymentList: MutableList<PaymentDto>,
-                      dateMap: MutableMap<String, Int>,
-                      onChangePosition: OnChangePosition)
+class PurchaseAdapter(val paymentsByDayList: List<PaymentsByDayRes>,
+                      val onChangePosition: OnChangePosition)
     : androidx.recyclerview.widget.RecyclerView.Adapter<PurchaseAdapter.ViewHolder>() {
-
-    var purchasesList: MutableList<PaymentDto> = paymentList
-    var datesMap: MutableMap<String, Int> = dateMap
-    var onChangePosition: OnChangePosition = onChangePosition
 
     //region ================= Implements Methods =================
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val payment: PaymentDto = purchasesList[position]
-        if (datesMap.contains(payment.date) && datesMap.get(payment.date) == position) {
-            showDateTitle(holder, payment.date)
-        } else {
+        val paymentByDay: PaymentsByDayRes = paymentsByDayList[position]
+        if (paymentByDay.datePayments?.isNotEmpty() == true) {
+            showDateTitle(holder, paymentByDay.datePayments)
+        } else if (paymentByDay.payment != null) {
+            val payment = paymentByDay.payment
             holder.date.visibility = GONE
+            holder.timePurchase.text = payment.time
+            holder.cost.text = payment.cost
+            if (payment.balance.isNotEmpty()) {
+                holder.balance.text = payment.balance
+                holder.balance.visibility = VISIBLE
+            }
+            holder.category.text = payment.category
         }
-        holder.timePurchase.text = payment.time
-        holder.cost.text = payment.cost
-        if (payment.balance.isNotEmpty()) {
-            holder.balance.text = payment.balance
-            holder.balance.visibility = VISIBLE
-        }
-        holder.category.text = payment.category
         onChangePosition.changePosition(holder.layoutPosition)
     }
 
     override fun getItemCount(): Int {
-        return purchasesList.size
+        return paymentsByDayList.size
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -66,6 +62,10 @@ class PurchaseAdapter(paymentList: MutableList<PaymentDto>,
     private fun showDateTitle(holder: ViewHolder?, date: String) {
         holder?.date?.visibility = VISIBLE
         holder?.date?.text = date
+        holder?.balance?.visibility = GONE
+        holder?.category?.visibility = GONE
+        holder?.cost?.visibility = GONE
+        holder?.timePurchase?.visibility = GONE
     }
 
     //endregion

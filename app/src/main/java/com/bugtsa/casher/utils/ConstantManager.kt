@@ -2,13 +2,26 @@ package com.bugtsa.casher.utils
 
 class ConstantManager {
 
-    companion object {
-        var PURCHASE_TABLE_NAME_SHEET = "Vova!"
-        var ROW_START_SHEET = "1"
-        var START_COLUMN_SHEET = "A"
-        var END_COLUMN_SHEET = "C"
+    object User {
+        const val DEFAULT_USER_ID = "0"
+    }
 
-//        val PAYMENT_WORD =
-//        val CATEGORY_WORD =
+    object CategoryNetwork {
+        const val CATEGORY_NAME_METHOD = "/category"
+        const val NAME_CATEGORY_PARAMETER = "name"
+    }
+
+    object Network {
+        const val PAYMENT_NAME_METHOD = "/payment"
+        const val PAGE_PAYMENT_NAME_METHOD = "/page"
+        const val LAST_PAGE_PAYMENT_NAME_METHOD = "/last"
+        const val USER_ID_PARAMETER = "userId"
+        const val COST_PARAMETER = "cost"
+        const val CATEGORY_PARAMETER = "category"
+        const val DATE_PARAMETER = "date"
+        const val BALANCE_PARAMETER = "balance"
+        private const val AMOUNT_PARAMETER = "amount"
+        private const val PRICE_PARAMETER = "price"
+        private const val DESCRIPTION_PARAMETER = "description"
     }
 }

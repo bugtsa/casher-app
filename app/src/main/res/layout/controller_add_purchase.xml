@@ -5,43 +5,6 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/price_purchase_wrapper"
-        style="@style/TilPurchase"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
-
-        <EditText
-            android:id="@+id/price_purchase_et"
-            style="@style/EditText.ManualCode"
-            android:inputType="number"
-            tools:text="54654632" />
-    </com.google.android.material.textfield.TextInputLayout>
-
-    <com.bugtsa.casher.utils.CustomAutoComplete
-        android:id="@+id/category_purchase_et"
-        style="@style/EditText.Category"
-        android:inputType="text"
-        app:drawableLeftCompat="@drawable/ic_search_accent_24dp"
-        app:drawableRightCompat="@drawable/ic_cancel_accent_24dp"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/price_purchase_wrapper"
-        tools:text="54654632" />
-
-    <CheckBox
-        android:id="@+id/add_date_purchase"
-        style="@style/DatePurchase"
-        android:text="@string/date_purchase"
-        app:layout_constraintTop_toBottomOf="@+id/category_purchase_et" />
-
-    <TextView
-        android:id="@+id/date_purchase"
-        style="@style/DatePurchase"
-        android:textColor="@color/colorDarkText"
-        android:textSize="@dimen/font_medium_14"
-        app:layout_constraintTop_toBottomOf="@+id/add_date_purchase"
-        tools:text="@string/add_caption" />
-
     <Button
         android:id="@+id/save_purchase"
         android:layout_width="wrap_content"
@@ -64,6 +27,12 @@
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/date_purchase" />
 
+    <CheckBox
+        android:id="@+id/add_date_purchase"
+        style="@style/DatePurchase"
+        android:text="@string/date_purchase"
+        app:layout_constraintTop_toBottomOf="@+id/category_purchase_et" />
+
     <ProgressBar
         android:id="@+id/progress_add_purchase"
         android:layout_width="@dimen/spacing_bigger_56"
@@ -78,5 +47,36 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         tools:visibility="visible" />
+
+    <TextView
+        android:id="@+id/date_purchase"
+        style="@style/DatePurchase"
+        android:textColor="@color/colorDarkText"
+        android:textSize="@dimen/font_medium_14"
+        app:layout_constraintTop_toBottomOf="@+id/add_date_purchase"
+        tools:text="@string/add_caption" />
+
+    <com.bugtsa.casher.utils.CustomAutoComplete
+        android:id="@+id/category_purchase_et"
+        style="@style/EditText.Category"
+        android:inputType="text"
+        app:drawableLeftCompat="@drawable/ic_search_accent_24dp"
+        app:drawableRightCompat="@drawable/ic_cancel_accent_24dp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/price_purchase_wrapper"
+        tools:text="54654632" />
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/price_purchase_wrapper"
+        style="@style/TilPurchase"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <EditText
+            android:id="@+id/price_purchase_et"
+            style="@style/EditText.ManualCode"
+            android:inputType="number"
+            tools:text="54654632" />
+    </com.google.android.material.textfield.TextInputLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

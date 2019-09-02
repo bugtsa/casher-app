@@ -64,7 +64,7 @@ android {
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
-    implementation "androidx.appcompat:appcompat:1.0.0"
+    implementation "androidx.appcompat:appcompat:1.0.2"
     implementation "com.google.android.material:material:1.0.0"
     implementation "androidx.legacy:legacy-support-v13:1.0.0"
     implementation "androidx.recyclerview:recyclerview:1.0.0"
@@ -72,12 +72,12 @@ dependencies {
 
     implementation 'com.google.android.gms:play-services-auth:16.0.1'
     implementation 'pub.devrel:easypermissions:2.0.0'
-//    implementation('com.google.api-client:google-api-client-android:1.25.0') {
-//        exclude group: 'org.apache.httpcomponents'
-//    }
-    implementation('com.google.apis:google-api-services-sheets:v4-rev553-1.25.0') {
+    implementation('com.google.api-client:google-api-client-android:1.25.0') {
         exclude group: 'org.apache.httpcomponents'
     }
+//    implementation('com.google.apis:google-api-services-sheets:v4-rev553-1.25.0') {
+//        exclude group: 'org.apache.httpcomponents'
+//    }
 
 // Google Api Client library and Android extension
     implementation 'com.google.api-client:google-api-client:1.22.0'
@@ -115,7 +115,7 @@ dependencies {
     // Timber
     implementation "com.jakewharton.timber:timber:$project.timberVersion"
 
-    implementation 'com.facebook.stetho:stetho:1.5.0'
+    implementation 'com.facebook.stetho:stetho:1.5.1'
 
     implementation 'com.github.maxyou:CalendarPicker:v1.1.2'
     implementation 'com.borax12.materialdaterangepicker:library:1.9'
