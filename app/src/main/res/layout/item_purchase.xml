@@ -28,20 +28,6 @@
         android:text="@string/price_caption"
         app:layout_constraintHorizontal_weight=".9"
         app:layout_constraintLeft_toRightOf="@+id/time_purchase"
-        app:layout_constraintRight_toLeftOf="@+id/balance_purchase"
-        app:layout_constraintTop_toBottomOf="@id/date_purchase" />
-
-    <TextView
-        android:id="@+id/balance_purchase"
-        android:layout_width="@dimen/zeros"
-        android:layout_height="wrap_content"
-        android:padding="@dimen/spacing_x_small_4"
-        android:text="@string/balance_caption"
-        android:gravity="center_vertical"
-        android:visibility="gone"
-        tools:visibility="visible"
-        app:layout_constraintHorizontal_weight="1"
-        app:layout_constraintLeft_toRightOf="@+id/cost_purchase"
         app:layout_constraintRight_toLeftOf="@+id/category_purchase"
         app:layout_constraintTop_toBottomOf="@id/date_purchase" />
 
@@ -52,7 +38,7 @@
         android:padding="@dimen/spacing_x_small_4"
         android:text="@string/category_caption"
         app:layout_constraintHorizontal_weight="2"
-        app:layout_constraintLeft_toRightOf="@+id/balance_purchase"
+        app:layout_constraintLeft_toRightOf="@+id/cost_purchase"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toBottomOf="@id/date_purchase" />
 
@@ -68,5 +54,34 @@
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         tools:text="Day"
+        tools:visibility="visible" />
+
+    <TextView
+        android:id="@+id/balance_caption_payment"
+        android:layout_width="@dimen/zeros"
+        android:layout_height="wrap_content"
+        android:gravity="end"
+        android:padding="@dimen/spacing_x_small_4"
+        android:text="@string/balance_caption"
+        android:textAlignment="viewEnd"
+        android:visibility="gone"
+        app:layout_constraintHorizontal_weight="1"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toLeftOf="@+id/balance_payment"
+        app:layout_constraintTop_toBottomOf="@+id/cost_purchase"
+        tools:visibility="visible" />
+
+    <TextView
+        android:id="@+id/balance_payment"
+        android:layout_width="@dimen/zeros"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:padding="@dimen/spacing_x_small_4"
+        android:visibility="gone"
+        app:layout_constraintHorizontal_weight="1"
+        app:layout_constraintLeft_toRightOf="@+id/balance_caption_payment"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/cost_purchase"
+        tools:text="Among"
         tools:visibility="visible" />
 </androidx.constraintlayout.widget.ConstraintLayout>

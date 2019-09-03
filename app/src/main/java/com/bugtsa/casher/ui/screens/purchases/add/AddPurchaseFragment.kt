@@ -73,9 +73,10 @@ class AddPurchaseFragment : Fragment(), AddPurchaseView, TimePickerDialog.OnTime
             presenter.checkCategorySaveOnDatabase(price_purchase_et.text.toString(),
                     category_purchase_et.text.toString())
         }
-        cancel_purchase.setOnClickListener { popCurrentController() }
+        cancel_purchase.setOnClickListener { processBackPress() }
 
         view.setBackgroundColor(bone.color)
+        color_demo.text = bone.color.toString()
 
         refreshUI()
     }
@@ -101,7 +102,7 @@ class AddPurchaseFragment : Fragment(), AddPurchaseView, TimePickerDialog.OnTime
     //region ================= Add Purchase View =================
 
     override fun completedAddPurchase() {
-        popCurrentController()
+        processBackPress()
     }
 
     override fun showProgressBar() {
@@ -181,14 +182,6 @@ class AddPurchaseFragment : Fragment(), AddPurchaseView, TimePickerDialog.OnTime
 
     private fun resetSearchView() {
         category_purchase_et.text.clear()
-    }
-
-    //endregion
-
-    //region ================= Private Methods =================
-
-    private fun popCurrentController() {
-//        router.popCurrentController()
     }
 
     //endregion

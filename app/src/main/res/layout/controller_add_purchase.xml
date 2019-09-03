@@ -31,6 +31,8 @@
         android:id="@+id/add_date_purchase"
         style="@style/DatePurchase"
         android:text="@string/date_purchase"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/category_purchase_et" />
 
     <ProgressBar
@@ -53,6 +55,8 @@
         style="@style/DatePurchase"
         android:textColor="@color/colorDarkText"
         android:textSize="@dimen/font_medium_14"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/add_date_purchase"
         tools:text="@string/add_caption" />
 
@@ -78,5 +82,15 @@
             android:inputType="number"
             tools:text="54654632" />
     </com.google.android.material.textfield.TextInputLayout>
+
+    <TextView
+        android:id="@+id/color_demo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/spacing_xxx_medium_32"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        tools:text="sfasfasfasdf"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

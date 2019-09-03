@@ -19,7 +19,7 @@ class ConstantManager {
         const val COST_PARAMETER = "cost"
         const val CATEGORY_PARAMETER = "category"
         const val DATE_PARAMETER = "date"
-        const val BALANCE_PARAMETER = "balance"
+        const val BALANCE_PARAMETER = "balanceCaption"
         private const val AMOUNT_PARAMETER = "amount"
         private const val PRICE_PARAMETER = "price"
         private const val DESCRIPTION_PARAMETER = "description"
