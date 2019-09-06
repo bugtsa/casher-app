@@ -3,10 +3,7 @@ package com.bugtsa.casher.ui.screens.purchases.add
 import android.annotation.SuppressLint
 import android.graphics.Color
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.MotionEvent
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import android.widget.ArrayAdapter
 import androidx.fragment.app.Fragment
 import com.borax12.materialdaterangepicker.time.RadialPickerLayout
@@ -32,8 +29,21 @@ class AddPurchaseScreen : Phalanx() {
         val bot = closest<Finger>()?.phalanxes?.first()
     }
 
+    data class ArgbValues(val alpha: Int,
+                          val red: Int,
+                          val green: Int,
+                          val blue: Int) {
+
+        override fun toString(): String {
+            return "Alpha: ${this.alpha} Red: ${this.red} Green: ${this.green} Blue: ${this.blue}"
+        }
+    }
+
+    lateinit var argbValues: ArgbValues
     val color = Random().let {
-        Color.argb(255, it.nextInt(256), it.nextInt(256), it.nextInt(256))
+        argbValues = ArgbValues(alpha = 255, red = it.nextInt(256),
+                green = it.nextInt(256), blue = it.nextInt(256))
+        Color.argb(argbValues.alpha, argbValues.red, argbValues.green, argbValues.blue)
     }
 
     override val seed = { AddPurchaseFragment() }
@@ -76,7 +86,7 @@ class AddPurchaseFragment : Fragment(), AddPurchaseView, TimePickerDialog.OnTime
         cancel_purchase.setOnClickListener { processBackPress() }
 
         view.setBackgroundColor(bone.color)
-        color_demo.text = bone.color.toString()
+        color_demo.text = bone.argbValues.toString()
 
         refreshUI()
     }

@@ -4,12 +4,11 @@ import com.bugtsa.casher.data.dto.PaymentsByDayRes
 
 interface PurchasesView {
 
-    fun showProgressBar()
-    fun hideProgressBar()
+    fun showProgressBar(isVisible: Boolean)
+
+    fun showPaymentList(isVisible: Boolean)
 
     fun setupStatusText(status: String)
-
-    fun startIntent(mLastError: Exception?)
 
     fun setupPurchaseList(paymentsByDayList: List<PaymentsByDayRes>)
     fun scrollToPosition(position: Int)

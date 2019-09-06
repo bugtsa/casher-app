@@ -2,24 +2,19 @@ package com.bugtsa.casher.ui.screens.purchases.show
 
 import android.annotation.SuppressLint
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.View.GONE
-import android.view.View.VISIBLE
-import android.view.ViewGroup
+import android.view.*
 import androidx.fragment.app.Fragment
 import com.bugtsa.casher.R
 import com.bugtsa.casher.data.dto.PaymentsByDayRes
 import com.bugtsa.casher.ui.OnChangePosition
 import com.bugtsa.casher.ui.adapters.PurchaseAdapter
-import com.bugtsa.casher.ui.screens.purchases.add.AddPurchaseFragment
 import com.bugtsa.casher.ui.screens.purchases.add.AddPurchaseScreen
+import com.bugtsa.casher.utils.visibility
 import kotlinx.android.synthetic.main.fragment_purchases.*
 import pro.horovodovodo4ka.bones.Finger
 import pro.horovodovodo4ka.bones.Phalanx
 import pro.horovodovodo4ka.bones.extensions.closest
 import pro.horovodovodo4ka.bones.extensions.present
-import pro.horovodovodo4ka.bones.extensions.show
 import pro.horovodovodo4ka.bones.persistance.BonePersisterInterface
 import pro.horovodovodo4ka.bones.ui.ScreenInterface
 import pro.horovodovodo4ka.bones.ui.delegates.Page
@@ -132,7 +127,7 @@ class PurchasesFragment : Fragment(), PurchasesView,
 
     override fun scrollToPosition(position: Int) {
         purchases.scrollToPosition(position)
-        bottom_scroll.visibility = GONE
+        bottom_scroll.visibility { false }
     }
 
     override fun setupPurchaseList(paymentsByDayList: List<PaymentsByDayRes>) {
@@ -147,22 +142,17 @@ class PurchasesFragment : Fragment(), PurchasesView,
 
     override fun setupStatusText(caption: String) {
         status_tv.text = caption
-        status_tv.visibility = VISIBLE
+        status_tv.visibility { true }
     }
 
-    override fun showProgressBar() {
+    override fun showProgressBar(isVisible: Boolean) {
         setupStatusText("")
-        progress_purchase.visibility = VISIBLE
+        progress_purchase.visibility { isVisible }
     }
 
-    override fun hideProgressBar() {
-        progress_purchase.visibility = GONE
+    override fun showPaymentList(isVisible: Boolean) {
+        purchases.visibility { isVisible }
     }
 
-    override fun startIntent(lastError: Exception?) {
-//        startActivityForResult(
-//                (lastError as UserRecoverableAuthIOException).intent,
-//                REQUEST_AUTHORIZATION)
-    }
     //endregion
 }

@@ -23,61 +23,33 @@
         app:layout_constraintTop_toTopOf="parent"
         tools:visibility="visible" />
 
-    <TextView
-        android:id="@+id/cost_purchase"
-        android:layout_width="@dimen/zeros"
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/left_guideline"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:background="@color/primaryDarkColor"
-        android:padding="@dimen/spacing_xx_small_8"
-        android:text="@string/cost_caption"
-        android:textColor="@color/primaryTextColor"
-        app:layout_constraintBaseline_toBaselineOf="@id/time_purchase"
-        app:layout_constraintHorizontal_weight="1"
-        app:layout_constraintLeft_toRightOf="@+id/time_purchase"
-        app:layout_constraintRight_toLeftOf="@+id/balance_caption_payment" />
+        android:orientation="vertical"
+        app:layout_constraintGuide_begin="@dimen/spacing_normal_16"/>
 
-    <TextView
-        android:id="@+id/balance_caption_payment"
-        android:layout_width="@dimen/zeros"
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/right_guideline"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:background="@color/primaryDarkColor"
-        android:padding="@dimen/spacing_xx_small_8"
-        android:text="@string/balance_caption"
-        android:textColor="@color/primaryTextColor"
-        app:layout_constraintBaseline_toBaselineOf="@id/time_purchase"
-        app:layout_constraintHorizontal_weight="1"
-        app:layout_constraintLeft_toRightOf="@+id/cost_purchase"
-        app:layout_constraintRight_toLeftOf="@+id/category_purchase" />
+        android:orientation="vertical"
+        app:layout_constraintGuide_end="@dimen/spacing_normal_16"/>
 
-    <TextView
-        android:id="@+id/category_purchase"
-        android:layout_width="@dimen/zeros"
+    <include
+        android:id="@+id/captions"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        layout="@layout/item_payment_caption"
         android:background="@color/primaryDarkColor"
-        android:padding="@dimen/spacing_xx_small_8"
-        android:text="@string/category_caption"
-        android:textColor="@color/primaryTextColor"
-        app:layout_constraintBaseline_toBaselineOf="@id/time_purchase"
-        app:layout_constraintHorizontal_weight="1.5"
-        app:layout_constraintLeft_toRightOf="@+id/balance_caption_payment"
-        app:layout_constraintRight_toRightOf="parent" />
-
-    <TextView
-        android:id="@+id/time_purchase"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:background="@color/primaryDarkColor"
-        android:padding="@dimen/spacing_xx_small_8"
-        android:paddingStart="@dimen/spacing_medium_24"
-        android:paddingLeft="@dimen/spacing_medium_24"
-        android:text="@string/time_caption"
-        android:textColor="@color/primaryTextColor"
         app:layout_constraintBottom_toTopOf="@+id/purchases"
         app:layout_constraintHorizontal_weight="1"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toLeftOf="@+id/cost_purchase"
+        app:layout_constraintLeft_toLeftOf="@+id/left_guideline"
+        app:layout_constraintRight_toRightOf="@+id/right_guideline"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0" />
+        app:layout_constraintVertical_bias="0"
+        />
 
     <TextView
         android:id="@+id/status_tv"
@@ -97,15 +69,11 @@
         android:layout_height="wrap_content"
         android:layout_marginBottom="@dimen/spacing_x_small_4"
         android:background="@color/primaryLightColor"
-        android:paddingStart="@dimen/spacing_normal_16"
-        android:paddingLeft="@dimen/spacing_normal_16"
-        android:paddingEnd="@dimen/spacing_normal_16"
-        android:paddingRight="@dimen/spacing_normal_16"
         android:paddingBottom="@dimen/spacing_x_small_4"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/time_purchase"
+        app:layout_constraintEnd_toEndOf="@+id/right_guideline"
+        app:layout_constraintStart_toStartOf="@+id/left_guideline"
+        app:layout_constraintTop_toBottomOf="@id/captions"
         app:layout_constraintVertical_bias="0.5" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton

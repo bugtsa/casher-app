@@ -43,8 +43,4 @@ class SoftwareUtils {
             return dateFormat.format(date)
         }
     }
-
-
-
-
 }

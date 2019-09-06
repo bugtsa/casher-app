@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    tools:background="@color/primaryDarkColor">
+
+    <TextView
+        android:id="@+id/cost_purchase"
+        android:layout_width="@dimen/zeros"
+        android:layout_height="wrap_content"
+        android:padding="@dimen/spacing_xx_small_8"
+        android:text="@string/cost_caption"
+        android:textColor="@color/primaryTextColor"
+        app:layout_constraintBaseline_toBaselineOf="@id/time_purchase"
+        app:layout_constraintHorizontal_weight="1"
+        app:layout_constraintLeft_toRightOf="@+id/time_purchase"
+        app:layout_constraintRight_toLeftOf="@+id/balance_caption_payment" />
+
+    <TextView
+        android:id="@+id/balance_caption_payment"
+        android:layout_width="@dimen/zeros"
+        android:layout_height="wrap_content"
+        android:padding="@dimen/spacing_xx_small_8"
+        android:text="@string/balance_caption"
+        android:textColor="@color/primaryTextColor"
+        app:layout_constraintBaseline_toBaselineOf="@id/time_purchase"
+        app:layout_constraintHorizontal_weight="1"
+        app:layout_constraintLeft_toRightOf="@+id/cost_purchase"
+        app:layout_constraintRight_toLeftOf="@+id/category_purchase" />
+
+    <TextView
+        android:id="@+id/category_purchase"
+        android:layout_width="@dimen/zeros"
+        android:layout_height="wrap_content"
+        android:padding="@dimen/spacing_xx_small_8"
+        android:text="@string/category_caption"
+        android:textColor="@color/primaryTextColor"
+        app:layout_constraintBaseline_toBaselineOf="@id/time_purchase"
+        app:layout_constraintHorizontal_weight="1.5"
+        app:layout_constraintLeft_toRightOf="@+id/balance_caption_payment"
+        app:layout_constraintRight_toRightOf="parent" />
+
+    <TextView
+        android:id="@+id/time_purchase"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:padding="@dimen/spacing_xx_small_8"
+        android:text="@string/time_caption"
+        android:textColor="@color/primaryTextColor"
+        app:layout_constraintHorizontal_weight="1"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toLeftOf="@+id/cost_purchase"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

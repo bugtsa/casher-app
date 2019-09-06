@@ -1,15 +1,13 @@
 package com.bugtsa.casher.ui.adapters
 
-import android.view.LayoutInflater
-import android.view.View
-import android.view.View.GONE
-import android.view.View.VISIBLE
-import android.view.ViewGroup
+import android.view.*
 import android.widget.TextView
 import com.bugtsa.casher.R
 import com.bugtsa.casher.data.dto.PaymentDto
 import com.bugtsa.casher.data.dto.PaymentsByDayRes
 import com.bugtsa.casher.ui.OnChangePosition
+import com.bugtsa.casher.utils.visibility
+import kotlinx.android.synthetic.main.item_payment_caption.view.*
 import kotlinx.android.synthetic.main.item_purchase.view.*
 
 class PurchaseAdapter(val paymentsByDayList: List<PaymentsByDayRes>,
@@ -25,7 +23,6 @@ class PurchaseAdapter(val paymentsByDayList: List<PaymentsByDayRes>,
             paymentByDay.payment != null -> {
                 showPayment(holder, paymentByDay.payment)
             }
-            paymentByDay.balance?.isNotEmpty() == true -> showBalance(holder, paymentByDay.balance)
         }
         onChangePosition.changePosition(holder.layoutPosition)
     }
@@ -44,11 +41,10 @@ class PurchaseAdapter(val paymentsByDayList: List<PaymentsByDayRes>,
 
     class ViewHolder(item: View) : androidx.recyclerview.widget.RecyclerView.ViewHolder(item) {
         var date: TextView = item.date_purchase
-        var timePurchase: TextView = item.time_purchase
-        var cost: TextView = item.cost_purchase
-        var category: TextView = item.category_purchase
-        var balanceCaption: TextView = item.balance_caption_payment
-        var balance: TextView = item.balance_payment
+        var timePurchase: TextView = item.payment_item.time_purchase
+        var cost: TextView = item.payment_item.cost_purchase
+        var modernBalance: TextView = item.payment_item.balance_caption_payment
+        var category: TextView = item.payment_item.category_purchase
     }
 
     //endregion
@@ -56,38 +52,25 @@ class PurchaseAdapter(val paymentsByDayList: List<PaymentsByDayRes>,
     //region ================= private Functions =================
 
     private fun showPayment(holder: ViewHolder?, payment: PaymentDto) {
-        holder?.date?.visibility = GONE
-        holder?.balance?.visibility = GONE
-        holder?.balanceCaption?.visibility = GONE
+        holder?.date?.visibility { false }
 
-        holder?.timePurchase?.visibility = VISIBLE
-        holder?.cost?.visibility = VISIBLE
-        holder?.category?.visibility = VISIBLE
+        holder?.timePurchase?.visibility { true }
+        holder?.cost?.visibility { true }
+        holder?.category?.visibility { true }
+        holder?.modernBalance?.visibility { true }
         holder?.timePurchase?.text = payment.time
         holder?.cost?.text = payment.cost
+        holder?.modernBalance?.text = if (payment.balance.isNotEmpty()) payment.balance else ""
         holder?.category?.text = payment.category
     }
 
     private fun showDateTitle(holder: ViewHolder?, date: String) {
-        holder?.date?.visibility = VISIBLE
+        holder?.date?.visibility { true }
         holder?.date?.text = date
 
-        holder?.category?.visibility = GONE
-        holder?.cost?.visibility = GONE
-        holder?.timePurchase?.visibility = GONE
-        holder?.balanceCaption?.visibility = GONE
-        holder?.balance?.visibility = GONE
-    }
-
-    private fun showBalance(holder: ViewHolder?, balance: String) {
-        holder?.balanceCaption?.visibility = VISIBLE
-        holder?.balance?.visibility = VISIBLE
-        holder?.balance?.text = balance
-
-        holder?.date?.visibility = GONE
-        holder?.category?.visibility = GONE
-        holder?.cost?.visibility = GONE
-        holder?.timePurchase?.visibility = GONE
+        holder?.category?.visibility { false }
+        holder?.cost?.visibility { false }
+        holder?.timePurchase?.visibility { false }
     }
 
     //endregion
