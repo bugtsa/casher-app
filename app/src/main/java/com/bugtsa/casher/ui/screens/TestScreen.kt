@@ -3,9 +3,7 @@ package com.bugtsa.casher.ui.screens
 import android.annotation.SuppressLint
 import android.graphics.Color
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import com.bugtsa.casher.R
 import com.bugtsa.casher.ui.navigation.NavigationStackPresentable
 import kotlinx.android.synthetic.main.fragment_phalanx_test.*
@@ -19,6 +17,7 @@ import java.util.*
 
 
 class TestScreen : Phalanx(), NavigationStackPresentable {
+
     override val seed = { ScreenFragment() }
 
     val color = Random().let {

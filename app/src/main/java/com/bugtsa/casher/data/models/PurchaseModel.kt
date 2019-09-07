@@ -1,8 +1,6 @@
 package com.bugtsa.casher.data.models
 
-import com.bugtsa.casher.data.dto.CategoryDto
-import com.bugtsa.casher.data.dto.PaymentDto
-import com.bugtsa.casher.data.dto.PaymentsByDayRes
+import com.bugtsa.casher.data.dto.*
 import com.bugtsa.casher.networking.CasherApi
 import io.reactivex.Flowable
 import io.reactivex.Single
@@ -11,7 +9,7 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class PurchaseModel @Inject constructor(injectCasherRestApi: CasherApi) {
+class PurchaseModel @Inject constructor(private val casherRestApi: CasherApi) {
 
     companion object {
         private var instance: PurchaseModel? = null
@@ -20,9 +18,6 @@ class PurchaseModel @Inject constructor(injectCasherRestApi: CasherApi) {
     init {
         instance = this
     }
-
-    var sizePurchaseList: Int = 0
-    private val casherRestApi = injectCasherRestApi
 
     fun getCategoriesList(): Flowable<List<CategoryDto>> {
         return casherRestApi.getCategories()

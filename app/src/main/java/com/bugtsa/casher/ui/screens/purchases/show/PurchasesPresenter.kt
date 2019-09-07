@@ -20,6 +20,7 @@ class PurchasesPresenter @Inject constructor(preferenceProvider: PreferenceProvi
     private var categoryDataStore: CategoryDataStore = injectCategoryDataStore
 
     private var isScrollPurchasesList: Boolean
+    private var paymentsListSize: Int? = null
 
     private val bag: CompositeDisposable = CompositeDisposable()
     private lateinit var purchasesView: PurchasesView
@@ -37,6 +38,7 @@ class PurchasesPresenter @Inject constructor(preferenceProvider: PreferenceProvi
     }
 
     fun processData() {
+        purchasesView.showProgressBar(true)
         performCheckStorageCategoriesList()
         getPaymentsByDay()
     }
@@ -103,6 +105,8 @@ class PurchasesPresenter @Inject constructor(preferenceProvider: PreferenceProvi
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({ paymentsList ->
+                    paymentsListSize = paymentsList.size
+                    purchasesView.showProgressBar(false)
                     if (paymentsList.isEmpty()) {
                         purchasesView.setupStatusText("No results returned.")
                     } else {
@@ -117,14 +121,19 @@ class PurchasesPresenter @Inject constructor(preferenceProvider: PreferenceProvi
     //region ================= Scroll Function =================
 
     fun requestScrollToDown() {
-        purchasesView.scrollToPosition(purchasesModel.sizePurchaseList - 1)
+        paymentsListSize?.also {
+            purchasesView.scrollToPosition(it - 1)
+            setScrollPurchasesList(false)
+        }
     }
 
     fun checkPositionAdapter(position: Int) {
-        if (position <= purchasesModel.sizePurchaseList - 10 && isScrollPurchasesList()) {
-            purchasesView.showBottomScroll()
-        } else {
-            purchasesView.hideBottomScroll()
+        paymentsListSize?.also {
+            if (position <= it - 10 && isScrollPurchasesList()) {
+                purchasesView.showBottomScroll()
+            } else {
+                purchasesView.hideBottomScroll()
+            }
         }
     }
 

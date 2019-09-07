@@ -6,13 +6,18 @@ import com.bugtsa.casher.R
 import com.bugtsa.casher.data.dto.PaymentDto
 import com.bugtsa.casher.data.dto.PaymentsByDayRes
 import com.bugtsa.casher.ui.OnChangePosition
+import com.bugtsa.casher.utils.autoNotify
 import com.bugtsa.casher.utils.visibility
 import kotlinx.android.synthetic.main.item_payment_caption.view.*
 import kotlinx.android.synthetic.main.item_purchase.view.*
+import kotlin.properties.Delegates
 
-class PurchaseAdapter(val paymentsByDayList: List<PaymentsByDayRes>,
-                      val onChangePosition: OnChangePosition)
+class PurchaseAdapter(private val onChangePosition: OnChangePosition)
     : androidx.recyclerview.widget.RecyclerView.Adapter<PurchaseAdapter.ViewHolder>() {
+
+    private var paymentsByDayList: List<PaymentsByDayRes> by Delegates.observable(initialValue = listOf(), onChange = { property, oldValue, newValue ->
+        autoNotify(oldValue, newValue)
+    })
 
     //region ================= Implements Methods =================
 
@@ -36,6 +41,10 @@ class PurchaseAdapter(val paymentsByDayList: List<PaymentsByDayRes>,
     }
 
     //endregion
+
+    fun setItems(itemList: List<PaymentsByDayRes>) {
+        this.paymentsByDayList = itemList
+    }
 
     //region ================= View Holder =================
 

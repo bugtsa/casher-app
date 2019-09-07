@@ -1,6 +1,7 @@
 package com.bugtsa.casher.ui.screens.purchases.add
 
 import android.annotation.SuppressLint
+import android.content.Context
 import android.graphics.Color
 import android.os.Bundle
 import android.view.*
@@ -11,35 +12,36 @@ import com.borax12.materialdaterangepicker.time.TimePickerDialog
 import com.bugtsa.casher.R
 import com.maxproj.calendarpicker.Builder
 import kotlinx.android.synthetic.main.controller_add_purchase.*
+import pro.horovodovodo4ka.bones.Bone
 import pro.horovodovodo4ka.bones.Finger
-import pro.horovodovodo4ka.bones.Phalanx
-import pro.horovodovodo4ka.bones.extensions.closest
+import pro.horovodovodo4ka.bones.extensions.dismiss
 import pro.horovodovodo4ka.bones.persistance.BonePersisterInterface
-import pro.horovodovodo4ka.bones.ui.ScreenInterface
-import pro.horovodovodo4ka.bones.ui.delegates.Page
+import pro.horovodovodo4ka.bones.ui.FingerNavigatorInterface
+import pro.horovodovodo4ka.bones.ui.delegates.FingerNavigator
+import pro.horovodovodo4ka.bones.ui.extensions.addNavigationToToolbar
 import toothpick.Scope
 import toothpick.Toothpick
 import java.util.*
 import javax.inject.Inject
 
+interface AddPaymentStackPresentable {
+    val fragmentTitle: String
+}
 
-class AddPurchaseScreen : Phalanx() {
 
-    fun showRootView() {
-        val bot = closest<Finger>()?.phalanxes?.first()
-    }
-
+//class AddPurchaseScreen : Phalanx() {
+open class AddPurchaseScreen (rootPhalanx: Bone? = null) : Finger(rootPhalanx), AddPaymentStackPresentable {
     data class ArgbValues(val alpha: Int,
                           val red: Int,
                           val green: Int,
                           val blue: Int) {
 
         override fun toString(): String {
-            return "Alpha: ${this.alpha} Red: ${this.red} Green: ${this.green} Blue: ${this.blue}"
+            return "R: ${this.red} G: ${this.green} B: ${this.blue}"
         }
     }
 
-    lateinit var argbValues: ArgbValues
+    var argbValues: ArgbValues
     val color = Random().let {
         argbValues = ArgbValues(alpha = 255, red = it.nextInt(256),
                 green = it.nextInt(256), blue = it.nextInt(256))
@@ -47,12 +49,17 @@ class AddPurchaseScreen : Phalanx() {
     }
 
     override val seed = { AddPurchaseFragment() }
+
+    override val fragmentTitle: String
+        get() = "[${(parentBone as? Finger)?.phalanxes?.size ?: 0}] " + argbValues.toString()
 }
 
 @Suppress("DEPRECATED_IDENTITY_EQUALS")
 @SuppressLint("MissingSuperCall")
 class AddPurchaseFragment : Fragment(), AddPurchaseView, TimePickerDialog.OnTimeSetListener,
-        ScreenInterface<AddPurchaseScreen> by Page(), BonePersisterInterface<AddPurchaseScreen> {
+//        ScreenInterface<AddPurchaseScreen> by Page(),
+        FingerNavigatorInterface<AddPurchaseScreen> by FingerNavigator(R.id.add_payment_container),
+        BonePersisterInterface<AddPurchaseScreen> {
 
     @Inject
     lateinit var presenter: AddPurchasePresenter
@@ -83,12 +90,12 @@ class AddPurchaseFragment : Fragment(), AddPurchaseView, TimePickerDialog.OnTime
             presenter.checkCategorySaveOnDatabase(price_purchase_et.text.toString(),
                     category_purchase_et.text.toString())
         }
-        cancel_purchase.setOnClickListener { processBackPress() }
+        cancel_purchase.setOnClickListener { completedAddPurchase() }
 
         view.setBackgroundColor(bone.color)
         color_demo.text = bone.argbValues.toString()
 
-        refreshUI()
+        onRefresh()
     }
 
     override fun onDestroyView() {
@@ -101,30 +108,56 @@ class AddPurchaseFragment : Fragment(), AddPurchaseView, TimePickerDialog.OnTime
 
     override fun onSaveInstanceState(outState: Bundle) {
         super<BonePersisterInterface>.onSaveInstanceState(outState)
-        super<androidx.fragment.app.Fragment>.onSaveInstanceState(outState)
+        super<Fragment>.onSaveInstanceState(outState)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super<BonePersisterInterface>.onCreate(savedInstanceState)
-        super<androidx.fragment.app.Fragment>.onCreate(savedInstanceState)
+        super<Fragment>.onCreate(savedInstanceState)
+    }
+
+    override fun onAttach(context: Context?) {
+        super.onAttach(context)
+        managerProvider = ::getChildFragmentManager
+    }
+
+    override fun onDetach() {
+        super.onDetach()
+        managerProvider = null
+    }
+
+    override fun onRefresh() {
+        super<FingerNavigatorInterface>.onRefresh()
+
+        if (view == null) return
+
+        val title = bone.fragmentTitle
+        when (title) {
+            null -> toolbar.visibility = View.GONE
+            else -> {
+                toolbar.visibility = View.VISIBLE
+                toolbar.title = title
+
+                addNavigationToToolbar(toolbar, R.drawable.ic_arrow_back_white)
+            }
+        }
     }
 
     //region ================= Add Purchase View =================
 
     override fun completedAddPurchase() {
-        processBackPress()
+//        bone.processBackPress()
+//        bone.goBack()
+        bone.dismiss()
     }
 
     override fun showProgressBar() {
-//        binding.pro
     }
 
     override fun hideProgressBar() {
-//        binding.pro
     }
 
     override fun setSearchText(result: String) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
     override fun setupCategoriesList(categoriesList: List<String>) {

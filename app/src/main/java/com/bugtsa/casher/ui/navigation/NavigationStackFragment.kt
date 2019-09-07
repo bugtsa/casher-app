@@ -3,9 +3,8 @@ package com.bugtsa.casher.ui.navigation
 import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
+import androidx.fragment.app.Fragment
 import com.bugtsa.casher.R
 import com.bugtsa.casher.ui.screens.TestScreen
 import kotlinx.android.synthetic.main.fragment_navigation_stack.*
@@ -27,7 +26,7 @@ open class NavigationStack(rootPhalanx: Bone? = null) : Finger(rootPhalanx) {
 }
 
 @SuppressLint("MissingSuperCall")
-open class NavigationStackFragment : androidx.fragment.app.Fragment(),
+open class NavigationStackFragment : Fragment(),
     BonePersisterInterface<NavigationStack>,
     FingerNavigatorInterface<NavigationStack> by FingerNavigator(R.id.stack_fragment_container) {
 
@@ -50,8 +49,6 @@ open class NavigationStackFragment : androidx.fragment.app.Fragment(),
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-//        bone.present(SingUpScreen())
 
         push_button.setOnClickListener {
             bone.push(TestScreen())

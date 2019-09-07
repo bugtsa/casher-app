@@ -32,7 +32,6 @@ class AddPurchasePresenter @Inject constructor(compositeDisposable: CompositeDis
     private var purchaseModel: PurchaseModel = injectPurchaseModel
     private var categoryDataStore: CategoryDataStore = injectCategoryDataStore
 
-    private var lastNotEmptyPurchaseRow: Int = 0
     private var customDate: String = ""
     private var customTime: String = ""
     private var checkedCustomDateTime: Boolean = false
@@ -43,7 +42,6 @@ class AddPurchasePresenter @Inject constructor(compositeDisposable: CompositeDis
 
     fun onAttachView(addPurchaseView: AddPurchaseView) {
         this.addPurchaseView = addPurchaseView
-        lastNotEmptyPurchaseRow = purchaseModel.sizePurchaseList
     }
 
     fun onViewDestroy() {

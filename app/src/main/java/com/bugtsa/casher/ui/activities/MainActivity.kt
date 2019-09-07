@@ -9,9 +9,7 @@ import android.os.Bundle
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import com.bugtsa.casher.ui.navigation.NavigationStack
-import com.bugtsa.casher.ui.navigation.PurchasesStack
-import com.bugtsa.casher.ui.navigation.TabBar
+import com.bugtsa.casher.ui.navigation.*
 import com.bugtsa.casher.ui.screens.TestScreen
 import com.bugtsa.casher.ui.screens.purchases.show.PurchasesScreen
 import com.bugtsa.casher.ui.screens.singIn.SingUpScreen
@@ -20,10 +18,7 @@ import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.GoogleApiAvailability
 import io.fabric.sdk.android.Fabric
 import kotlinx.android.synthetic.main.activity_root.*
-import pro.horovodovodo4ka.bones.Bone
-import pro.horovodovodo4ka.bones.Finger
-import pro.horovodovodo4ka.bones.Spine
-import pro.horovodovodo4ka.bones.Wrist
+import pro.horovodovodo4ka.bones.*
 import pro.horovodovodo4ka.bones.extensions.glueWith
 import pro.horovodovodo4ka.bones.extensions.processBackPress
 import pro.horovodovodo4ka.bones.statesstore.EmergencyPersister
@@ -89,11 +84,6 @@ class MainActivity : AppCompatActivity(),
 
     init {
         managerProvider = ::getSupportFragmentManager
-    }
-
-    companion object {
-        const val REQUEST_CODE_EMAIL = 11110
-        const val REQUEST_GOOGLE_PLAY_SERVICES = 1002
     }
 
     @Inject
@@ -209,19 +199,9 @@ class MainActivity : AppCompatActivity(),
 
     //endregion
 
-    //region ================= Root View =================
-
-//	override fun getPayments(allPayments: Observable<java.util.List<PaymentRes>>) {
-//		allPayments
-//			.subscribeOn(Schedulers.io())
-//			.observeOn(AndroidSchedulers.mainThread())
-//			.subscribe({ result ->
-//				Log.d("Result", "There are ${result.size} Java developers in Lagos")
-//			}, { error ->
-//				error.printStackTrace()
-//			})
-//	}
-
-    //endregion
+    companion object {
+        const val REQUEST_CODE_EMAIL = 11110
+        const val REQUEST_GOOGLE_PLAY_SERVICES = 1002
+    }
 
 }
