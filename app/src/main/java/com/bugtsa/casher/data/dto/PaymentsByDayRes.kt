@@ -8,8 +8,5 @@ data class PaymentsByDayRes(
         val date: String?,
 
         @field:SerializedName("payment")
-        val payment: PaymentDto?,
-
-        @field:SerializedName("balance_account")
-        val balance: String?
+        val payment: PaymentDto?
 )

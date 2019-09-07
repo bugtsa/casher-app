@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:paddingBottom="@dimen/spacing_normal_16"
     android:clickable="true"
     android:focusable="true"
     android:focusableInTouchMode="true">
@@ -66,15 +67,14 @@
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/purchases"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="@dimen/spacing_x_small_4"
+        android:layout_height="match_parent"
+        android:layout_marginBottom="@dimen/spacing_xx_small_8"
         android:background="@color/primaryLightColor"
-        android:paddingBottom="@dimen/spacing_x_small_4"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="@+id/right_guideline"
         app:layout_constraintStart_toStartOf="@+id/left_guideline"
         app:layout_constraintTop_toBottomOf="@id/captions"
-        app:layout_constraintVertical_bias="0.5" />
+        app:layout_constraintVertical_bias="1" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/add_purchase"

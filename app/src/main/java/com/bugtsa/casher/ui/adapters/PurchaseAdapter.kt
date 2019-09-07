@@ -54,10 +54,7 @@ class PurchaseAdapter(val paymentsByDayList: List<PaymentsByDayRes>,
     private fun showPayment(holder: ViewHolder?, payment: PaymentDto) {
         holder?.date?.visibility { false }
 
-        holder?.timePurchase?.visibility { true }
-        holder?.cost?.visibility { true }
-        holder?.category?.visibility { true }
-        holder?.modernBalance?.visibility { true }
+        setupPaymentVisibility(holder, true)
         holder?.timePurchase?.text = payment.time
         holder?.cost?.text = payment.cost
         holder?.modernBalance?.text = if (payment.balance.isNotEmpty()) payment.balance else ""
@@ -68,11 +65,15 @@ class PurchaseAdapter(val paymentsByDayList: List<PaymentsByDayRes>,
         holder?.date?.visibility { true }
         holder?.date?.text = date
 
-        holder?.category?.visibility { false }
-        holder?.cost?.visibility { false }
-        holder?.timePurchase?.visibility { false }
+        setupPaymentVisibility(holder, false)
     }
 
+    private fun setupPaymentVisibility(holder: ViewHolder?, visibility: Boolean) {
+        holder?.category?.visibility { visibility }
+        holder?.cost?.visibility { visibility }
+        holder?.modernBalance?.visibility { visibility }
+        holder?.timePurchase?.visibility { visibility }
+    }
     //endregion
 
 }
