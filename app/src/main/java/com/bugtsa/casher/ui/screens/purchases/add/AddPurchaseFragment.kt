@@ -1,15 +1,15 @@
 package com.bugtsa.casher.ui.screens.purchases.add
 
 import android.annotation.SuppressLint
-import android.content.Context
+import android.content.*
 import android.graphics.Color
 import android.os.Bundle
 import android.view.*
 import android.widget.ArrayAdapter
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import com.borax12.materialdaterangepicker.time.RadialPickerLayout
 import com.borax12.materialdaterangepicker.time.TimePickerDialog
-import com.bugtsa.casher.R
 import com.maxproj.calendarpicker.Builder
 import kotlinx.android.synthetic.main.controller_add_purchase.*
 import pro.horovodovodo4ka.bones.Bone
@@ -24,13 +24,13 @@ import toothpick.Toothpick
 import java.util.*
 import javax.inject.Inject
 
+
 interface AddPaymentStackPresentable {
     val fragmentTitle: String
 }
 
 
-//class AddPurchaseScreen : Phalanx() {
-open class AddPurchaseScreen (rootPhalanx: Bone? = null) : Finger(rootPhalanx), AddPaymentStackPresentable {
+open class AddPurchaseScreen(rootPhalanx: Bone? = null) : Finger(rootPhalanx), AddPaymentStackPresentable {
     data class ArgbValues(val alpha: Int,
                           val red: Int,
                           val green: Int,
@@ -51,14 +51,13 @@ open class AddPurchaseScreen (rootPhalanx: Bone? = null) : Finger(rootPhalanx), 
     override val seed = { AddPurchaseFragment() }
 
     override val fragmentTitle: String
-        get() = "[${(parentBone as? Finger)?.phalanxes?.size ?: 0}] " + argbValues.toString()
+        get() = argbValues.toString()
 }
 
 @Suppress("DEPRECATED_IDENTITY_EQUALS")
 @SuppressLint("MissingSuperCall")
 class AddPurchaseFragment : Fragment(), AddPurchaseView, TimePickerDialog.OnTimeSetListener,
-//        ScreenInterface<AddPurchaseScreen> by Page(),
-        FingerNavigatorInterface<AddPurchaseScreen> by FingerNavigator(R.id.add_payment_container),
+        FingerNavigatorInterface<AddPurchaseScreen> by FingerNavigator(com.bugtsa.casher.R.id.add_payment_container),
         BonePersisterInterface<AddPurchaseScreen> {
 
     @Inject
@@ -69,7 +68,7 @@ class AddPurchaseFragment : Fragment(), AddPurchaseView, TimePickerDialog.OnTime
     //region ================= Implements Methods =================
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        return inflater.inflate(R.layout.controller_add_purchase, container, false)
+        return inflater.inflate(com.bugtsa.casher.R.layout.controller_add_purchase, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -137,8 +136,14 @@ class AddPurchaseFragment : Fragment(), AddPurchaseView, TimePickerDialog.OnTime
             else -> {
                 toolbar.visibility = View.VISIBLE
                 toolbar.title = title
+                toolbar.setOnClickListener {
+                    val cm = context?.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+                    val cData = ClipData.newPlainText("text", title)
+                    cm.primaryClip = cData
+                    Toast.makeText(context, "Copied to clipboard", Toast.LENGTH_SHORT).show()
+                }
 
-                addNavigationToToolbar(toolbar, R.drawable.ic_arrow_back_white)
+                addNavigationToToolbar(toolbar, com.bugtsa.casher.R.drawable.ic_arrow_back_white)
             }
         }
     }
@@ -146,8 +151,6 @@ class AddPurchaseFragment : Fragment(), AddPurchaseView, TimePickerDialog.OnTime
     //region ================= Add Purchase View =================
 
     override fun completedAddPurchase() {
-//        bone.processBackPress()
-//        bone.goBack()
         bone.dismiss()
     }
 
@@ -169,11 +172,11 @@ class AddPurchaseFragment : Fragment(), AddPurchaseView, TimePickerDialog.OnTime
     }
 
     override fun setupCurrentDateAndTime(dateAndTime: String) {
-        date_purchase.text = activity!!.resources.getString(R.string.current_date_and_time) + dateAndTime
+        date_purchase.text = activity!!.resources.getString(com.bugtsa.casher.R.string.current_date_and_time) + dateAndTime
     }
 
     override fun setupCustomDateAndTime(date: String, time: String) {
-        date_purchase.text = activity!!.resources.getString(R.string.changed_date_and_time) + "$date $time"
+        date_purchase.text = activity!!.resources.getString(com.bugtsa.casher.R.string.changed_date_and_time) + "$date $time"
     }
 
     //endregion
