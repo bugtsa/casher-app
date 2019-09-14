@@ -9,7 +9,9 @@ import android.os.Bundle
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import com.bugtsa.casher.ui.navigation.*
+import com.bugtsa.casher.ui.navigation.NavigationStack
+import com.bugtsa.casher.ui.navigation.PurchasesStack
+import com.bugtsa.casher.ui.navigation.TabBar
 import com.bugtsa.casher.ui.screens.TestScreen
 import com.bugtsa.casher.ui.screens.purchases.show.PurchasesScreen
 import com.bugtsa.casher.ui.screens.singIn.SingUpScreen
@@ -18,11 +20,14 @@ import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.GoogleApiAvailability
 import io.fabric.sdk.android.Fabric
 import kotlinx.android.synthetic.main.activity_root.*
-import pro.horovodovodo4ka.bones.*
-import pro.horovodovodo4ka.bones.extensions.glueWith
+import pro.horovodovodo4ka.bones.Bone
+import pro.horovodovodo4ka.bones.Finger
+import pro.horovodovodo4ka.bones.Spine
+import pro.horovodovodo4ka.bones.Wrist
 import pro.horovodovodo4ka.bones.extensions.processBackPress
 import pro.horovodovodo4ka.bones.statesstore.EmergencyPersister
 import pro.horovodovodo4ka.bones.statesstore.EmergencyPersisterInterface
+import pro.horovodovodo4ka.bones.statesstore.loadBones
 import pro.horovodovodo4ka.bones.ui.SpineNavigatorInterface
 import pro.horovodovodo4ka.bones.ui.delegates.NavigatorDelayedTransactions
 import pro.horovodovodo4ka.bones.ui.delegates.SpineNavigator
@@ -52,7 +57,7 @@ class RootBone(root: Bone) :
 
     override fun fingerSwitched(transition: Wrist.TransitionType) = dropExitStatus()
     override fun phalanxSwitched(transition: Finger.TransitionType) = dropExitStatus()
-    override fun boneSwitched(transition: Spine.TransitionType) = dropExitStatus()
+    override fun boneSwitched(transition: TransitionType) = dropExitStatus()
 
     fun processBack(preExitCallback: () -> Unit): Boolean {
         if (processBackPress()) {
@@ -98,15 +103,14 @@ class MainActivity : AppCompatActivity(),
     override fun onResume() {
         super.onResume()
 
-        emergencyRemovePin()
-
+        emergencyUnpin()
         bone.dropExitStatus()
 
         NavigatorDelayedTransactions.executePendingTransactions()
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        super<AppCompatActivity>.onCreate(savedInstanceState)
+        super.onCreate(savedInstanceState)
 
         Fabric.with(this, Crashlytics())
         activityScope = Toothpick.openScopes(application, this)
@@ -114,23 +118,14 @@ class MainActivity : AppCompatActivity(),
 
         presenter.onAttachView(this)
 
-        if (!emergencyLoad(savedInstanceState, this)) {
-
-            super<ActivityAppRestartCleaner>.onCreate(savedInstanceState)
-
-            bone = RootBone(
+        loadBones(savedInstanceState) {
+            RootBone(
                     TabBar(
                             PurchasesStack(SingUpScreen()),
                             TestScreen(),
-                            NavigationStack(TestScreen()))
+                            NavigationStack(TestScreen())
+                    )
             )
-
-            glueWith(bone)
-            bone.isActive = true
-
-            refreshUI()
-        } else {
-            glueWith(bone)
         }
     }
 
@@ -139,16 +134,10 @@ class MainActivity : AppCompatActivity(),
         emergencyPin(outState)
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
-
-        with(bone) {
-            sibling = null // remove strong pointer to existing activity instance
-            emergencySave {
-                it.bone = this
-            }
-        }
-    }
+//    override fun onDestroy() {
+//        super.onDestroy()
+//        saveBones()
+//    }
 
     //region ================= Request Permissions =================
 

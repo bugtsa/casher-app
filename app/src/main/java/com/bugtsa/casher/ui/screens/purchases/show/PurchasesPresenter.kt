@@ -53,8 +53,8 @@ class PurchasesPresenter @Inject constructor(preferenceProvider: PreferenceProvi
                         })
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe({ t -> Timber.d("PurchasesPresenter", "verify at check exist categories $t") },
-                        { t -> Timber.e("PurchasesPresenter", "error at check exist categories $t") })
+                .subscribe({ t -> Timber.d( "verify at check exist categories $t") },
+                        { t -> Timber.e( "error at check exist categories $t") })
                 .also { bag.add(it) }
     }
 

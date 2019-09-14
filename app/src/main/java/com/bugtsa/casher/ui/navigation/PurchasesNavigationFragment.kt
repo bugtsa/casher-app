@@ -31,7 +31,7 @@ open class PurchasesNavigationFragment : Fragment(),
     BonePersisterInterface<PurchasesStack>,
     FingerNavigatorInterface<PurchasesStack> by FingerNavigator(R.id.stack_fragment_container){
 
-    override fun onAttach(context: Context?) {
+    override fun onAttach(context: Context) {
         super.onAttach(context)
         managerProvider = ::getChildFragmentManager
     }

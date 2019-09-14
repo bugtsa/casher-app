@@ -30,7 +30,7 @@ class PurchasesScreen(rootPhalanx: Bone? = null) : Finger(rootPhalanx) {
 }
 
 @SuppressLint("MissingSuperCall")
-class PurchasesFragment : Fragment(), PurchasesView,
+class PurchasesFragment : Fragment(R.layout.fragment_purchases), PurchasesView,
         FingerNavigatorInterface<PurchasesScreen> by FingerNavigator(R.id.payments_container),
         BonePersisterInterface<PurchasesScreen> {
 
@@ -42,14 +42,6 @@ class PurchasesFragment : Fragment(), PurchasesView,
     private lateinit var mainControllerScope: Scope
 
     //region ================= Implements Methods =================
-
-    override fun onCreateView(
-            inflater: LayoutInflater,
-            container: ViewGroup?,
-            savedInstanceState: Bundle?
-    ): View? {
-        return inflater.inflate(R.layout.fragment_purchases, container, false)
-    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -79,7 +71,7 @@ class PurchasesFragment : Fragment(), PurchasesView,
         Toothpick.closeScope(this)
     }
 
-    override fun onAttach(context: Context?) {
+    override fun onAttach(context: Context) {
         super.onAttach(context)
         managerProvider = ::getChildFragmentManager
     }
@@ -91,12 +83,12 @@ class PurchasesFragment : Fragment(), PurchasesView,
 
     override fun onSaveInstanceState(outState: Bundle) {
         super<BonePersisterInterface>.onSaveInstanceState(outState)
-        super<androidx.fragment.app.Fragment>.onSaveInstanceState(outState)
+        super<Fragment>.onSaveInstanceState(outState)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super<BonePersisterInterface>.onCreate(savedInstanceState)
-        super<androidx.fragment.app.Fragment>.onCreate(savedInstanceState)
+        super<Fragment>.onCreate(savedInstanceState)
     }
 
     //endregion
@@ -121,8 +113,8 @@ class PurchasesFragment : Fragment(), PurchasesView,
         presenter.requestScrollToDown()
     }
 
-    override fun setupStatusText(caption: String) {
-        status_tv.text = caption
+    override fun setupStatusText(status: String) {
+        status_tv.text = status
         status_tv.visibility { true }
     }
 

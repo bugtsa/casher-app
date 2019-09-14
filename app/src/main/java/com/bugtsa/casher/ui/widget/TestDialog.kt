@@ -1,6 +1,7 @@
 package com.bugtsa.casher.ui.widget
 
 import android.annotation.SuppressLint
+import android.content.DialogInterface
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -12,6 +13,7 @@ import pro.horovodovodo4ka.bones.persistance.BonePersisterInterface
 import pro.horovodovodo4ka.bones.ui.FragmentSibling
 import pro.horovodovodo4ka.bones.ui.delegates.Page
 import pro.horovodovodo4ka.bones.ui.helpers.BoneDialogFragment
+import timber.log.Timber
 import java.util.*
 
 class WidgetDialogBone(value: Date?) : Phalanx() {

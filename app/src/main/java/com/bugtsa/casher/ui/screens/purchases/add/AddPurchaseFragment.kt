@@ -1,15 +1,21 @@
 package com.bugtsa.casher.ui.screens.purchases.add
 
 import android.annotation.SuppressLint
-import android.content.*
+import android.content.ClipData
+import android.content.ClipboardManager
+import android.content.Context
 import android.graphics.Color
 import android.os.Bundle
-import android.view.*
+import android.view.LayoutInflater
+import android.view.MotionEvent
+import android.view.View
+import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import com.borax12.materialdaterangepicker.time.RadialPickerLayout
 import com.borax12.materialdaterangepicker.time.TimePickerDialog
+import com.bugtsa.casher.R
 import com.maxproj.calendarpicker.Builder
 import kotlinx.android.synthetic.main.controller_add_purchase.*
 import pro.horovodovodo4ka.bones.Bone
@@ -56,7 +62,7 @@ open class AddPurchaseScreen(rootPhalanx: Bone? = null) : Finger(rootPhalanx), A
 
 @Suppress("DEPRECATED_IDENTITY_EQUALS")
 @SuppressLint("MissingSuperCall")
-class AddPurchaseFragment : Fragment(), AddPurchaseView, TimePickerDialog.OnTimeSetListener,
+class AddPurchaseFragment : Fragment(R.layout.controller_add_purchase), AddPurchaseView, TimePickerDialog.OnTimeSetListener,
         FingerNavigatorInterface<AddPurchaseScreen> by FingerNavigator(com.bugtsa.casher.R.id.add_payment_container),
         BonePersisterInterface<AddPurchaseScreen> {
 
@@ -66,10 +72,6 @@ class AddPurchaseFragment : Fragment(), AddPurchaseView, TimePickerDialog.OnTime
     private lateinit var addPurchaseScope: Scope
 
     //region ================= Implements Methods =================
-
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        return inflater.inflate(com.bugtsa.casher.R.layout.controller_add_purchase, container, false)
-    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -115,7 +117,7 @@ class AddPurchaseFragment : Fragment(), AddPurchaseView, TimePickerDialog.OnTime
         super<Fragment>.onCreate(savedInstanceState)
     }
 
-    override fun onAttach(context: Context?) {
+    override fun onAttach(context: Context) {
         super.onAttach(context)
         managerProvider = ::getChildFragmentManager
     }
@@ -131,21 +133,16 @@ class AddPurchaseFragment : Fragment(), AddPurchaseView, TimePickerDialog.OnTime
         if (view == null) return
 
         val title = bone.fragmentTitle
-        when (title) {
-            null -> toolbar.visibility = View.GONE
-            else -> {
-                toolbar.visibility = View.VISIBLE
-                toolbar.title = title
-                toolbar.setOnClickListener {
-                    val cm = context?.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-                    val cData = ClipData.newPlainText("text", title)
-                    cm.primaryClip = cData
-                    Toast.makeText(context, "Copied to clipboard", Toast.LENGTH_SHORT).show()
-                }
-
-                addNavigationToToolbar(toolbar, com.bugtsa.casher.R.drawable.ic_arrow_back_white)
-            }
+        toolbar.visibility = View.VISIBLE
+        toolbar.title = title
+        toolbar.setOnClickListener {
+            val cm = context?.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+            val cData = ClipData.newPlainText("text", title)
+            cm.primaryClip = cData
+            Toast.makeText(context, "Copied to clipboard", Toast.LENGTH_SHORT).show()
         }
+
+        addNavigationToToolbar(toolbar, com.bugtsa.casher.R.drawable.ic_arrow_back_white)
     }
 
     //region ================= Add Purchase View =================
@@ -155,28 +152,33 @@ class AddPurchaseFragment : Fragment(), AddPurchaseView, TimePickerDialog.OnTime
     }
 
     override fun showProgressBar() {
+        TODO()
     }
 
     override fun hideProgressBar() {
+        TODO()
     }
 
     override fun setSearchText(result: String) {
+        TODO()
     }
 
     override fun setupCategoriesList(categoriesList: List<String>) {
         val adapter: ArrayAdapter<String> = ArrayAdapter(
-                activity,
+                requireContext(),
                 android.R.layout.simple_dropdown_item_1line,
                 categoriesList)
         category_purchase_et.setAdapter(adapter)
     }
 
+    @SuppressLint("SetTextI18n")
     override fun setupCurrentDateAndTime(dateAndTime: String) {
-        date_purchase.text = activity!!.resources.getString(com.bugtsa.casher.R.string.current_date_and_time) + dateAndTime
+        date_purchase.text = requireContext().getString(com.bugtsa.casher.R.string.current_date_and_time) + dateAndTime
     }
 
+    @SuppressLint("SetTextI18n")
     override fun setupCustomDateAndTime(date: String, time: String) {
-        date_purchase.text = activity!!.resources.getString(com.bugtsa.casher.R.string.changed_date_and_time) + "$date $time"
+        date_purchase.text = requireContext().getString(com.bugtsa.casher.R.string.changed_date_and_time) + "$date $time"
     }
 
     //endregion
@@ -202,7 +204,7 @@ class AddPurchaseFragment : Fragment(), AddPurchaseView, TimePickerDialog.OnTime
                 now.get(Calendar.MINUTE),
                 true
         )
-        tpd.show(activity!!.fragmentManager, "TagTimePickerDialog")
+        tpd.show(requireActivity().fragmentManager, "TagTimePickerDialog")
     }
 
     override fun onTimeSet(view: RadialPickerLayout?, hourOfDay: Int, minute: Int, hourOfDayEnd: Int, minuteEnd: Int) {
