@@ -11,7 +11,7 @@ interface CategoryDao {
     @Update(onConflict = OnConflictStrategy.REPLACE)
     fun update(category: CategoryEntity)
 
-//    @Delete
+    //    @Delete
 //    fun delete(categoryText: String)
 //
     @Query("SELECT * FROM category")

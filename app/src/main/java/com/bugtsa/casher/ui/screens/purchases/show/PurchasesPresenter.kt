@@ -2,6 +2,7 @@ package com.bugtsa.casher.ui.screens.purchases.show
 
 import com.bugtsa.casher.data.dto.CategoryDto
 import com.bugtsa.casher.data.local.database.entity.category.CategoryDataStore
+import com.bugtsa.casher.data.local.database.entity.payment.PaymentDataStore
 import com.bugtsa.casher.data.models.PurchaseModel
 import com.bugtsa.casher.di.inject.PreferenceProvider
 import io.reactivex.Flowable
@@ -14,6 +15,7 @@ import javax.inject.Inject
 
 class PurchasesPresenter @Inject constructor(preferenceProvider: PreferenceProvider,
                                              injectPurchaseModel: PurchaseModel,
+                                             injectPaymentDataStore: PaymentDataStore,
                                              injectCategoryDataStore: CategoryDataStore) {
 
     private var purchasesModel: PurchaseModel = injectPurchaseModel
@@ -40,7 +42,7 @@ class PurchasesPresenter @Inject constructor(preferenceProvider: PreferenceProvi
     fun processData() {
         purchasesView.showProgressBar(true)
         performCheckStorageCategoriesList()
-        getPaymentsByDay()
+        performCheckStoragePaymentsList()
     }
 
     //region ================= Compare Storage and Network Categories =================
@@ -53,8 +55,11 @@ class PurchasesPresenter @Inject constructor(preferenceProvider: PreferenceProvi
                         })
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe({ t -> Timber.d( "verify at check exist categories $t") },
-                        { t -> Timber.e( "error at check exist categories $t") })
+                .subscribe({ t -> Timber.d("PurchasesPresenter", "verify at check exist categories $t") },
+                        { t ->
+                            purchasesView.showProgressBar(false)
+                            purchasesView.setupStatusText("Server not allow, trying later")
+                            Timber.e("PurchasesPresenter", "error at check exist categories $t") })
                 .also { bag.add(it) }
     }
 
@@ -84,6 +89,11 @@ class PurchasesPresenter @Inject constructor(preferenceProvider: PreferenceProvi
     }
 
     //endregion
+
+    private fun performCheckStoragePaymentsList() {
+        getPaymentsByDay()
+
+    }
 
     //region ================= DataBase =================
 

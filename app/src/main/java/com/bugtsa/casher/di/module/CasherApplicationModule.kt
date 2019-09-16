@@ -1,11 +1,18 @@
 package com.bugtsa.casher.di.module
 
 import android.app.Application
-import com.bugtsa.casher.data.models.PurchaseModel
-import com.bugtsa.casher.di.inject.*
+import com.bugtsa.casher.data.local.database.CasherDatabase
 import com.bugtsa.casher.data.local.database.entity.category.CategoryDao
 import com.bugtsa.casher.data.local.database.entity.category.CategoryDataStore
+import com.bugtsa.casher.data.local.database.entity.payment.PaymentDao
+import com.bugtsa.casher.data.local.database.entity.payment.PaymentDataStore
 import com.bugtsa.casher.data.local.prefs.LocalSettingsRepository
+import com.bugtsa.casher.data.models.PurchaseModel
+import com.bugtsa.casher.di.inject.*
+import com.bugtsa.casher.di.inject.category.CategoryDaoProvider
+import com.bugtsa.casher.di.inject.category.LocalCategoryDateStoreProvider
+import com.bugtsa.casher.di.inject.payment.LocalPaymentDataStoreProvider
+import com.bugtsa.casher.di.inject.payment.PaymentDaoProvider
 import com.bugtsa.casher.networking.CasherApi
 import io.reactivex.disposables.CompositeDisposable
 import toothpick.config.Module
@@ -25,11 +32,22 @@ class CasherApplicationModule : Module {
                 PurchaseModelProvider(
                         casherApi.get()))
 
-        val categoryDao = CategoryDaoProvider(application)
+        val casherDataBaseProvider = DataBaseProvider(application)
+        bind(CasherDatabase::class.java).toProviderInstance(casherDataBaseProvider)
+
+        val categoryDao = CategoryDaoProvider(casherDataBaseProvider.get())
         bind(CategoryDao::class.java).toProviderInstance(categoryDao)
         bind(CategoryDataStore::class.java).toProviderInstance(
                 LocalCategoryDateStoreProvider(
                         categoryDao.get()
+                )
+        )
+
+        val paymentDao = PaymentDaoProvider(casherDataBaseProvider.get())
+        bind(PaymentDao::class.java).toProviderInstance(paymentDao)
+        bind(PaymentDataStore::class.java).toProviderInstance(
+                LocalPaymentDataStoreProvider(
+                        paymentDao.get()
                 )
         )
     }

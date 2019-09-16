@@ -3,7 +3,9 @@ package com.bugtsa.casher.ui.navigation
 import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Bundle
-import android.view.*
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import com.bugtsa.casher.R
 import com.bugtsa.casher.ui.screens.TestScreen
@@ -27,8 +29,8 @@ open class NavigationStack(rootPhalanx: Bone? = null) : Finger(rootPhalanx) {
 
 @SuppressLint("MissingSuperCall")
 open class NavigationStackFragment : Fragment(),
-    BonePersisterInterface<NavigationStack>,
-    FingerNavigatorInterface<NavigationStack> by FingerNavigator(R.id.stack_fragment_container) {
+        BonePersisterInterface<NavigationStack>,
+        FingerNavigatorInterface<NavigationStack> by FingerNavigator(R.id.stack_fragment_container) {
 
     // region ContainerFragmentSibling
 
@@ -45,7 +47,7 @@ open class NavigationStackFragment : Fragment(),
     // endregion
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? =
-        inflater.inflate(R.layout.fragment_navigation_stack, container, false)
+            inflater.inflate(R.layout.fragment_navigation_stack, container, false)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)

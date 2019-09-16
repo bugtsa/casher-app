@@ -22,6 +22,10 @@ project.ext {
     rxLintVersion = "1.6"
 }
 
+detekt {
+    config = files("detekt-config.yml")
+}
+
 android {
     compileSdkVersion 28
     defaultConfig {

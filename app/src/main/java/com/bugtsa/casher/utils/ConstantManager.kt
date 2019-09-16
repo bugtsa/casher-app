@@ -7,12 +7,12 @@ class ConstantManager {
     }
 
     object CategoryNetwork {
-        const val CATEGORY_NAME_METHOD = "/category"
+        const val CATEGORY_NAME_METHOD = "category"
         const val NAME_CATEGORY_PARAMETER = "name"
     }
 
     object Network {
-        const val PAYMENT_NAME_METHOD = "/payment"
+        const val PAYMENT_NAME_METHOD = "payment"
         const val PAGE_PAYMENT_NAME_METHOD = "/page"
         const val LAST_PAGE_PAYMENT_NAME_METHOD = "/last"
         const val USER_ID_PARAMETER = "userId"

@@ -9,7 +9,7 @@ buildscript {
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:3.5.0'
-        classpath 'io.fabric.tools:gradle:1.28.1'
+        classpath 'io.fabric.tools:gradle:1.31.0'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
     }
 }
@@ -19,6 +19,8 @@ plugins {
     id "io.gitlab.arturbosch.detekt" version "1.0.1"
     id 'org.sonarqube' version '2.7.1'
 }
+
+
 
 allprojects {
     repositories {

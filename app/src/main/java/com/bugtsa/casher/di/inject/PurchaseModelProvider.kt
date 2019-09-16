@@ -6,15 +6,9 @@ import javax.inject.Provider
 import javax.inject.Singleton
 
 @Singleton
-class PurchaseModelProvider : Provider<PurchaseModel> {
-
-    private val purchaseModel : PurchaseModel
-
-    constructor(casherApi: CasherApi) {
-        purchaseModel = PurchaseModel(casherApi)
-    }
+class PurchaseModelProvider(private val casherApi: CasherApi) : Provider<PurchaseModel> {
 
     override fun get(): PurchaseModel {
-        return purchaseModel
+        return PurchaseModel(casherApi)
     }
 }

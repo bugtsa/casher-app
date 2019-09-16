@@ -15,7 +15,7 @@ class CasherRestApiProvider: Provider<CasherApi> {
         private const val CONNECTION_TIMEOUT = 60L
     }
 
-    val casherApi: CasherApi
+    private val casherApi: CasherApi
 
     init {
         val okHttpClient = OkHttpClient.Builder()
