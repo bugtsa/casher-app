@@ -2,9 +2,7 @@ package com.bugtsa.casher.ui.screens.purchases.show
 
 import com.bugtsa.casher.data.dto.CategoryDto
 import com.bugtsa.casher.data.local.database.entity.category.CategoryDataStore
-import com.bugtsa.casher.data.local.database.entity.payment.PaymentDataStore
 import com.bugtsa.casher.data.models.PurchaseModel
-import com.bugtsa.casher.di.inject.PreferenceProvider
 import io.reactivex.Flowable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
@@ -13,9 +11,7 @@ import io.reactivex.schedulers.Schedulers
 import timber.log.Timber
 import javax.inject.Inject
 
-class PurchasesPresenter @Inject constructor(preferenceProvider: PreferenceProvider,
-                                             injectPurchaseModel: PurchaseModel,
-                                             injectPaymentDataStore: PaymentDataStore,
+class PurchasesPresenter @Inject constructor(injectPurchaseModel: PurchaseModel,
                                              injectCategoryDataStore: CategoryDataStore) {
 
     private var purchasesModel: PurchaseModel = injectPurchaseModel
