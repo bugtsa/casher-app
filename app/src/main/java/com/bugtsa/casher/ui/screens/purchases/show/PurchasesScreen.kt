@@ -6,6 +6,8 @@ import android.os.Bundle
 import android.view.View
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProviders
 import com.bugtsa.casher.R
 import com.bugtsa.casher.data.dto.PaymentsByDayRes
 import com.bugtsa.casher.ui.OnChangePosition
@@ -21,7 +23,6 @@ import pro.horovodovodo4ka.bones.ui.FingerNavigatorInterface
 import pro.horovodovodo4ka.bones.ui.delegates.FingerNavigator
 import toothpick.Scope
 import toothpick.Toothpick
-import javax.inject.Inject
 
 
 class PurchasesScreen(rootPhalanx: Bone? = null) : Finger(rootPhalanx) {
@@ -34,9 +35,9 @@ class PurchasesFragment : Fragment(R.layout.fragment_purchases), PurchasesView,
         FingerNavigatorInterface<PurchasesScreen> by FingerNavigator(R.id.payments_container),
         BonePersisterInterface<PurchasesScreen> {
 
-    @Inject
-    lateinit var presenter: PurchasesPresenter
-
+//    @Inject
+//    lateinit var presenter: PurchasesPresenter
+    private lateinit var viewModel: PurchasesViewModel
     private lateinit var paymentsAdapter: PurchaseAdapter
 
     private lateinit var mainControllerScope: Scope
@@ -48,17 +49,22 @@ class PurchasesFragment : Fragment(R.layout.fragment_purchases), PurchasesView,
         setupListeners()
         initPaymentsAdapter()
         initView()
-        bindInjection()
+//        bindInjection()
 
-        presenter.onAttachView(this)
-        presenter.processData()
+        val viewModelFactory = Toothpick
+                .openScope(requireActivity().application)
+                .getInstance(PurchaseViewModelFactory::class.java)
+        viewModel = ViewModelProviders.of(this, viewModelFactory)[PurchasesViewModel::class.java]
+        bindViewModel()
+//        presenter.onAttachView(this)
+        viewModel.processData()
 
         refreshUI()
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
-        presenter.onViewDestroy()
+//        presenter.onViewDestroy()
         Toothpick.closeScope(this)
     }
 
@@ -101,7 +107,7 @@ class PurchasesFragment : Fragment(R.layout.fragment_purchases), PurchasesView,
 
     override fun setupPurchaseList(paymentsByDayList: List<PaymentsByDayRes>) {
         paymentsAdapter.setItems(paymentsByDayList)
-        presenter.requestScrollToDown()
+        viewModel.requestScrollToDown()
     }
 
     override fun setupStatusText(status: String) {
@@ -119,6 +125,32 @@ class PurchasesFragment : Fragment(R.layout.fragment_purchases), PurchasesView,
     }
 
     //endregion
+
+    private fun bindViewModel() {
+        viewModel.observeProgress().observe(viewLifecycleOwner, Observer {
+            showProgressBar(it)
+        })
+
+        viewModel.observeShowBottomScroll().observe(viewLifecycleOwner, Observer {
+            if (it) {
+                showBottomScroll()
+            } else {
+                hideBottomScroll()
+            }
+        })
+
+        viewModel.observeScrollToPosition().observe(viewLifecycleOwner, Observer {
+            scrollToPosition(it)
+        })
+
+        viewModel.observeStatusText().observe(viewLifecycleOwner, Observer {
+            setupStatusText(it)
+        })
+
+        viewModel.observeSetupPurchase().observe(viewLifecycleOwner, Observer {
+            setupPurchaseList(it)
+        })
+    }
 
     //region ================= Setup Ui =================
 
@@ -139,7 +171,7 @@ class PurchasesFragment : Fragment(R.layout.fragment_purchases), PurchasesView,
 
     private fun requestToScrollDown(): View.OnClickListener? {
         return View.OnClickListener {
-            presenter.requestScrollToDown()
+            viewModel.requestScrollToDown()
         }
     }
 
@@ -151,7 +183,7 @@ class PurchasesFragment : Fragment(R.layout.fragment_purchases), PurchasesView,
             override fun onScrolled(recyclerView: androidx.recyclerview.widget.RecyclerView, dx: Int, dy: Int) {
                 super.onScrolled(recyclerView, dx, dy)
                 if (dy > 0 || dy < 0) {
-                    presenter.setScrollPurchasesList(true)
+                    viewModel.setScrollPurchasesList(true)
                 }
             }
         })
@@ -162,7 +194,7 @@ class PurchasesFragment : Fragment(R.layout.fragment_purchases), PurchasesView,
         purchases.layoutManager = linearLayoutManager
         paymentsAdapter = PurchaseAdapter(object : OnChangePosition {
             override fun changePosition(position: Int) {
-                presenter.checkPositionAdapter(position)
+                viewModel.checkPositionAdapter(position)
             }
         })
         purchases.adapter = paymentsAdapter
