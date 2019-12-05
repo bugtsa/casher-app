@@ -3,7 +3,7 @@ package com.bugtsa.casher.ui.screens.purchases.show
 import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Bundle
-import android.view.*
+import android.view.View
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import com.bugtsa.casher.R
@@ -45,19 +45,10 @@ class PurchasesFragment : Fragment(R.layout.fragment_purchases), PurchasesView,
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        captions.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.primaryDarkColor))
-
-        val linearLayoutManager = androidx.recyclerview.widget.LinearLayoutManager(activity)
-        purchases.layoutManager = linearLayoutManager
-        setupScrollListener()
-        initPaymentsList()
-
-        add_purchase.setOnClickListener(showAddPurchaseController())
-        bottom_scroll.setOnClickListener(requestToScrollDown())
-
-        mainControllerScope = Toothpick.openScopes(activity, this)
-        Toothpick.inject(this, mainControllerScope)
+        setupListeners()
+        initPaymentsAdapter()
+        initView()
+        bindInjection()
 
         presenter.onAttachView(this)
         presenter.processData()
@@ -131,6 +122,15 @@ class PurchasesFragment : Fragment(R.layout.fragment_purchases), PurchasesView,
 
     //region ================= Setup Ui =================
 
+    private fun initView() {
+        captions.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.primaryDarkColor))
+    }
+
+    private fun bindInjection() {
+        mainControllerScope = Toothpick.openScopes(activity, this)
+        Toothpick.inject(this, mainControllerScope)
+    }
+
     private fun showAddPurchaseController(): View.OnClickListener? {
         return View.OnClickListener {
             bone.present( AddPurchaseScreen())
@@ -143,7 +143,10 @@ class PurchasesFragment : Fragment(R.layout.fragment_purchases), PurchasesView,
         }
     }
 
-    private fun setupScrollListener() {
+    private fun setupListeners() {
+        add_purchase.setOnClickListener(showAddPurchaseController())
+        bottom_scroll.setOnClickListener(requestToScrollDown())
+
         purchases.addOnScrollListener(object : androidx.recyclerview.widget.RecyclerView.OnScrollListener() {
             override fun onScrolled(recyclerView: androidx.recyclerview.widget.RecyclerView, dx: Int, dy: Int) {
                 super.onScrolled(recyclerView, dx, dy)
@@ -154,7 +157,9 @@ class PurchasesFragment : Fragment(R.layout.fragment_purchases), PurchasesView,
         })
     }
 
-    private fun initPaymentsList() {
+    private fun initPaymentsAdapter() {
+        val linearLayoutManager = androidx.recyclerview.widget.LinearLayoutManager(activity)
+        purchases.layoutManager = linearLayoutManager
         paymentsAdapter = PurchaseAdapter(object : OnChangePosition {
             override fun changePosition(position: Int) {
                 presenter.checkPositionAdapter(position)
