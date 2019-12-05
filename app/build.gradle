@@ -20,6 +20,7 @@ project.ext {
     okHttpVersion = "3.4.1"
     rxRelayVersion = "2.0.0"
     rxLintVersion = "1.6"
+    lifecycle = "2.1.0"
 }
 
 detekt {
@@ -78,6 +79,9 @@ dependencies {
     implementation('com.google.api-client:google-api-client-android:1.25.0') {
         exclude group: 'org.apache.httpcomponents'
     }
+
+    implementation "androidx.lifecycle:lifecycle-extensions:$lifecycle"
+    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:$lifecycle"
 
     implementation 'com.google.api-client:google-api-client:1.22.0'
     implementation 'com.google.api-client:google-api-client-android:1.22.0'

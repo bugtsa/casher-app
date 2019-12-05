@@ -6,6 +6,8 @@ import android.os.Bundle
 import android.view.View
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProviders
 import com.bugtsa.casher.R
 import com.bugtsa.casher.data.dto.PaymentsByDayRes
 import com.bugtsa.casher.ui.OnChangePosition
@@ -21,7 +23,6 @@ import pro.horovodovodo4ka.bones.ui.FingerNavigatorInterface
 import pro.horovodovodo4ka.bones.ui.delegates.FingerNavigator
 import toothpick.Scope
 import toothpick.Toothpick
-import javax.inject.Inject
 
 
 class PurchasesScreen(rootPhalanx: Bone? = null) : Finger(rootPhalanx) {
@@ -34,8 +35,9 @@ class PurchasesFragment : Fragment(R.layout.fragment_purchases), PurchasesView,
         FingerNavigatorInterface<PurchasesScreen> by FingerNavigator(R.id.payments_container),
         BonePersisterInterface<PurchasesScreen> {
 
-    @Inject
-    lateinit var presenter: PurchasesPresenter
+//    @Inject
+//    lateinit var presenter: PurchasesPresenter
+    private lateinit var presenter: PurchasesViewModel
 
     private lateinit var paymentsAdapter: PurchaseAdapter
 
@@ -48,17 +50,46 @@ class PurchasesFragment : Fragment(R.layout.fragment_purchases), PurchasesView,
         setupListeners()
         initPaymentsAdapter()
         initView()
-        bindInjection()
+//        bindInjection()
+        val viewModelFactoryJava = Toothpick
+                .openScope(requireActivity().application)
+                .getInstance(PurchasesViewModelFactory::class.java)
+        presenter = ViewModelProviders.of(this, viewModelFactoryJava)[PurchasesViewModel::class.java]
 
-        presenter.onAttachView(this)
+//        presenter.onAttachView(this)
+        bindViewModel()
         presenter.processData()
 
         refreshUI()
     }
 
+    private fun bindViewModel() {
+        presenter.observeProgress().observe(viewLifecycleOwner, Observer {
+            showProgressBar(it)
+        })
+        presenter.observeStatusText().observe(viewLifecycleOwner, Observer {
+            setupStatusText(it)
+        })
+        presenter.observePurchaseList().observe(viewLifecycleOwner, Observer {
+            setupPurchaseList(it)
+        })
+        presenter.observeScrollToPosition().observe(viewLifecycleOwner, Observer {
+            scrollToPosition(it)
+        })
+        presenter.observeBottomBarVisibility().observe(viewLifecycleOwner, Observer {
+            if (it) showBottomScroll()
+            else hideBottomScroll()
+        })
+    }
+
+    private fun bindInjection() {
+        mainControllerScope = Toothpick.openScopes(activity, this)
+        Toothpick.inject(this, mainControllerScope)
+    }
+
     override fun onDestroyView() {
         super.onDestroyView()
-        presenter.onViewDestroy()
+//        presenter.onViewDestroy()
         Toothpick.closeScope(this)
     }
 
@@ -124,11 +155,6 @@ class PurchasesFragment : Fragment(R.layout.fragment_purchases), PurchasesView,
 
     private fun initView() {
         captions.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.primaryDarkColor))
-    }
-
-    private fun bindInjection() {
-        mainControllerScope = Toothpick.openScopes(activity, this)
-        Toothpick.inject(this, mainControllerScope)
     }
 
     private fun showAddPurchaseController(): View.OnClickListener? {
