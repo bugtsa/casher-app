@@ -56,7 +56,8 @@ class PurchasesViewModel @Inject constructor(injectPurchaseModel: PurchaseModel,
         isScrollPurchasesList = false
     }
 
-    fun onViewDestroy() {
+    override fun onCleared() {
+        super.onCleared()
         bag.dispose()
     }
 

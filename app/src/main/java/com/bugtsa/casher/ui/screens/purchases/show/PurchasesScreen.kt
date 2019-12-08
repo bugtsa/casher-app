@@ -3,13 +3,17 @@ package com.bugtsa.casher.ui.screens.purchases.show
 import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Bundle
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import androidx.core.content.ContextCompat
+import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import com.bugtsa.casher.R
 import com.bugtsa.casher.data.dto.PaymentsByDayRes
+import com.bugtsa.casher.databinding.FragmentPurchasesBinding
 import com.bugtsa.casher.ui.OnChangePosition
 import com.bugtsa.casher.ui.adapters.PurchaseAdapter
 import com.bugtsa.casher.ui.screens.purchases.add.AddPurchaseScreen
@@ -31,32 +35,35 @@ class PurchasesScreen(rootPhalanx: Bone? = null) : Finger(rootPhalanx) {
 }
 
 @SuppressLint("MissingSuperCall")
-class PurchasesFragment : Fragment(R.layout.fragment_purchases), PurchasesView,
+class PurchasesFragment : Fragment(), PurchasesView,
         FingerNavigatorInterface<PurchasesScreen> by FingerNavigator(R.id.payments_container),
         BonePersisterInterface<PurchasesScreen> {
 
-//    @Inject
-//    lateinit var presenter: PurchasesPresenter
     private lateinit var viewModel: PurchasesViewModel
     private lateinit var paymentsAdapter: PurchaseAdapter
 
     private lateinit var mainControllerScope: Scope
 
+    private lateinit var binding: FragmentPurchasesBinding
+
     //region ================= Implements Methods =================
+
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        binding = DataBindingUtil.inflate(inflater, R.layout.fragment_purchases, container, false)
+        return binding.root
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setupListeners()
         initPaymentsAdapter()
         initView()
-//        bindInjection()
 
         val viewModelFactory = Toothpick
                 .openScope(requireActivity().application)
                 .getInstance(PurchaseViewModelFactory::class.java)
         viewModel = ViewModelProviders.of(this, viewModelFactory)[PurchasesViewModel::class.java]
         bindViewModel()
-//        presenter.onAttachView(this)
         viewModel.processData()
 
         refreshUI()
@@ -64,7 +71,6 @@ class PurchasesFragment : Fragment(R.layout.fragment_purchases), PurchasesView,
 
     override fun onDestroyView() {
         super.onDestroyView()
-//        presenter.onViewDestroy()
         Toothpick.closeScope(this)
     }
 
