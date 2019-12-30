@@ -6,13 +6,13 @@ import android.content.ClipboardManager
 import android.content.Context
 import android.graphics.Color
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
-import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProviders
 import com.borax12.materialdaterangepicker.time.RadialPickerLayout
 import com.borax12.materialdaterangepicker.time.TimePickerDialog
 import com.bugtsa.casher.R
@@ -25,16 +25,13 @@ import pro.horovodovodo4ka.bones.persistance.BonePersisterInterface
 import pro.horovodovodo4ka.bones.ui.FingerNavigatorInterface
 import pro.horovodovodo4ka.bones.ui.delegates.FingerNavigator
 import pro.horovodovodo4ka.bones.ui.extensions.addNavigationToToolbar
-import toothpick.Scope
 import toothpick.Toothpick
 import java.util.*
-import javax.inject.Inject
 
 
 interface AddPaymentStackPresentable {
     val fragmentTitle: String
 }
-
 
 open class AddPurchaseScreen(rootPhalanx: Bone? = null) : Finger(rootPhalanx), AddPaymentStackPresentable {
     data class ArgbValues(val alpha: Int,
@@ -66,32 +63,20 @@ class AddPurchaseFragment : Fragment(R.layout.controller_add_purchase), AddPurch
         FingerNavigatorInterface<AddPurchaseScreen> by FingerNavigator(com.bugtsa.casher.R.id.add_payment_container),
         BonePersisterInterface<AddPurchaseScreen> {
 
-    @Inject
-    lateinit var presenter: AddPurchasePresenter
-
-    private lateinit var addPurchaseScope: Scope
+    private lateinit var viewModel: AddPurchaseViewModel
 
     //region ================= Implements Methods =================
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        setupCategoriesTouchListener()
-        add_date_purchase.setOnClickListener {
-            presenter.checkSetupCustomDateAndTime(add_date_purchase.isChecked)
-        }
+        val viewModelFactory = Toothpick
+                .openScopes(activity, this)
+                .getInstance(AddPurchaseViewModelFactory::class.java)
+        viewModel = ViewModelProviders.of(this, viewModelFactory)[AddPurchaseViewModel::class.java]
 
-        addPurchaseScope = Toothpick.openScopes(activity, this)
-        Toothpick.inject(this, addPurchaseScope)
-        presenter.onAttachView(this)
-        presenter.setupCurrentDate()
-        presenter.checkExistCategoriesInDatabase()
-
-        save_purchase.setOnClickListener {
-            presenter.checkCategorySaveOnDatabase(price_purchase_et.text.toString(),
-                    category_purchase_et.text.toString())
-        }
-        cancel_purchase.setOnClickListener { completedAddPurchase() }
+        bindListeners()
+        bindViewModel()
 
         view.setBackgroundColor(bone.color)
         color_demo.text = bone.argbValues.toString()
@@ -99,9 +84,53 @@ class AddPurchaseFragment : Fragment(R.layout.controller_add_purchase), AddPurch
         onRefresh()
     }
 
+    private fun bindViewModel() {
+
+        viewModel.requestSetupCurrentDate()
+        viewModel.checkExistCategoriesInDatabase()
+
+        viewModel.observeCategoriesList().observe(viewLifecycleOwner,
+                Observer { categoriesList ->
+                    setupCategoriesList(categoriesList)
+                })
+        viewModel.observeCompleteAddPayment().observe(viewLifecycleOwner,
+                Observer {
+                    completedAddPurchase()
+                })
+        viewModel.observeSetupCurrentDate().observe(viewLifecycleOwner,
+                Observer { currentDateAndTime ->
+                    setupCurrentDateAndTime(currentDateAndTime)
+                })
+        viewModel.observeShowDatePicker().observe(viewLifecycleOwner,
+                Observer {
+                    showDatePicker()
+                })
+        viewModel.observeShowTimePicker().observe(viewLifecycleOwner,
+                Observer {
+                    showTimePicker()
+                })
+        viewModel.observeShowProgress().observe(viewLifecycleOwner,
+                Observer {
+                    showProgressBar()
+                })
+    }
+
+    private fun bindListeners() {
+        setupCategoriesTouchListener()
+        add_date_purchase.setOnClickListener {
+            viewModel.checkSetupCustomDateAndTime(add_date_purchase.isChecked)
+        }
+
+        save_purchase.setOnClickListener {
+            viewModel.checkCategorySaveOnDatabase(price_purchase_et.text.toString(),
+                    category_purchase_et.text.toString())
+        }
+        cancel_purchase.setOnClickListener { completedAddPurchase() }
+    }
+
     override fun onDestroyView() {
         super.onDestroyView()
-        presenter.onViewDestroy()
+        viewModel.onViewDestroy()
         Toothpick.closeScope(this)
     }
 
@@ -178,7 +207,7 @@ class AddPurchaseFragment : Fragment(R.layout.controller_add_purchase), AddPurch
 
     @SuppressLint("SetTextI18n")
     override fun setupCustomDateAndTime(date: String, time: String) {
-        date_purchase.text = requireContext().getString(com.bugtsa.casher.R.string.changed_date_and_time) + "$date $time"
+//        date_purchase.text = requireContext().getString(com.bugtsa.casher.R.string.changed_date_and_time) + "$date $time"
     }
 
     //endregion
@@ -187,7 +216,7 @@ class AddPurchaseFragment : Fragment(R.layout.controller_add_purchase), AddPurch
 
     override fun showDatePicker() {
         var builder = Builder(activity, Builder.CalendarPickerOnConfirm { yearMonthDay ->
-            presenter.changeCalendar(yearMonthDay)
+            viewModel.changeCalendar(yearMonthDay)
         })
         builder
                 .setPromptText("Select Date")
@@ -210,7 +239,7 @@ class AddPurchaseFragment : Fragment(R.layout.controller_add_purchase), AddPurch
     override fun onTimeSet(view: RadialPickerLayout?, hourOfDay: Int, minute: Int, hourOfDayEnd: Int, minuteEnd: Int) {
         val hourString = if (hourOfDay < 10) "0$hourOfDay" else "" + hourOfDay
         val minuteString = if (minute < 10) "0$minute" else "" + minute
-        presenter.changeTime(hourString, minuteString)
+        viewModel.changeTime(hourString, minuteString)
     }
 
     //endregion

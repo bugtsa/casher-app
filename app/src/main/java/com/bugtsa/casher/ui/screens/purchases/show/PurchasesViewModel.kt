@@ -19,15 +19,6 @@ import toothpick.Toothpick
 import javax.inject.Inject
 import javax.inject.Singleton
 
-
-@Singleton
-class ViewModelFactory @Inject constructor(private val app: Application) : ViewModelProvider.NewInstanceFactory() {
-
-    override fun <T : ViewModel> create(modelClass: Class<T>) =
-            Toothpick.openScope(app).getInstance(modelClass) as T
-
-}
-
 @Singleton
 class PurchasesViewModelFactory @Inject constructor(private val app: Application) : ViewModelProvider.NewInstanceFactory() {
     override fun <T : ViewModel?> create(modelClass: Class<T>): T =
@@ -40,11 +31,10 @@ class PurchasesViewModel @Inject constructor(injectPurchaseModel: PurchaseModel,
     private var purchasesModel: PurchaseModel = injectPurchaseModel
     private var categoryDataStore: CategoryDataStore = injectCategoryDataStore
 
-    private var isScrollPurchasesList: Boolean
+    private var isScrollPurchasesList: Boolean = false
     private var paymentsListSize: Int? = null
 
     private val bag: CompositeDisposable = CompositeDisposable()
-//    private lateinit var purchasesView: PurchasesView
 
     private val progressLiveData = MutableLiveData<Boolean>()
     fun observeProgress(): LiveData<Boolean> = progressLiveData
@@ -61,23 +51,28 @@ class PurchasesViewModel @Inject constructor(injectPurchaseModel: PurchaseModel,
     private val bottomBarVisibilityLiveData = MutableLiveData<Boolean>()
     fun observeBottomBarVisibility(): LiveData<Boolean> = bottomBarVisibilityLiveData
 
-    init {
-        isScrollPurchasesList = false
-    }
-
-//    fun onAttachView(landingView: PurchasesView) {
-//        this.purchasesView = landingView
-//    }
-//
-//    fun onViewDestroy() {
-//        bag.dispose()
-//    }
-
     fun processData() {
         progressLiveData.value = true
         performCheckStorageCategoriesList()
         performCheckStoragePaymentsList()
     }
+
+    //region ================= Scroll Function =================
+
+    fun requestScrollToDown() {
+        paymentsListSize?.also {
+            scrollToPositionLiveData.value = it - 1
+            setScrollPurchasesList(false)
+        }
+    }
+
+    fun checkPositionAdapter(position: Int) {
+        paymentsListSize?.also {
+            bottomBarVisibilityLiveData.value = position <= it - 10 && isScrollPurchasesList()
+        }
+    }
+
+    //endregion
 
     //region ================= Compare Storage and Network Categories =================
 
@@ -159,23 +154,6 @@ class PurchasesViewModel @Inject constructor(injectPurchaseModel: PurchaseModel,
                     }
                 }, { t -> Timber.e(t, "getPurchasesList") })
                 .also { bag.add(it) }
-    }
-
-    //endregion
-
-    //region ================= Scroll Function =================
-
-    fun requestScrollToDown() {
-        paymentsListSize?.also {
-            scrollToPositionLiveData.value = it - 1
-            setScrollPurchasesList(false)
-        }
-    }
-
-    fun checkPositionAdapter(position: Int) {
-        paymentsListSize?.also {
-            bottomBarVisibilityLiveData.value = position <= it - 10 && isScrollPurchasesList()
-        }
     }
 
     //endregion
