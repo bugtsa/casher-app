@@ -78,8 +78,8 @@ class AddPurchaseFragment : Fragment(R.layout.controller_add_purchase), AddPurch
         bindListeners()
         bindViewModel()
 
-        view.setBackgroundColor(bone.color)
-        color_demo.text = bone.argbValues.toString()
+//        view.setBackgroundColor(bone.color)
+//        color_demo.text = bone.argbValues.toString()
 
         onRefresh()
     }
@@ -215,7 +215,7 @@ class AddPurchaseFragment : Fragment(R.layout.controller_add_purchase), AddPurch
     //region ================= Calendar And Time Picker =================
 
     override fun showDatePicker() {
-        var builder = Builder(activity, Builder.CalendarPickerOnConfirm { yearMonthDay ->
+        val builder = Builder(activity, Builder.CalendarPickerOnConfirm { yearMonthDay ->
             viewModel.changeCalendar(yearMonthDay)
         })
         builder

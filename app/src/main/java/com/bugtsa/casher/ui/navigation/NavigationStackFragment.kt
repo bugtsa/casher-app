@@ -8,11 +8,9 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import com.bugtsa.casher.R
-import com.bugtsa.casher.ui.screens.TestScreen
 import kotlinx.android.synthetic.main.fragment_navigation_stack.*
 import pro.horovodovodo4ka.bones.Bone
 import pro.horovodovodo4ka.bones.Finger
-import pro.horovodovodo4ka.bones.extensions.present
 import pro.horovodovodo4ka.bones.persistance.BonePersisterInterface
 import pro.horovodovodo4ka.bones.ui.FingerNavigatorInterface
 import pro.horovodovodo4ka.bones.ui.delegates.FingerNavigator
@@ -52,24 +50,10 @@ open class NavigationStackFragment : Fragment(),
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        push_button.setOnClickListener {
-            bone.push(TestScreen())
-        }
+        change_theme.setOnCheckedChangeListener { _, isChecked ->
+            if (isChecked) {
 
-        pop_button.setOnClickListener {
-            bone.pop()
-        }
-
-        to_root_button.setOnClickListener {
-            bone.popToRoot()
-        }
-
-        replace_button.setOnClickListener {
-            bone.replace(with = TestScreen())
-        }
-
-        modal_button.setOnClickListener {
-            bone.present(TestScreen())
+            }
         }
 
         refreshUI()

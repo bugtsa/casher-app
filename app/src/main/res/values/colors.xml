@@ -1,11 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="primaryColor">#37474f</color>
-    <color name="primaryLightColor">#62727b</color>
-    <color name="primaryDarkColor">#102027</color>
+    <color name="colorAccent">@color/blue_bt_23</color>
+
+    <color name="primaryColor">@color/grey_bt_37</color>
+    <color name="primaryLightColor">@color/grey_bt_62</color>
+    <color name="primaryDarkColor">@color/black_bt_10</color>
     <color name="secondaryColor">#ef5350</color>
     <color name="secondaryLightColor">#ff867c</color>
     <color name="secondaryDarkColor">#b61827</color>
-    <color name="primaryTextColor">#eeeeee</color>
-    <color name="secondaryTextColor">#455a64</color>
+    <color name="primaryTextColor">@color/white_bt_ee</color>
+    <color name="secondaryTextColor">@color/white_bt_cc</color>
+
+    <color name="blue_bt_23">#23C2E4</color>
+    <color name="grey_bt_37">#37474f</color>
+    <color name="grey_bt_62">#62727b</color>
+    <color name="grey_bt_45">#455a64</color>
+    <color name="black_bt_10">#102027</color>
+    <color name="white_bt_ee">#eeeeee</color>
+    <color name="white_bt_cc">#cccccc</color>
 </resources>

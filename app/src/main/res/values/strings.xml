@@ -18,4 +18,5 @@
     <string name="title_notifications">Settings</string>
 
     <string name="sing_up_in_app">Sing Up in App</string>
+    <string name="dark_mode">Dark Mode</string>
 </resources>
