@@ -8,6 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import com.bugtsa.casher.R
+import com.bugtsa.casher.utils.ThemeHelper
 import kotlinx.android.synthetic.main.fragment_navigation_stack.*
 import pro.horovodovodo4ka.bones.Bone
 import pro.horovodovodo4ka.bones.Finger
@@ -51,9 +52,12 @@ open class NavigationStackFragment : Fragment(),
         super.onViewCreated(view, savedInstanceState)
 
         change_theme.setOnCheckedChangeListener { _, isChecked ->
-            if (isChecked) {
-
+            val currentTheme = if (isChecked) {
+                ThemeHelper.darkMode
+            } else {
+                ThemeHelper.lightMode
             }
+            ThemeHelper.applyTheme(currentTheme)
         }
 
         refreshUI()

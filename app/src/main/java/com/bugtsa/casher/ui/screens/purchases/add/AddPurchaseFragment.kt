@@ -1,15 +1,12 @@
 package com.bugtsa.casher.ui.screens.purchases.add
 
 import android.annotation.SuppressLint
-import android.content.ClipData
-import android.content.ClipboardManager
 import android.content.Context
 import android.graphics.Color
 import android.os.Bundle
 import android.view.MotionEvent
 import android.view.View
 import android.widget.ArrayAdapter
-import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
@@ -164,12 +161,12 @@ class AddPurchaseFragment : Fragment(R.layout.controller_add_purchase), AddPurch
         val title = bone.fragmentTitle
         toolbar.visibility = View.VISIBLE
         toolbar.title = title
-        toolbar.setOnClickListener {
-            val cm = context?.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-            val cData = ClipData.newPlainText("text", title)
-            cm.primaryClip = cData
-            Toast.makeText(context, "Copied to clipboard", Toast.LENGTH_SHORT).show()
-        }
+//        toolbar.setOnClickListener {
+//            val cm = context?.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+//            val cData = ClipData.newPlainText("text", title)
+//            cm.primaryClip = cData
+//            Toast.makeText(context, "Copied to clipboard", Toast.LENGTH_SHORT).show()
+//        }
 
         addNavigationToToolbar(toolbar, com.bugtsa.casher.R.drawable.ic_arrow_back_white)
     }
