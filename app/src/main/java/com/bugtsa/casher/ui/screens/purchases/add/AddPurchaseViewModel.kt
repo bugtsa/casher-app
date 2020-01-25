@@ -70,13 +70,8 @@ class AddPurchaseViewModel @Inject constructor(
     private val completeAddPaymentLiveData = MutableLiveData<Boolean>()
     fun observeCompleteAddPayment(): LiveData<Boolean> = completeAddPaymentLiveData
 
-//    private lateinit var addPurchaseView: AddPurchaseView
 
     //region ================ Base Methods =================
-
-//    fun onAttachView(addPurchaseView: AddPurchaseView) {
-//        this.addPurchaseView = addPurchaseView
-//    }
 
     fun onViewDestroy() {
         bag.dispose()
@@ -89,15 +84,12 @@ class AddPurchaseViewModel @Inject constructor(
     fun checkExistCategoriesInDatabase() {
         categoryDataStore.getCategoriesList()
                 .subscribeOn(Schedulers.io())
-                .flatMapIterable { it }
-                .map { category -> category.name }
-                .toList()
+                .map { list -> list.map { category -> category.name } }
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({ categoriesList: List<String> ->
                     categoriesListLiveData.value = categoriesList
                     Timber.d("get all categories")
-                },
-                        { t -> Timber.e(t, "error at check exist categories $t") })
+                }, { t -> Timber.e(t, "error at check exist categories $t") })
                 .also { bag.add(it) }
     }
 
@@ -116,11 +108,15 @@ class AddPurchaseViewModel @Inject constructor(
         purchaseModel.addPayment(partFormBody)
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe({
-                    if (it != null) {
+                .subscribe({ payment ->
+                    showProgressLiveData.value = false
+                    payment?.also {
                         completeAddPayment()
                     }
-                }, { completeAddPayment() })
+                }, {
+                    showProgressLiveData.value = false
+                    completeAddPayment()
+                })
                 .also { bag.add(it) }
     }
 
@@ -131,7 +127,9 @@ class AddPurchaseViewModel @Inject constructor(
     fun checkCategorySaveOnDatabase(pricePayment: String, nameCategory: String) {
         categoryDataStore.getCategoriesList()
                 .subscribeOn(Schedulers.io())
-                .map { it.mapNotNull { it.name } }
+                .map { list ->
+                    list.mapNotNull { it.name }
+                }
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({ storageCategoriesList: List<String> ->
                     if (!isContainsCurrentCategoryInDatabase(nameCategory, storageCategoriesList)) {
@@ -194,6 +192,7 @@ class AddPurchaseViewModel @Inject constructor(
         val date = SoftwareUtils.modernTimeStampToString(getCurrentTimeStamp(), Locale.getDefault())
         setupCurrentDate(date)
     }
+
     private fun setupCurrentDate(date: String) {
         setupCurrentDateLiveData.value = date
         refreshCurrentDate()

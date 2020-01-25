@@ -10,7 +10,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import com.bugtsa.casher.R
 import com.bugtsa.casher.ui.activities.MainActivity
-import com.bugtsa.casher.ui.navigation.NavigationStackPresentable
+import com.bugtsa.casher.ui.screens.settings.NavigationStackPresentable
 import com.bugtsa.casher.ui.screens.purchases.show.PurchasesScreen
 import com.google.android.gms.auth.GoogleAuthUtil
 import com.google.android.gms.common.AccountPicker

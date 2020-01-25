@@ -68,4 +68,16 @@
         <item name="android:textColor">@color/primaryTextColor</item>
     </style>
 
+    <style name="ProgressDialog" parent="Theme.AppCompat.Light.Dialog.Alert">
+        <item name="android:background">@drawable/background_progress_dialog</item>
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
+    </style>
+
+    <style name="FullScreenProgressDialog" parent="Theme.AppCompat.Light.Dialog.Alert">
+        <item name="android:background">@null</item>
+        <item name="android:windowIsFloating">false</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
+    </style>
+
 </resources>

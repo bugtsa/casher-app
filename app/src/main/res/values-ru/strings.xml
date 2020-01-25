@@ -1,24 +1,37 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
 <resources>
+    <string name="add_caption">Добавить</string>
+
     <string name="app_name">Русходничек</string>
-    <string name="cost_caption">Сумма</string>
-    <string name="time_caption">Время</string>
-    <string name="category_caption">На что</string>
+
     <string name="balance_caption">Баланс</string>
 
-    <string name="price_purchase">Цена траты</string>
-    <string name="category_purchase">На что потрачено</string>
     <string name="cancel_caption">Отмена</string>
-    <string name="add_caption">Добавить</string>
-    <string name="date_purchase">установить дату самостоятельно</string>
-    <string name="current_date_and_time">"Текущая дата и время: "</string>
+
+    <string name="category_caption">На что</string>
+    <string name="category_purchase">На что потрачено</string>
+
     <string name="changed_date_and_time">"Установленные дата и время: "</string>
 
-    <string name="title_home">Home</string>
-    <string name="title_dashboard">Dashboard</string>
-    <string name="title_notifications">Notifications</string>
+    <string name="cost_caption">Сумма</string>
+
+    <string name="current_date_and_time">"Текущая дата и время: "</string>
+
+    <string name="dark_mode">Темная тема</string>
+
+    <string name="date_purchase">установить дату самостоятельно</string>
+
+    <string name="load_data_dialog_content">Остановить загрузку?</string>
+    <string name="load_data_dialog_netagive_button">Остановить</string>
+    <string name="load_data_dialog_positive_button">Подождать еще</string>
+
+    <string name="price_purchase">Цена траты</string>
 
     <string name="sing_up_in_app">Войдите в приложение</string>
 
-    <string name="dark_mode">Темная тема</string>
+    <string name="time_caption">Время</string>
+
+    <string name="title_dashboard">Dashboard</string>
+    <string name="title_home">Home</string>
+    <string name="title_notifications">Notifications</string>
 </resources>

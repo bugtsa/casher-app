@@ -1,4 +1,4 @@
-package com.bugtsa.casher.ui.navigation
+package com.bugtsa.casher.ui.screens.settings
 
 import android.annotation.SuppressLint
 import android.content.Context
@@ -31,8 +31,6 @@ open class NavigationStackFragment : Fragment(),
         BonePersisterInterface<NavigationStack>,
         FingerNavigatorInterface<NavigationStack> by FingerNavigator(R.id.stack_fragment_container) {
 
-    // region ContainerFragmentSibling
-
     override fun onAttach(context: Context) {
         super.onAttach(context)
         managerProvider = ::getChildFragmentManager
@@ -42,8 +40,6 @@ open class NavigationStackFragment : Fragment(),
         super.onDetach()
         managerProvider = null
     }
-
-    // endregion
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? =
             inflater.inflate(R.layout.fragment_navigation_stack, container, false)
@@ -58,6 +54,7 @@ open class NavigationStackFragment : Fragment(),
                 ThemeHelper.lightMode
             }
             ThemeHelper.applyTheme(currentTheme)
+
         }
 
         refreshUI()
@@ -80,8 +77,6 @@ open class NavigationStackFragment : Fragment(),
             }
         }
     }
-
-    // region BonePersisterInterface
 
     override fun onSaveInstanceState(outState: Bundle) {
         super<BonePersisterInterface>.onSaveInstanceState(outState)

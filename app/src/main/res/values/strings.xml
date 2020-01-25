@@ -1,22 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <resources>
+    <string name="add_caption">Add</string>
+
     <string name="app_name">Casher</string>
-    <string name="cost_caption">Cost</string>
-    <string name="time_caption">Time</string>
-    <string name="category_caption">Category</string>
+
     <string name="balance_caption">Balance</string>
 
-    <string name="price_purchase">Price payment</string>
-    <string name="category_purchase">Category payment</string>
     <string name="cancel_caption">Cancel</string>
-    <string name="add_caption">Add</string>
-    <string name="date_purchase">setup date yourself</string>
-    <string name="current_date_and_time">"Current time and date: "</string>
+
+    <string name="category_caption">Category</string>
+    <string name="category_purchase">Category payment</string>
+
     <string name="changed_date_and_time">"Setup time and date: "</string>
 
-    <string name="title_home">Payments</string>
-    <string name="title_dashboard">Dashboard</string>
-    <string name="title_notifications">Settings</string>
+    <string name="cost_caption">Cost</string>
+
+    <string name="current_date_and_time">"Current time and date: "</string>
+
+    <string name="dark_mode">Dark Mode</string>
+
+    <string name="date_purchase">setup date yourself</string>
+
+    <string name="load_data_dialog_content">Stop loading?</string>
+    <string name="load_data_dialog_netagive_button">Stop</string>
+    <string name="load_data_dialog_positive_button">Still wait</string>
+    <string name="load_data_dialog_title" translatable="false">@string/app_name</string>
+
+    <string name="price_purchase">Price payment</string>
 
     <string name="sing_up_in_app">Sing Up in App</string>
-    <string name="dark_mode">Dark Mode</string>
+
+    <string name="time_caption">Time</string>
+
+    <string name="title_dashboard">Dashboard</string>
+    <string name="title_home">Payments</string>
+    <string name="title_notifications">Settings</string>
 </resources>

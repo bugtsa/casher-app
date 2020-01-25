@@ -7,12 +7,12 @@ import android.os.Bundle
 import android.view.MotionEvent
 import android.view.View
 import android.widget.ArrayAdapter
-import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import com.borax12.materialdaterangepicker.time.RadialPickerLayout
 import com.borax12.materialdaterangepicker.time.TimePickerDialog
 import com.bugtsa.casher.R
+import com.bugtsa.casher.ui.screens.BaseFragment
 import com.maxproj.calendarpicker.Builder
 import kotlinx.android.synthetic.main.controller_add_purchase.*
 import pro.horovodovodo4ka.bones.Bone
@@ -56,13 +56,16 @@ open class AddPurchaseScreen(rootPhalanx: Bone? = null) : Finger(rootPhalanx), A
 
 @Suppress("DEPRECATED_IDENTITY_EQUALS")
 @SuppressLint("MissingSuperCall")
-class AddPurchaseFragment : Fragment(R.layout.controller_add_purchase), AddPurchaseView, TimePickerDialog.OnTimeSetListener,
+class AddPurchaseFragment : BaseFragment(), AddPurchaseView, TimePickerDialog.OnTimeSetListener,
         FingerNavigatorInterface<AddPurchaseScreen> by FingerNavigator(com.bugtsa.casher.R.id.add_payment_container),
         BonePersisterInterface<AddPurchaseScreen> {
 
     private lateinit var viewModel: AddPurchaseViewModel
 
     //region ================= Implements Methods =================
+
+    override val layout: Int
+        get() = R.layout.controller_add_purchase
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -75,10 +78,12 @@ class AddPurchaseFragment : Fragment(R.layout.controller_add_purchase), AddPurch
         bindListeners()
         bindViewModel()
 
-//        view.setBackgroundColor(bone.color)
-//        color_demo.text = bone.argbValues.toString()
-
         onRefresh()
+    }
+
+    override fun processBackPress(): Boolean {
+        return super.processBackPress()
+        backPressAction()
     }
 
     private fun bindViewModel() {
@@ -135,12 +140,12 @@ class AddPurchaseFragment : Fragment(R.layout.controller_add_purchase), AddPurch
 
     override fun onSaveInstanceState(outState: Bundle) {
         super<BonePersisterInterface>.onSaveInstanceState(outState)
-        super<Fragment>.onSaveInstanceState(outState)
+        super<BaseFragment>.onSaveInstanceState(outState)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super<BonePersisterInterface>.onCreate(savedInstanceState)
-        super<Fragment>.onCreate(savedInstanceState)
+        super<BaseFragment>.onCreate(savedInstanceState)
     }
 
     override fun onAttach(context: Context) {
@@ -178,11 +183,11 @@ class AddPurchaseFragment : Fragment(R.layout.controller_add_purchase), AddPurch
     }
 
     override fun showProgressBar() {
-        TODO()
+        showProgress(cancelAction = { processBackPress() })
     }
 
     override fun hideProgressBar() {
-        TODO()
+        hideProgress()
     }
 
     override fun setSearchText(result: String) {
@@ -204,7 +209,7 @@ class AddPurchaseFragment : Fragment(R.layout.controller_add_purchase), AddPurch
 
     @SuppressLint("SetTextI18n")
     override fun setupCustomDateAndTime(date: String, time: String) {
-//        date_purchase.text = requireContext().getString(com.bugtsa.casher.R.string.changed_date_and_time) + "$date $time"
+        date_purchase.text = requireContext().getString(com.bugtsa.casher.R.string.changed_date_and_time) + "$date $time"
     }
 
     //endregion
