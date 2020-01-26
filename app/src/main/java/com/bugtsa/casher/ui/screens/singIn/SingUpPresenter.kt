@@ -1,11 +1,11 @@
 package com.bugtsa.casher.ui.screens.singIn
 
 import android.text.TextUtils
-import com.bugtsa.casher.di.inject.PreferenceProvider
+import com.bugtsa.casher.domain.prefs.PreferenceRepository
 import javax.inject.Inject
 
 class SingUpPresenter @Inject constructor(
-        private val preferenceProvider: PreferenceProvider
+        private val preferenceProvider: PreferenceRepository
 ) {
     private lateinit var singUpView: SingUpView
 
@@ -14,7 +14,7 @@ class SingUpPresenter @Inject constructor(
     }
 
     fun requestAccountName() {
-        if (!TextUtils.isEmpty(preferenceProvider.getAccoutnName())) {
+        if (!TextUtils.isEmpty(preferenceProvider.getAccountName())) {
             singUpView.showMainController()
         } else {
             singUpView.requestAccountName()

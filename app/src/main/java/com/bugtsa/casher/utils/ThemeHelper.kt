@@ -5,7 +5,7 @@ import androidx.appcompat.app.AppCompatDelegate
 object ThemeHelper {
     const val lightMode = "light"
     const val darkMode = "dark"
-    private const val batterySaverMode = "battery"
+    const val batterySaverMode = "battery"
     const val default = "default"
 
     fun applyTheme(theme: String) {

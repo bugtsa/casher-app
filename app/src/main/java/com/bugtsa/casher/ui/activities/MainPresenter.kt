@@ -1,10 +1,10 @@
 package com.bugtsa.casher.ui.activities
 
-import com.bugtsa.casher.di.inject.PreferenceProvider
+import com.bugtsa.casher.domain.prefs.PreferenceRepository
 import javax.inject.Inject
 
 class MainPresenter @Inject constructor(
-	private val preferenceProvider: PreferenceProvider
+	private val preferenceProvider: PreferenceRepository
 ) {
 
 	private lateinit var mainView: MainView

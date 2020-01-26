@@ -2,11 +2,14 @@ package com.bugtsa.casher.ui.screens.settings
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProviders
 import com.bugtsa.casher.R
 import com.bugtsa.casher.utils.ThemeHelper
 import kotlinx.android.synthetic.main.fragment_navigation_stack.*
@@ -17,6 +20,7 @@ import pro.horovodovodo4ka.bones.ui.FingerNavigatorInterface
 import pro.horovodovodo4ka.bones.ui.delegates.FingerNavigator
 import pro.horovodovodo4ka.bones.ui.extensions.addNavigationToToolbar
 import pro.horovodovodo4ka.bones.ui.extensions.removeNavigationFromToolbar
+import toothpick.Toothpick
 
 interface NavigationStackPresentable {
     val fragmentTitle: String
@@ -30,6 +34,8 @@ open class NavigationStack(rootPhalanx: Bone? = null) : Finger(rootPhalanx) {
 open class NavigationStackFragment : Fragment(),
         BonePersisterInterface<NavigationStack>,
         FingerNavigatorInterface<NavigationStack> by FingerNavigator(R.id.stack_fragment_container) {
+
+    private lateinit var viewModel: SettingsViewModel
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -47,17 +53,34 @@ open class NavigationStackFragment : Fragment(),
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        change_theme.setOnCheckedChangeListener { _, isChecked ->
-            val currentTheme = if (isChecked) {
-                ThemeHelper.darkMode
-            } else {
-                ThemeHelper.lightMode
-            }
-            ThemeHelper.applyTheme(currentTheme)
+        val viewModelFactory = Toothpick
+                .openScopes(activity, this)
+                .getInstance(SettingsViewModelFactory::class.java)
+        viewModel = ViewModelProviders.of(this, viewModelFactory)[SettingsViewModel::class.java]
 
-        }
+        bindListeners()
+        bindViewModel()
 
         refreshUI()
+    }
+
+    private fun bindViewModel() {
+        viewModel.observeModelTheme().observe(viewLifecycleOwner, Observer { isChecked ->
+            change_theme.isChecked = isChecked
+        })
+    }
+
+    private fun bindListeners() {
+        change_theme.setOnCheckedChangeListener { _, isChecked ->
+            val currentTheme = when {
+                Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q && isChecked -> ThemeHelper.darkMode
+                Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q && !isChecked -> ThemeHelper.lightMode
+                Build.VERSION.SDK_INT < Build.VERSION_CODES.Q && isChecked -> ThemeHelper.batterySaverMode
+                else -> ThemeHelper.default
+            }
+            ThemeHelper.applyTheme(currentTheme)
+            viewModel.saveModeTheme(currentTheme)
+        }
     }
 
     override fun onRefresh() {
@@ -89,4 +112,6 @@ open class NavigationStackFragment : Fragment(),
     }
 
     // endregion
+
+
 }

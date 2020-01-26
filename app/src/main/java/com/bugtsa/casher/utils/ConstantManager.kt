@@ -24,4 +24,8 @@ class ConstantManager {
         private const val PRICE_PARAMETER = "price"
         private const val DESCRIPTION_PARAMETER = "description"
     }
+
+    object Constants {
+        const val EMPTY = ""
+    }
 }

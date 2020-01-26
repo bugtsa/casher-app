@@ -6,7 +6,8 @@ import com.bugtsa.casher.data.local.database.entity.category.CategoryDao
 import com.bugtsa.casher.data.local.database.entity.category.CategoryDataStore
 import com.bugtsa.casher.data.local.database.entity.payment.PaymentDao
 import com.bugtsa.casher.data.local.database.entity.payment.PaymentDataStore
-import com.bugtsa.casher.data.local.prefs.LocalSettingsRepository
+import com.bugtsa.casher.domain.prefs.LocalSettingsRepository
+import com.bugtsa.casher.domain.prefs.PreferenceRepository
 import com.bugtsa.casher.data.models.PurchaseModel
 import com.bugtsa.casher.di.inject.*
 import com.bugtsa.casher.di.inject.category.CategoryDaoProvider
@@ -26,7 +27,7 @@ class CasherApplicationModule : Module {
         bind(CasherApi::class.java).toProviderInstance(casherApi)
 
         bind(Application::class.java).toProviderInstance(ApplicationProvider(application))
-        bind(LocalSettingsRepository::class.java).toProviderInstance(PreferenceProvider(application))
+        bind(LocalSettingsRepository::class.java).toProviderInstance(PreferenceRepository(application))
 
         bind(PurchaseModel::class.java).toProviderInstance(
                 PurchaseModelProvider(

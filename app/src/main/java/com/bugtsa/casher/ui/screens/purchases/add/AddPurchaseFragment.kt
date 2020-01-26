@@ -81,55 +81,6 @@ class AddPurchaseFragment : BaseFragment(), AddPurchaseView, TimePickerDialog.On
         onRefresh()
     }
 
-    override fun processBackPress(): Boolean {
-        return super.processBackPress()
-        backPressAction()
-    }
-
-    private fun bindViewModel() {
-
-        viewModel.requestSetupCurrentDate()
-        viewModel.checkExistCategoriesInDatabase()
-
-        viewModel.observeCategoriesList().observe(viewLifecycleOwner,
-                Observer { categoriesList ->
-                    setupCategoriesList(categoriesList)
-                })
-        viewModel.observeCompleteAddPayment().observe(viewLifecycleOwner,
-                Observer {
-                    completedAddPurchase()
-                })
-        viewModel.observeSetupCurrentDate().observe(viewLifecycleOwner,
-                Observer { currentDateAndTime ->
-                    setupCurrentDateAndTime(currentDateAndTime)
-                })
-        viewModel.observeShowDatePicker().observe(viewLifecycleOwner,
-                Observer {
-                    showDatePicker()
-                })
-        viewModel.observeShowTimePicker().observe(viewLifecycleOwner,
-                Observer {
-                    showTimePicker()
-                })
-        viewModel.observeShowProgress().observe(viewLifecycleOwner,
-                Observer {
-                    showProgressBar()
-                })
-    }
-
-    private fun bindListeners() {
-        setupCategoriesTouchListener()
-        add_date_purchase.setOnClickListener {
-            viewModel.checkSetupCustomDateAndTime(add_date_purchase.isChecked)
-        }
-
-        save_purchase.setOnClickListener {
-            viewModel.checkCategorySaveOnDatabase(price_purchase_et.text.toString(),
-                    category_purchase_et.text.toString())
-        }
-        cancel_purchase.setOnClickListener { completedAddPurchase() }
-    }
-
     override fun onDestroyView() {
         super.onDestroyView()
         viewModel.onViewDestroy()
@@ -160,7 +111,6 @@ class AddPurchaseFragment : BaseFragment(), AddPurchaseView, TimePickerDialog.On
 
     override fun onRefresh() {
         super<FingerNavigatorInterface>.onRefresh()
-
         if (view == null) return
 
         val title = bone.fragmentTitle
@@ -188,10 +138,6 @@ class AddPurchaseFragment : BaseFragment(), AddPurchaseView, TimePickerDialog.On
 
     override fun hideProgressBar() {
         hideProgress()
-    }
-
-    override fun setSearchText(result: String) {
-        TODO()
     }
 
     override fun setupCategoriesList(categoriesList: List<String>) {
@@ -245,6 +191,50 @@ class AddPurchaseFragment : BaseFragment(), AddPurchaseView, TimePickerDialog.On
     }
 
     //endregion
+
+    private fun bindViewModel() {
+
+        viewModel.requestSetupCurrentDate()
+        viewModel.checkExistCategoriesInDatabase()
+
+        viewModel.observeCategoriesList().observe(viewLifecycleOwner,
+                Observer { categoriesList ->
+                    setupCategoriesList(categoriesList)
+                })
+        viewModel.observeCompleteAddPayment().observe(viewLifecycleOwner,
+                Observer {
+                    completedAddPurchase()
+                })
+        viewModel.observeSetupCurrentDate().observe(viewLifecycleOwner,
+                Observer { currentDateAndTime ->
+                    setupCurrentDateAndTime(currentDateAndTime)
+                })
+        viewModel.observeShowDatePicker().observe(viewLifecycleOwner,
+                Observer {
+                    showDatePicker()
+                })
+        viewModel.observeShowTimePicker().observe(viewLifecycleOwner,
+                Observer {
+                    showTimePicker()
+                })
+        viewModel.observeShowProgress().observe(viewLifecycleOwner,
+                Observer {
+                    showProgressBar()
+                })
+    }
+
+    private fun bindListeners() {
+        setupCategoriesTouchListener()
+        add_date_purchase.setOnClickListener {
+            viewModel.checkSetupCustomDateAndTime(add_date_purchase.isChecked)
+        }
+
+        save_purchase.setOnClickListener {
+            viewModel.checkCategorySaveOnDatabase(price_purchase_et.text.toString(),
+                    category_purchase_et.text.toString())
+        }
+        cancel_purchase.setOnClickListener { completedAddPurchase() }
+    }
 
     //region ================= Categories List Methods =================
 
