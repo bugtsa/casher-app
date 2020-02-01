@@ -1,112 +1,102 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout android:layout_height="match_parent"
+    android:layout_width="match_parent"
+    xmlns:tools="http://schemas.android.com/tools"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools">
+    xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <data>
-        <variable
-            name="progressVisibility"
-            type="Integer" />
-    </data>
+    <FrameLayout
+        android:id="@+id/payments_container"
+        android:layout_height="0dp"
+        android:layout_width="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <ProgressBar
+        android:elevation="@dimen/spacing_x_small_4"
+        android:id="@+id/progress_purchase"
+        android:layout_height="50dp"
+        android:layout_marginBottom="@dimen/spacing_xx_small_8"
+        android:layout_marginEnd="@dimen/spacing_xx_small_8"
+        android:layout_marginStart="@dimen/spacing_xx_small_8"
+        android:layout_marginTop="@dimen/spacing_xx_small_8"
+        android:layout_width="50dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:visibility="visible" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/left_guideline"
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_begin="@dimen/spacing_normal_16" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/right_guideline"
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_end="@dimen/spacing_normal_16" />
+
+    <include
+        android:id="@+id/captions"
+        android:layout_height="wrap_content"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        app:layout_constraintBottom_toTopOf="@+id/purchases"
+        app:layout_constraintHorizontal_weight="1"
+        app:layout_constraintLeft_toLeftOf="@+id/left_guideline"
+        app:layout_constraintRight_toRightOf="@+id/right_guideline"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0"
+        layout="@layout/item_payment_caption"
+        tools:background="@color/primaryDarkColor" />
 
-        <FrameLayout
-            android:id="@+id/payments_container"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+    <TextView
+        android:id="@+id/status_tv"
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="@string/app_name"
+        tools:visibility="visible" />
 
-        <ProgressBar
-            android:id="@+id/progress_purchase"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:layout_marginStart="@dimen/spacing_xx_small_8"
-            android:layout_marginTop="@dimen/spacing_xx_small_8"
-            android:layout_marginEnd="@dimen/spacing_xx_small_8"
-            android:layout_marginBottom="@dimen/spacing_xx_small_8"
-            android:visibility="@{progressVisibility}"
-            android:elevation="@dimen/spacing_x_small_4"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            tools:visibility="visible" />
+    <androidx.recyclerview.widget.RecyclerView
+        android:background="@color/primaryLightColor"
+        android:id="@+id/purchases"
+        android:layout_height="@dimen/zeros"
+        android:layout_width="match_parent"
+        android:paddingBottom="@dimen/spacing_xx_small_8"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="@+id/right_guideline"
+        app:layout_constraintStart_toStartOf="@+id/left_guideline"
+        app:layout_constraintTop_toBottomOf="@id/captions"
+        app:layout_constraintVertical_bias="1" />
 
-        <androidx.constraintlayout.widget.Guideline
-            android:id="@+id/left_guideline"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            app:layout_constraintGuide_begin="@dimen/spacing_normal_16" />
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/add_purchase"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/spacing_normal_16"
+        android:layout_width="wrap_content"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:srcCompat="@drawable/ic_add_black_24dp" />
 
-        <androidx.constraintlayout.widget.Guideline
-            android:id="@+id/right_guideline"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            app:layout_constraintGuide_end="@dimen/spacing_normal_16" />
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/bottom_scroll"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/spacing_normal_16"
+        android:layout_width="wrap_content"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:srcCompat="@drawable/ic_keyboard_arrow_down_black_24dp" />
 
-        <include
-            android:id="@+id/captions"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            layout="@layout/item_payment_caption"
-            tools:background="@color/primaryDarkColor"
-            app:layout_constraintBottom_toTopOf="@+id/purchases"
-            app:layout_constraintHorizontal_weight="1"
-            app:layout_constraintLeft_toLeftOf="@+id/left_guideline"
-            app:layout_constraintRight_toRightOf="@+id/right_guideline"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0" />
-
-        <TextView
-            android:id="@+id/status_tv"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:visibility="gone"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            tools:text="@string/app_name"
-            tools:visibility="visible" />
-
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/purchases"
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/zeros"
-            android:paddingBottom="@dimen/spacing_xx_small_8"
-            android:background="@color/primaryLightColor"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="@+id/right_guideline"
-            app:layout_constraintStart_toStartOf="@+id/left_guideline"
-            app:layout_constraintTop_toBottomOf="@id/captions"
-            app:layout_constraintVertical_bias="1" />
-
-        <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:id="@+id/add_purchase"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_margin="@dimen/spacing_normal_16"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:srcCompat="@drawable/ic_add_black_24dp" />
-
-        <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:id="@+id/bottom_scroll"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_margin="@dimen/spacing_normal_16"
-            android:visibility="gone"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:srcCompat="@drawable/ic_keyboard_arrow_down_black_24dp" />
-
-    </androidx.constraintlayout.widget.ConstraintLayout>
-</layout>
+</androidx.constraintlayout.widget.ConstraintLayout>
