@@ -20,7 +20,8 @@ project.ext {
     okHttpVersion = "3.4.1"
     rxRelayVersion = "2.0.0"
     rxLintVersion = "1.6"
-    lyfecycle = "2.1.0"
+    lifecycle = "2.1.0"
+    version = "0"
 }
 
 detekt {
@@ -28,13 +29,13 @@ detekt {
 }
 
 android {
-    compileSdkVersion 28
+    compileSdkVersion 29
     defaultConfig {
         applicationId "com.bugtsa.casher"
         minSdkVersion 21
-        targetSdkVersion 28
+        targetSdkVersion 29
         versionCode 1
-        versionName "1.0"
+        versionName "1.0$version"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
         multiDexEnabled true
@@ -63,10 +64,6 @@ android {
         exclude 'META-INF/notice.txt'
         exclude 'META-INF/ASL2.0'
     }
-
-    dataBinding {
-        enabled true
-    }
 }
 
 dependencies {
@@ -84,8 +81,8 @@ dependencies {
         exclude group: 'org.apache.httpcomponents'
     }
 
-    implementation "androidx.lifecycle:lifecycle-extensions:$lyfecycle"
-    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:$lyfecycle"
+    implementation "androidx.lifecycle:lifecycle-extensions:$lifecycle"
+    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:$lifecycle"
 
     implementation 'com.google.api-client:google-api-client:1.22.0'
     implementation 'com.google.api-client:google-api-client-android:1.22.0'

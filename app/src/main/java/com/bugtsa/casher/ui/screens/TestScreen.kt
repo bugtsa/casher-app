@@ -5,7 +5,7 @@ import android.graphics.Color
 import android.os.Bundle
 import android.view.*
 import com.bugtsa.casher.R
-import com.bugtsa.casher.ui.navigation.NavigationStackPresentable
+import com.bugtsa.casher.ui.screens.settings.NavigationStackPresentable
 import kotlinx.android.synthetic.main.fragment_phalanx_test.*
 import pro.horovodovodo4ka.bones.Finger
 import pro.horovodovodo4ka.bones.Phalanx

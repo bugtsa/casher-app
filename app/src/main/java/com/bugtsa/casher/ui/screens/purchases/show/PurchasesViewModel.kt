@@ -20,19 +20,18 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class PurchaseViewModelFactory @Inject constructor(private val app: Application) : ViewModelProvider.NewInstanceFactory() {
-    override fun <T : ViewModel?> create(modelClass: Class<T>): T {
-        return Toothpick.openScope(app).getInstance(modelClass) as T
-    }
+class PurchasesViewModelFactory @Inject constructor(private val app: Application) : ViewModelProvider.NewInstanceFactory() {
+    override fun <T : ViewModel?> create(modelClass: Class<T>): T =
+            Toothpick.openScope(app).getInstance(modelClass) as T
 }
 
 class PurchasesViewModel @Inject constructor(injectPurchaseModel: PurchaseModel,
-                                             injectCategoryDataStore: CategoryDataStore): ViewModel() {
+                                             injectCategoryDataStore: CategoryDataStore) : ViewModel() {
 
     private var purchasesModel: PurchaseModel = injectPurchaseModel
     private var categoryDataStore: CategoryDataStore = injectCategoryDataStore
 
-    private var isScrollPurchasesList: Boolean
+    private var isScrollPurchasesList: Boolean = false
     private var paymentsListSize: Int? = null
 
     private val bag: CompositeDisposable = CompositeDisposable()
@@ -43,29 +42,37 @@ class PurchasesViewModel @Inject constructor(injectPurchaseModel: PurchaseModel,
     private val statusTextLiveData = MutableLiveData<String>()
     fun observeStatusText(): LiveData<String> = statusTextLiveData
 
-    private val setupPurchaseLiveData = MutableLiveData<List<PaymentsByDayRes>>()
-    fun observeSetupPurchase(): LiveData<List<PaymentsByDayRes>> = setupPurchaseLiveData
+    private val setupPurchaseListLiveData = MutableLiveData<List<PaymentsByDayRes>>()
+    fun observePurchaseList(): LiveData<List<PaymentsByDayRes>> = setupPurchaseListLiveData
 
     private val scrollToPositionLiveData = MutableLiveData<Int>()
     fun observeScrollToPosition(): LiveData<Int> = scrollToPositionLiveData
 
-    private val showBottomScrollLiveData = MutableLiveData<Boolean>()
-    fun observeShowBottomScroll(): LiveData<Boolean> = showBottomScrollLiveData
-
-    init {
-        isScrollPurchasesList = false
-    }
-
-    override fun onCleared() {
-        super.onCleared()
-        bag.dispose()
-    }
+    private val bottomBarVisibilityLiveData = MutableLiveData<Boolean>()
+    fun observeBottomBarVisibility(): LiveData<Boolean> = bottomBarVisibilityLiveData
 
     fun processData() {
         progressLiveData.value = true
         performCheckStorageCategoriesList()
         performCheckStoragePaymentsList()
     }
+
+    //region ================= Scroll Function =================
+
+    fun requestScrollToDown() {
+        paymentsListSize?.also {
+            scrollToPositionLiveData.value = it - 1
+            setScrollPurchasesList(false)
+        }
+    }
+
+    fun checkPositionAdapter(position: Int) {
+        paymentsListSize?.also {
+            bottomBarVisibilityLiveData.value = position <= it - 10 && isScrollPurchasesList()
+        }
+    }
+
+    //endregion
 
     //region ================= Compare Storage and Network Categories =================
 
@@ -81,7 +88,8 @@ class PurchasesViewModel @Inject constructor(injectPurchaseModel: PurchaseModel,
                         { t ->
                             progressLiveData.value = false
                             statusTextLiveData.value = "Server not allow, trying later"
-                            Timber.e("PurchasesPresenter", "error at check exist categories $t") })
+                            Timber.e("PurchasesPresenter", "error at check exist categories $t")
+                        })
                 .also { bag.add(it) }
     }
 
@@ -138,41 +146,14 @@ class PurchasesViewModel @Inject constructor(injectPurchaseModel: PurchaseModel,
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({ paymentsList ->
                     paymentsListSize = paymentsList.size
-//                    purchasesView.showProgressBar(false)
                     progressLiveData.value = false
                     if (paymentsList.isEmpty()) {
-//                        purchasesView.setupStatusText()
                         statusTextLiveData.value = "No results returned."
                     } else {
-//                        purchasesView.setupPurchaseList(paymentsList)
-                        setupPurchaseLiveData.value = paymentsList
+                        setupPurchaseListLiveData.value = paymentsList
                     }
                 }, { t -> Timber.e(t, "getPurchasesList") })
                 .also { bag.add(it) }
-    }
-
-    //endregion
-
-    //region ================= Scroll Function =================
-
-    fun requestScrollToDown() {
-        paymentsListSize?.also {
-//            purchasesView.scrollToPosition()
-            scrollToPositionLiveData.value = it - 1
-            setScrollPurchasesList(false)
-        }
-    }
-
-    fun checkPositionAdapter(position: Int) {
-        paymentsListSize?.also {
-            showBottomScrollLiveData.value = position <= it - 10 && isScrollPurchasesList()
-//            if () {
-//
-//                purchasesView.showBottomScroll()
-//            } else {
-//                purchasesView.hideBottomScroll()
-//            }
-        }
     }
 
     //endregion

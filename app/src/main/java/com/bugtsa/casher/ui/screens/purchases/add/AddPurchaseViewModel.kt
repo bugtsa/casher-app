@@ -1,5 +1,10 @@
 package com.bugtsa.casher.ui.screens.purchases.add
 
+import android.app.Application
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import com.bugtsa.casher.data.dto.CategoryDto
 import com.bugtsa.casher.data.local.database.entity.category.CategoryDataStore
 import com.bugtsa.casher.data.models.PurchaseModel
@@ -18,15 +23,26 @@ import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
 import okhttp3.FormBody
 import timber.log.Timber
+import toothpick.Toothpick
 import java.util.*
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
+import javax.inject.Singleton
 
+@Singleton
+class AddPurchaseViewModelFactory @Inject constructor(
+        private val app: Application
+) : ViewModelProvider.NewInstanceFactory() {
+    override fun <T : ViewModel?> create(modelClass: Class<T>): T {
+        return Toothpick.openScope(app).getInstance(modelClass) as T
+    }
+}
 
-class AddPurchasePresenter @Inject constructor(compositeDisposable: CompositeDisposable,
-                                               injectPurchaseModel: PurchaseModel,
-                                               injectCategoryDataStore: CategoryDataStore
-) {
+class AddPurchaseViewModel @Inject constructor(
+        compositeDisposable: CompositeDisposable,
+        injectPurchaseModel: PurchaseModel,
+        injectCategoryDataStore: CategoryDataStore
+) : ViewModel() {
 
     private var bag: CompositeDisposable = compositeDisposable
     private var purchaseModel: PurchaseModel = injectPurchaseModel
@@ -36,13 +52,26 @@ class AddPurchasePresenter @Inject constructor(compositeDisposable: CompositeDis
     private var customTime: String = ""
     private var checkedCustomDateTime: Boolean = false
 
-    private lateinit var addPurchaseView: AddPurchaseView
+    private val categoriesListLiveData = MutableLiveData<List<String>>()
+    fun observeCategoriesList(): LiveData<List<String>> = categoriesListLiveData
+
+    private val showProgressLiveData = MutableLiveData<Boolean>()
+    fun observeShowProgress(): LiveData<Boolean> = showProgressLiveData
+
+    private val showDatePickerLiveData = MutableLiveData<Boolean>()
+    fun observeShowDatePicker(): LiveData<Boolean> = showDatePickerLiveData
+
+    private val showTimePickerLiveData = MutableLiveData<Boolean>()
+    fun observeShowTimePicker(): LiveData<Boolean> = showTimePickerLiveData
+
+    private val setupCurrentDateLiveData = MutableLiveData<String>()
+    fun observeSetupCurrentDate(): LiveData<String> = setupCurrentDateLiveData
+
+    private val completeAddPaymentLiveData = MutableLiveData<Boolean>()
+    fun observeCompleteAddPayment(): LiveData<Boolean> = completeAddPaymentLiveData
+
 
     //region ================ Base Methods =================
-
-    fun onAttachView(addPurchaseView: AddPurchaseView) {
-        this.addPurchaseView = addPurchaseView
-    }
 
     fun onViewDestroy() {
         bag.dispose()
@@ -55,15 +84,12 @@ class AddPurchasePresenter @Inject constructor(compositeDisposable: CompositeDis
     fun checkExistCategoriesInDatabase() {
         categoryDataStore.getCategoriesList()
                 .subscribeOn(Schedulers.io())
-                .flatMapIterable { it }
-                .map { category -> category.name }
-                .toList()
+                .map { list -> list.map { category -> category.name } }
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({ categoriesList: List<String> ->
-                    addPurchaseView.setupCategoriesList(categoriesList)
+                    categoriesListLiveData.value = categoriesList
                     Timber.d("get all categories")
-                },
-                        { t -> Timber.e(t, "error at check exist categories $t") })
+                }, { t -> Timber.e(t, "error at check exist categories $t") })
                 .also { bag.add(it) }
     }
 
@@ -72,7 +98,7 @@ class AddPurchasePresenter @Inject constructor(compositeDisposable: CompositeDis
     //region ================= Request to add purchase =================
 
     private fun addPurchase(pricePurchase: String, nameCategory: String) {
-        addPurchaseView.showProgressBar()
+        showProgressLiveData.value = true
         val partFormBody = FormBody.Builder()
                 .add(USER_ID_PARAMETER, DEFAULT_USER_ID)
                 .add(COST_PARAMETER, pricePurchase)
@@ -82,11 +108,15 @@ class AddPurchasePresenter @Inject constructor(compositeDisposable: CompositeDis
         purchaseModel.addPayment(partFormBody)
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe({
-                    if (it != null) {
+                .subscribe({ payment ->
+                    showProgressLiveData.value = false
+                    payment?.also {
                         completeAddPayment()
                     }
-                }, { completeAddPayment() })
+                }, {
+                    showProgressLiveData.value = false
+                    completeAddPayment()
+                })
                 .also { bag.add(it) }
     }
 
@@ -97,7 +127,9 @@ class AddPurchasePresenter @Inject constructor(compositeDisposable: CompositeDis
     fun checkCategorySaveOnDatabase(pricePayment: String, nameCategory: String) {
         categoryDataStore.getCategoriesList()
                 .subscribeOn(Schedulers.io())
-                .map { it.mapNotNull { it.name } }
+                .map { list ->
+                    list.mapNotNull { it.name }
+                }
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({ storageCategoriesList: List<String> ->
                     if (!isContainsCurrentCategoryInDatabase(nameCategory, storageCategoriesList)) {
@@ -150,14 +182,19 @@ class AddPurchasePresenter @Inject constructor(compositeDisposable: CompositeDis
     //endregion
 
     private fun completeAddPayment() {
-        addPurchaseView.hideProgressBar()
-        addPurchaseView.completedAddPurchase()
+        showProgressLiveData.value = false
+        completeAddPaymentLiveData.value = true
     }
 
     //region ================= Setup Current Date =================
 
-    fun setupCurrentDate() {
-        addPurchaseView.setupCurrentDateAndTime(SoftwareUtils.modernTimeStampToString(getCurrentTimeStamp(), Locale.getDefault()))
+    fun requestSetupCurrentDate() {
+        val date = SoftwareUtils.modernTimeStampToString(getCurrentTimeStamp(), Locale.getDefault())
+        setupCurrentDate(date)
+    }
+
+    private fun setupCurrentDate(date: String) {
+        setupCurrentDateLiveData.value = date
         refreshCurrentDate()
     }
 
@@ -171,16 +208,16 @@ class AddPurchasePresenter @Inject constructor(compositeDisposable: CompositeDis
                 }
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe({ result -> addPurchaseView.setupCurrentDateAndTime(result) }, { _ -> }))
+                .subscribe({ result -> setupCurrentDate(result) }, { _ -> }))
     }
 
     fun checkSetupCustomDateAndTime(checkedCustomDateTime: Boolean) {
         this.checkedCustomDateTime = checkedCustomDateTime
         if (checkedCustomDateTime) {
-            addPurchaseView.showDatePicker()
+            showDatePickerLiveData.value = true
             bag.clear()
         } else {
-            setupCurrentDate()
+            requestSetupCurrentDate()
         }
     }
 
@@ -198,12 +235,12 @@ class AddPurchasePresenter @Inject constructor(compositeDisposable: CompositeDis
                 selectedDate.year
                         .toString()
                         .substring(selectedDate.year.toString().length - 2)
-        addPurchaseView.showTimePicker()
+        showTimePickerLiveData.value = true
     }
 
     fun changeTime(hourString: String, minuteString: String) {
         customTime = "$hourString:$minuteString"
-        addPurchaseView.setupCustomDateAndTime(customDate, customTime)
+        setupCurrentDateLiveData.value = "$customDate $customTime"
     }
 
     //endregion

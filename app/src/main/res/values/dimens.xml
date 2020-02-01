@@ -22,6 +22,7 @@
     <dimen name="spacing_lager_36">36dp</dimen>
     <dimen name="spacing_xxx_lager_48">48dp</dimen>
     <dimen name="spacing_bigger_56">56dp</dimen>
+    <dimen name="dialog_progress_load_size">72dp</dimen>
     <dimen name="spacing_big_bigger_x_96">96dp</dimen>
     <dimen name="spacing_big_bigger_100">100dp</dimen>
     <dimen name="zeros">0dp</dimen>
