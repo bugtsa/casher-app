@@ -1,21 +1,37 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorAccent">@color/blue_bt_23</color>
+    <color name="colorAccent">@color/yellow_400</color>
 
-    <color name="primaryColor">@color/grey_bt_37</color>
-    <color name="primaryLightColor">@color/grey_bt_62</color>
-    <color name="primaryDarkColor">@color/black_bt_10</color>
-    <color name="secondaryColor">#ef5350</color>
-    <color name="secondaryLightColor">#ff867c</color>
-    <color name="secondaryDarkColor">#b61827</color>
-    <color name="primaryTextColor">@color/white_bt_ee</color>
-    <color name="secondaryTextColor">@color/white_bt_cc</color>
+    <color name="primaryColor">@color/pink_300</color>
+    <color name="primaryLightColor">@color/pink_200</color>
+    <color name="primaryDarkColor">@color/pink_600</color>
+    <color name="secondaryColor">@color/blue_300</color>
+    <color name="secondaryLightColor">@color/blue_200</color>
+    <color name="secondaryDarkColor">@color/blue_600</color>
+    <color name="primaryTextColor">@color/grey_800</color>
+    <color name="secondaryTextColor">@color/grey_dark_700</color>
 
-    <color name="blue_bt_23">#23C2E4</color>
+    <color name="yellow_400">#ffee58</color>
+    <color name="grey_800">#424242</color>
+    <color name="grey_dark_700">#373737</color>
+
+    <color name="blue_300">#1565c0</color>
+    <color name="blue_200">#5e92f3</color>
+    <color name="blue_600">#003c8f</color>
+
+    <color name="pink_300">#f06292</color>
+    <color name="pink_200">#ff94c2</color>
+    <color name="pink_600">#ba2d65</color>
+
+    <color name="blue_400">#23C2E4</color>
     <color name="grey_bt_37">#37474f</color>
     <color name="grey_bt_62">#62727b</color>
     <color name="grey_bt_45">#455a64</color>
     <color name="black_bt_10">#102027</color>
     <color name="white_bt_ee">#eeeeee</color>
     <color name="white_bt_cc">#cccccc</color>
+
+    <color name="red_200">#ff867c</color>
+    <color name="red_300">#ef5350</color>
+    <color name="red_600">#b61827</color>
 </resources>

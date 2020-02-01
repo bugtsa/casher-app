@@ -2,7 +2,7 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:background="?attr/colorPrimary"
+    android:background="@color/primaryLightColor"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -10,7 +10,7 @@
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="?attr/colorPrimaryDark"
+        android:background="@color/primaryDarkColor"
         android:elevation="4dp"
         android:minHeight="?attr/actionBarSize"
         android:theme="@style/AppTheme.NoActionBar.PopupOverlay"
@@ -32,7 +32,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/spacing_xxx_medium_32"
-        android:text="@string/add_caption"
+        android:text="@string/sheet_add_caption"
         android:theme="@style/AccentButton"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toLeftOf="@+id/cancel_purchase"
@@ -80,7 +80,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/add_date_purchase"
-        tools:text="@string/add_caption" />
+        tools:text="@string/sheet_add_caption" />
 
     <com.bugtsa.casher.utils.CustomAutoComplete
         android:id="@+id/category_purchase_et"
@@ -101,7 +101,9 @@
         <EditText
             android:id="@+id/price_purchase_et"
             style="@style/EditText.ManualCode"
+            android:hint="@string/price_purchase_hint"
             android:inputType="number"
+            android:importantForAutofill="no"
             tools:text="54654632" />
     </com.google.android.material.textfield.TextInputLayout>
 

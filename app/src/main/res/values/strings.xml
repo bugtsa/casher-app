@@ -1,23 +1,14 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <resources>
-    <string name="add_caption">Add</string>
-
     <string name="app_name">Casher</string>
-
-    <string name="balance_caption">Balance</string>
 
     <string name="cancel_caption">Cancel</string>
 
-    <string name="category_caption">Category</string>
     <string name="category_purchase">Category payment</string>
 
     <string name="changed_date_and_time">"Setup time and date: "</string>
 
-    <string name="cost_caption">Cost</string>
-
     <string name="current_date_and_time">"Current time and date: "</string>
-
-    <string name="dark_mode">Dark Mode</string>
 
     <string name="date_purchase">setup date yourself</string>
 
@@ -27,8 +18,18 @@
     <string name="load_data_dialog_title" translatable="false">@string/app_name</string>
 
     <string name="price_purchase">Price payment</string>
+    <string name="price_purchase_hint">Write number</string>
+
+    <string name="screen_add_purchase">Add purchase</string>
+
+    <string name="sheet_add_caption">Add</string>
+    <string name="sheet_balance_caption">Balance</string>
+    <string name="sheet_category_caption">Category</string>
+    <string name="sheet_cost_caption">Cost</string>
 
     <string name="sing_up_in_app">Sing Up in App</string>
+
+    <string name="switch_theme_mode">Switch theme mode</string>
 
     <string name="time_caption">Time</string>
 

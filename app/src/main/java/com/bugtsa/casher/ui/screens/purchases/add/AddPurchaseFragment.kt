@@ -14,7 +14,7 @@ import com.borax12.materialdaterangepicker.time.TimePickerDialog
 import com.bugtsa.casher.R
 import com.bugtsa.casher.ui.screens.BaseFragment
 import com.maxproj.calendarpicker.Builder
-import kotlinx.android.synthetic.main.controller_add_purchase.*
+import kotlinx.android.synthetic.main.fragment_add_purchase.*
 import pro.horovodovodo4ka.bones.Bone
 import pro.horovodovodo4ka.bones.Finger
 import pro.horovodovodo4ka.bones.extensions.dismiss
@@ -30,42 +30,22 @@ interface AddPaymentStackPresentable {
     val fragmentTitle: String
 }
 
-open class AddPurchaseScreen(rootPhalanx: Bone? = null) : Finger(rootPhalanx), AddPaymentStackPresentable {
-    data class ArgbValues(val alpha: Int,
-                          val red: Int,
-                          val green: Int,
-                          val blue: Int) {
-
-        override fun toString(): String {
-            return "R: ${this.red} G: ${this.green} B: ${this.blue}"
-        }
-    }
-
-    var argbValues: ArgbValues
-    val color = Random().let {
-        argbValues = ArgbValues(alpha = 255, red = it.nextInt(256),
-                green = it.nextInt(256), blue = it.nextInt(256))
-        Color.argb(argbValues.alpha, argbValues.red, argbValues.green, argbValues.blue)
-    }
-
+open class AddPurchaseScreen(rootPhalanx: Bone? = null) : Finger(rootPhalanx) {
     override val seed = { AddPurchaseFragment() }
-
-    override val fragmentTitle: String
-        get() = argbValues.toString()
 }
 
 @Suppress("DEPRECATED_IDENTITY_EQUALS")
 @SuppressLint("MissingSuperCall")
 class AddPurchaseFragment : BaseFragment(), AddPurchaseView, TimePickerDialog.OnTimeSetListener,
         FingerNavigatorInterface<AddPurchaseScreen> by FingerNavigator(com.bugtsa.casher.R.id.add_payment_container),
-        BonePersisterInterface<AddPurchaseScreen> {
+        BonePersisterInterface<AddPurchaseScreen>, AddPaymentStackPresentable {
 
     private lateinit var viewModel: AddPurchaseViewModel
 
     //region ================= Implements Methods =================
 
     override val layout: Int
-        get() = R.layout.controller_add_purchase
+        get() = R.layout.fragment_add_purchase
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -109,20 +89,16 @@ class AddPurchaseFragment : BaseFragment(), AddPurchaseView, TimePickerDialog.On
         managerProvider = null
     }
 
+    override val fragmentTitle: String
+        get() = getString(R.string.screen_add_purchase)
+
     override fun onRefresh() {
         super<FingerNavigatorInterface>.onRefresh()
         if (view == null) return
 
-        val title = bone.fragmentTitle
+        val title = fragmentTitle
         toolbar.visibility = View.VISIBLE
         toolbar.title = title
-//        toolbar.setOnClickListener {
-//            val cm = context?.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-//            val cData = ClipData.newPlainText("text", title)
-//            cm.primaryClip = cData
-//            Toast.makeText(context, "Copied to clipboard", Toast.LENGTH_SHORT).show()
-//        }
-
         addNavigationToToolbar(toolbar, com.bugtsa.casher.R.drawable.ic_arrow_back_white)
     }
 
@@ -218,8 +194,8 @@ class AddPurchaseFragment : BaseFragment(), AddPurchaseView, TimePickerDialog.On
                     showTimePicker()
                 })
         viewModel.observeShowProgress().observe(viewLifecycleOwner,
-                Observer {
-                    showProgressBar()
+                Observer { isShow ->
+                    if (isShow) showProgressBar() else hideProgressBar()
                 })
     }
 

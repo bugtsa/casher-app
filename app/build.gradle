@@ -21,6 +21,7 @@ project.ext {
     rxRelayVersion = "2.0.0"
     rxLintVersion = "1.6"
     lifecycle = "2.1.0"
+    version = "0"
 }
 
 detekt {
@@ -34,7 +35,7 @@ android {
         minSdkVersion 21
         targetSdkVersion 29
         versionCode 1
-        versionName "1.0"
+        versionName "1.0$version"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
         multiDexEnabled true
