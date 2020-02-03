@@ -17,10 +17,14 @@
     <string name="load_data_dialog_positive_button">Still wait</string>
     <string name="load_data_dialog_title" translatable="false">@string/app_name</string>
 
+    <string name="ok_caption">Ok</string>
+
     <string name="price_purchase">Price payment</string>
     <string name="price_purchase_hint">Write number</string>
 
     <string name="screen_add_purchase">Add purchase</string>
+
+    <string name="settings_title">Settings</string>
 
     <string name="sheet_add_caption">Add</string>
     <string name="sheet_balance_caption">Balance</string>

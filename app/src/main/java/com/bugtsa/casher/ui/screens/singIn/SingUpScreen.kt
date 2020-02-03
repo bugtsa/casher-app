@@ -10,12 +10,11 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import com.bugtsa.casher.R
 import com.bugtsa.casher.ui.activities.MainActivity
-import com.bugtsa.casher.ui.screens.settings.NavigationStackPresentable
 import com.bugtsa.casher.ui.screens.purchases.show.PurchasesScreen
+import com.bugtsa.casher.ui.screens.settings.NavigationStackPresentable
 import com.google.android.gms.auth.GoogleAuthUtil
 import com.google.android.gms.common.AccountPicker
 import com.google.android.gms.common.GoogleApiAvailability
-import kotlinx.android.synthetic.main.fragment_phalanx_test.*
 import pro.horovodovodo4ka.bones.Phalanx
 import pro.horovodovodo4ka.bones.extensions.present
 import pro.horovodovodo4ka.bones.persistance.BonePersisterInterface
@@ -44,7 +43,7 @@ class SingUpFragment : Fragment(),
     private lateinit var singUpScreenScope: Scope
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        return inflater.inflate(R.layout.fragment_phalanx_test, container, false)
+        return inflater.inflate(R.layout.fragment_charts, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -55,7 +54,7 @@ class SingUpFragment : Fragment(),
 
         presenter.onAttachView(this)
         presenter.requestAccountName()
-        test_label.text = getString(R.string.sing_up_in_app)
+//        test_label.text = getString(R.string.sing_up_in_app)
 
         refreshUI()
     }

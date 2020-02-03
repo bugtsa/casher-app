@@ -9,7 +9,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import com.bugtsa.casher.R
 import com.bugtsa.casher.ui.screens.singIn.SingUpScreen
-import kotlinx.android.synthetic.main.fragment_navigation_stack.*
+import kotlinx.android.synthetic.main.fragment_settings.*
 import pro.horovodovodo4ka.bones.Bone
 import pro.horovodovodo4ka.bones.Finger
 import pro.horovodovodo4ka.bones.persistance.BonePersisterInterface
@@ -29,7 +29,7 @@ open class PurchasesStack(rootPhalanx: Bone? = null) : Finger(rootPhalanx) {
 @SuppressLint("MissingSuperCall")
 open class PurchasesNavigationFragment : Fragment(),
     BonePersisterInterface<PurchasesStack>,
-    FingerNavigatorInterface<PurchasesStack> by FingerNavigator(R.id.stack_fragment_container){
+    FingerNavigatorInterface<PurchasesStack> by FingerNavigator(R.id.purchases_navigation_container){
 
     override fun onAttach(context: Context) {
         super.onAttach(context)

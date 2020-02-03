@@ -5,7 +5,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.screens.settings.NavigationStackFragment">
+    tools:context=".ui.screens.settings.SettingsScreenFragment">
 
 
     <androidx.appcompat.widget.Toolbar
@@ -21,7 +21,7 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <FrameLayout
-        android:id="@+id/stack_fragment_container"
+        android:id="@+id/purchases_navigation_container"
         android:layout_width="0dp"
         android:layout_height="0dp"
         app:layout_constraintBottom_toBottomOf="parent"

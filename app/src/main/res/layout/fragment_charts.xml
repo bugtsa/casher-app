@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/primaryColor"
+    android:clickable="true"
+    android:focusable="true"
+    android:focusableInTouchMode="true">
+
+    <FrameLayout
+        android:id="@+id/charts_container"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginTop="8dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <Button
+        android:id="@+id/vChooseStartMonth"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Choose month"
+        app:layout_constraintBottom_toTopOf="@+id/vChooseEndMonth"
+        app:layout_constraintEnd_toStartOf="@+id/vStartDate"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/vStartDate"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Start Date"
+        app:layout_constraintBottom_toTopOf="@+id/vChooseEndMonth"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/vChooseStartMonth"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <Button
+        android:id="@+id/vChooseEndMonth"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Choose month"
+        app:layout_constraintBottom_toTopOf="@+id/vShowChart"
+        app:layout_constraintEnd_toStartOf="@+id/vEndDate"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/vChooseStartMonth" />
+
+    <TextView
+        android:id="@+id/vEndDate"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Start Date"
+        app:layout_constraintBottom_toTopOf="@+id/vShowChart"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/vChooseEndMonth"
+        app:layout_constraintTop_toBottomOf="@+id/vChooseStartMonth" />
+
+    <Button
+        android:id="@+id/vShowChart"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Show Chart"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/vChooseEndMonth" />
+</androidx.constraintlayout.widget.ConstraintLayout>

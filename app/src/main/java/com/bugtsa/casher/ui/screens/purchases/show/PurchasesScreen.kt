@@ -7,7 +7,7 @@ import android.view.View
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProviders
+import androidx.lifecycle.ViewModelProvider
 import com.bugtsa.casher.R
 import com.bugtsa.casher.data.dto.PaymentsByDayRes
 import com.bugtsa.casher.ui.OnChangePosition
@@ -48,7 +48,7 @@ class PurchasesFragment : Fragment(R.layout.fragment_purchases), PurchasesView,
         val viewModelFactory = Toothpick
                 .openScope(requireActivity().application)
                 .getInstance(PurchasesViewModelFactory::class.java)
-        viewModel = ViewModelProviders.of(this, viewModelFactory)[PurchasesViewModel::class.java]
+        viewModel = ViewModelProvider(this, viewModelFactory)[PurchasesViewModel::class.java]
 
         bindViewModel()
         viewModel.processData()

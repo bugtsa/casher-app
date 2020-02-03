@@ -9,10 +9,10 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProviders
+import androidx.lifecycle.ViewModelProvider
 import com.bugtsa.casher.R
 import com.bugtsa.casher.utils.ThemeHelper
-import kotlinx.android.synthetic.main.fragment_navigation_stack.*
+import kotlinx.android.synthetic.main.fragment_settings.*
 import pro.horovodovodo4ka.bones.Bone
 import pro.horovodovodo4ka.bones.Finger
 import pro.horovodovodo4ka.bones.persistance.BonePersisterInterface
@@ -24,16 +24,17 @@ import toothpick.Toothpick
 
 interface NavigationStackPresentable {
     val fragmentTitle: String
+        get() = "sdfsdfads"
 }
 
-open class NavigationStack(rootPhalanx: Bone? = null) : Finger(rootPhalanx) {
-    override val seed = { NavigationStackFragment() }
+open class SettingsScreen(rootPhalanx: Bone? = null) : Finger(rootPhalanx) {
+    override val seed = { SettingsScreenFragment() }
 }
 
 @SuppressLint("MissingSuperCall")
-open class NavigationStackFragment : Fragment(),
-        BonePersisterInterface<NavigationStack>,
-        FingerNavigatorInterface<NavigationStack> by FingerNavigator(R.id.stack_fragment_container) {
+open class SettingsScreenFragment : Fragment(),
+        BonePersisterInterface<SettingsScreen>,
+        FingerNavigatorInterface<SettingsScreen> by FingerNavigator(R.id.settings_container) {
 
     private lateinit var viewModel: SettingsViewModel
 
@@ -48,7 +49,7 @@ open class NavigationStackFragment : Fragment(),
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? =
-            inflater.inflate(R.layout.fragment_navigation_stack, container, false)
+            inflater.inflate(R.layout.fragment_settings, container, false)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -56,12 +57,12 @@ open class NavigationStackFragment : Fragment(),
         val viewModelFactory = Toothpick
                 .openScopes(activity, this)
                 .getInstance(SettingsViewModelFactory::class.java)
-        viewModel = ViewModelProviders.of(this, viewModelFactory)[SettingsViewModel::class.java]
+        viewModel = ViewModelProvider(this, viewModelFactory)[SettingsViewModel::class.java]
 
         bindListeners()
         bindViewModel()
 
-        refreshUI()
+        onRefresh()
     }
 
     private fun bindViewModel() {
@@ -88,7 +89,7 @@ open class NavigationStackFragment : Fragment(),
 
         if (view == null) return
 
-        val title = (bone.fingertip as? NavigationStackPresentable)?.fragmentTitle
+        val title = getString(R.string.settings_title)
         when (title) {
             null -> toolbar.visibility = View.GONE
             else -> {

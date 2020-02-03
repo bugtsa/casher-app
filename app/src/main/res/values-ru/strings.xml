@@ -16,10 +16,14 @@
     <string name="load_data_dialog_netagive_button">Остановить</string>
     <string name="load_data_dialog_positive_button">Подождать еще</string>
 
+    <string name="ok_caption">Отлично</string>
+
     <string name="price_purchase">Цена траты</string>
     <string name="price_purchase_hint">Напишите число</string>
 
     <string name="screen_add_purchase">Добавить трату</string>
+
+    <string name="settings_title">Настройки</string>
 
     <string name="sheet_add_caption">Добавить</string>
     <string name="sheet_balance_caption">Баланс</string>

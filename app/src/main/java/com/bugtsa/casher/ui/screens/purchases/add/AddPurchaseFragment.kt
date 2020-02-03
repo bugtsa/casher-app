@@ -8,7 +8,7 @@ import android.view.MotionEvent
 import android.view.View
 import android.widget.ArrayAdapter
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProviders
+import androidx.lifecycle.ViewModelProvider
 import com.borax12.materialdaterangepicker.time.RadialPickerLayout
 import com.borax12.materialdaterangepicker.time.TimePickerDialog
 import com.bugtsa.casher.R
@@ -53,7 +53,7 @@ class AddPurchaseFragment : BaseFragment(), AddPurchaseView, TimePickerDialog.On
         val viewModelFactory = Toothpick
                 .openScopes(activity, this)
                 .getInstance(AddPurchaseViewModelFactory::class.java)
-        viewModel = ViewModelProviders.of(this, viewModelFactory)[AddPurchaseViewModel::class.java]
+        viewModel = ViewModelProvider(this, viewModelFactory)[AddPurchaseViewModel::class.java]
 
         bindListeners()
         bindViewModel()

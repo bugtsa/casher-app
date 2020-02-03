@@ -11,9 +11,9 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.bugtsa.casher.ui.navigation.PurchasesStack
 import com.bugtsa.casher.ui.navigation.TabBar
-import com.bugtsa.casher.ui.screens.TestScreen
+import com.bugtsa.casher.ui.screens.charts.ChartsScreen
 import com.bugtsa.casher.ui.screens.purchases.show.PurchasesScreen
-import com.bugtsa.casher.ui.screens.settings.NavigationStack
+import com.bugtsa.casher.ui.screens.settings.SettingsScreen
 import com.bugtsa.casher.ui.screens.singIn.SingUpScreen
 import com.crashlytics.android.Crashlytics
 import com.google.android.gms.common.ConnectionResult
@@ -122,8 +122,9 @@ class MainActivity : AppCompatActivity(),
             RootBone(
                     TabBar(
                             PurchasesStack(SingUpScreen()),
-                            TestScreen(),
-                            NavigationStack(TestScreen())
+                            ChartsScreen(),
+                            SettingsScreen()
+//                            SettingsScreen(TestScreen())
                     )
             )
         }
