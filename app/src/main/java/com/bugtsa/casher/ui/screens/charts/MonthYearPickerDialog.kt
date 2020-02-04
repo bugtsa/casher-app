@@ -33,7 +33,7 @@ class MonthYearPickerDialog : DialogFragment() {
         yearPicker.maxValue = year
         yearPicker.value = year
         builder.setView(dialog) // Add action buttons
-                .setPositiveButton(R.string.ok_caption) { _, _ -> listener?.onDateSet(null, yearPicker.value, monthPicker.value - 1, 0) }
+                .setPositiveButton(android.R.string.ok) { _, _ -> listener?.onDateSet(null, yearPicker.value, monthPicker.value - 1, 0) }
                 .setNegativeButton(R.string.cancel_caption) { _, _ -> this@MonthYearPickerDialog.dialog?.cancel() }
         return builder.create()
     }

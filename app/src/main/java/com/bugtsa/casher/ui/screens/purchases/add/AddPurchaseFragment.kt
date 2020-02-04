@@ -12,6 +12,8 @@ import androidx.lifecycle.ViewModelProvider
 import com.borax12.materialdaterangepicker.time.RadialPickerLayout
 import com.borax12.materialdaterangepicker.time.TimePickerDialog
 import com.bugtsa.casher.R
+import com.bugtsa.casher.presentation.AddPurchaseViewModel
+import com.bugtsa.casher.presentation.AddPurchaseViewModelFactory
 import com.bugtsa.casher.ui.screens.BaseFragment
 import com.maxproj.calendarpicker.Builder
 import kotlinx.android.synthetic.main.fragment_add_purchase.*

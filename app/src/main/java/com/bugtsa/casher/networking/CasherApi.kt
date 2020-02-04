@@ -1,10 +1,12 @@
 package com.bugtsa.casher.networking
 
 import com.bugtsa.casher.data.dto.CategoryDto
-import com.bugtsa.casher.data.dto.CategoryRes
 import com.bugtsa.casher.data.dto.PaymentDto
-import com.bugtsa.casher.data.dto.PaymentsByDayRes
+import com.bugtsa.casher.data.network.CategoryRes
+import com.bugtsa.casher.data.network.PaymentRes
+import com.bugtsa.casher.data.network.PaymentsByDayRes
 import com.bugtsa.casher.utils.ConstantManager.CategoryNetwork.CATEGORY_NAME_METHOD
+import com.bugtsa.casher.utils.ConstantManager.CategoryNetwork.CHARTS_NAME_METHOD
 import com.bugtsa.casher.utils.ConstantManager.Network.LAST_PAGE_PAYMENT_NAME_METHOD
 import com.bugtsa.casher.utils.ConstantManager.Network.PAGE_PAYMENT_NAME_METHOD
 import com.bugtsa.casher.utils.ConstantManager.Network.PAYMENT_NAME_METHOD
@@ -28,4 +30,7 @@ interface CasherApi {
 
     @POST("$PAYMENT_NAME_METHOD/full")
     fun addPayment(@Body payment: FormBody): Single<PaymentDto>
+
+    @GET("$CHARTS_NAME_METHOD/rangeMonth")
+    fun getRangeMonths(): Single<List<PaymentRes>>
 }

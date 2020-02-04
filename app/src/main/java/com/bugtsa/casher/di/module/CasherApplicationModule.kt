@@ -6,14 +6,15 @@ import com.bugtsa.casher.data.local.database.entity.category.CategoryDao
 import com.bugtsa.casher.data.local.database.entity.category.CategoryDataStore
 import com.bugtsa.casher.data.local.database.entity.payment.PaymentDao
 import com.bugtsa.casher.data.local.database.entity.payment.PaymentDataStore
-import com.bugtsa.casher.domain.prefs.LocalSettingsRepository
-import com.bugtsa.casher.domain.prefs.PreferenceRepository
+import com.bugtsa.casher.data.models.ChartsModel
 import com.bugtsa.casher.data.models.PurchaseModel
 import com.bugtsa.casher.di.inject.*
 import com.bugtsa.casher.di.inject.category.CategoryDaoProvider
 import com.bugtsa.casher.di.inject.category.LocalCategoryDateStoreProvider
 import com.bugtsa.casher.di.inject.payment.LocalPaymentDataStoreProvider
 import com.bugtsa.casher.di.inject.payment.PaymentDaoProvider
+import com.bugtsa.casher.domain.prefs.LocalSettingsRepository
+import com.bugtsa.casher.domain.prefs.PreferenceRepository
 import com.bugtsa.casher.networking.CasherApi
 import io.reactivex.disposables.CompositeDisposable
 import toothpick.config.Module
@@ -30,8 +31,10 @@ class CasherApplicationModule : Module {
         bind(LocalSettingsRepository::class.java).toProviderInstance(PreferenceRepository(application))
 
         bind(PurchaseModel::class.java).toProviderInstance(
-                PurchaseModelProvider(
-                        casherApi.get()))
+                PurchaseModelProvider(casherApi.get()))
+
+        bind(ChartsModel::class.java).toProviderInstance(
+                ChartsModelProvider(casherApi.get()))
 
         val casherDataBaseProvider = DataBaseProvider(application)
         bind(CasherDatabase::class.java).toProviderInstance(casherDataBaseProvider)

@@ -1,5 +1,6 @@
-package com.bugtsa.casher.data.dto
+package com.bugtsa.casher.data.network
 
+import com.bugtsa.casher.data.dto.PaymentDto
 import com.bugtsa.casher.utils.DiffItem
 import com.google.gson.annotations.SerializedName
 

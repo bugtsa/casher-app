@@ -11,6 +11,8 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.bugtsa.casher.R
+import com.bugtsa.casher.presentation.SettingsViewModel
+import com.bugtsa.casher.presentation.SettingsViewModelFactory
 import com.bugtsa.casher.utils.ThemeHelper
 import kotlinx.android.synthetic.main.fragment_settings.*
 import pro.horovodovodo4ka.bones.Bone
@@ -79,7 +81,6 @@ open class SettingsScreenFragment : Fragment(),
                 Build.VERSION.SDK_INT < Build.VERSION_CODES.Q && isChecked -> ThemeHelper.batterySaverMode
                 else -> ThemeHelper.default
             }
-            ThemeHelper.applyTheme(currentTheme)
             viewModel.saveModeTheme(currentTheme)
         }
     }

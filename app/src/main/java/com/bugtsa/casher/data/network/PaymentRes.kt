@@ -1,4 +1,4 @@
-package com.bugtsa.casher.data.dto
+package com.bugtsa.casher.data.network
 
 data class PaymentRes(
 	val date: String? = null,

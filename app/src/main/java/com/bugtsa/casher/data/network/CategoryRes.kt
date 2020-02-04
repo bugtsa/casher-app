@@ -1,4 +1,4 @@
-package com.bugtsa.casher.data.dto
+package com.bugtsa.casher.data.network
 
 import com.google.gson.annotations.SerializedName
 

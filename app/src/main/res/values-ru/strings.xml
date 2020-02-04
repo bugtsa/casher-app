@@ -8,15 +8,18 @@
 
     <string name="changed_date_and_time">"Установленные дата и время: "</string>
 
+    <string name="charts_choose_month">Выберите месяц</string>
+    <string name="charts_month_end">Заключительный месяц</string>
+    <string name="charts_show_chart">Показать диаграмму</string>
+    <string name="charts_month_start">Начальный месяц</string>
+
     <string name="current_date_and_time">"Текущая дата и время: "</string>
 
     <string name="date_purchase">установить дату самостоятельно</string>
 
     <string name="load_data_dialog_content">Остановить загрузку?</string>
-    <string name="load_data_dialog_netagive_button">Остановить</string>
+    <string name="load_data_dialog_negative_button">Остановить</string>
     <string name="load_data_dialog_positive_button">Подождать еще</string>
-
-    <string name="ok_caption">Отлично</string>
 
     <string name="price_purchase">Цена траты</string>
     <string name="price_purchase_hint">Напишите число</string>

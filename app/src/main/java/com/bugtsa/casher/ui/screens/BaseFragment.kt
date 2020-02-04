@@ -88,7 +88,7 @@ abstract class BaseFragment : Fragment() {
                         dialog.dismiss()
                         showProgress(cancelAction)
                     }
-                    .setNegativeButton(R.string.load_data_dialog_netagive_button) { dialog, _ ->
+                    .setNegativeButton(R.string.load_data_dialog_negative_button) { dialog, _ ->
                         hideProgress()
                         dialog.dismiss()
                         cancelAction?.invoke()

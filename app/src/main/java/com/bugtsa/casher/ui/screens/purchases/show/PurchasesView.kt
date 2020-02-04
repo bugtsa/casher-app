@@ -1,6 +1,6 @@
 package com.bugtsa.casher.ui.screens.purchases.show
 
-import com.bugtsa.casher.data.dto.PaymentsByDayRes
+import com.bugtsa.casher.data.network.PaymentsByDayRes
 
 interface PurchasesView {
 

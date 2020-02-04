@@ -1,4 +1,4 @@
-package com.bugtsa.casher.ui.screens.purchases.add
+package com.bugtsa.casher.presentation
 
 import android.app.Application
 import androidx.lifecycle.LiveData
@@ -69,7 +69,6 @@ class AddPurchaseViewModel @Inject constructor(
 
     private val completeAddPaymentLiveData = MutableLiveData<Boolean>()
     fun observeCompleteAddPayment(): LiveData<Boolean> = completeAddPaymentLiveData
-
 
     //region ================ Base Methods =================
 

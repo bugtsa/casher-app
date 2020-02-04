@@ -1,4 +1,4 @@
-package com.bugtsa.casher.ui.screens.purchases.show
+package com.bugtsa.casher.presentation
 
 import android.app.Application
 import androidx.lifecycle.LiveData
@@ -6,9 +6,9 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.bugtsa.casher.data.dto.CategoryDto
-import com.bugtsa.casher.data.dto.PaymentsByDayRes
 import com.bugtsa.casher.data.local.database.entity.category.CategoryDataStore
 import com.bugtsa.casher.data.models.PurchaseModel
+import com.bugtsa.casher.data.network.PaymentsByDayRes
 import io.reactivex.Flowable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable

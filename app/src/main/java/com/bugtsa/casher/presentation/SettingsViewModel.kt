@@ -1,4 +1,4 @@
-package com.bugtsa.casher.ui.screens.settings
+package com.bugtsa.casher.presentation
 
 import android.app.Application
 import androidx.lifecycle.LiveData
@@ -6,6 +6,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.bugtsa.casher.domain.prefs.PreferenceRepository
+import com.bugtsa.casher.utils.ThemeHelper
 import com.bugtsa.casher.utils.ThemeHelper.lightMode
 import toothpick.Toothpick
 import javax.inject.Inject
@@ -23,10 +24,18 @@ class SettingsViewModel @Inject constructor(private val preferenceRepo: Preferen
     fun observeModelTheme(): LiveData<Boolean> = modeThemeLiveData
 
     init {
-        modeThemeLiveData.value = preferenceRepo.getModeTheme() != lightMode
+        processModeTheme(preferenceRepo.getModeTheme())
     }
 
-    fun saveModeTheme(modeTheme: String) {
-        preferenceRepo.saveModeTheme(modeTheme)
+    fun saveModeTheme(theme: String) {
+        if (preferenceRepo.getModeTheme() != theme) {
+            preferenceRepo.saveModeTheme(theme)
+            ThemeHelper.applyTheme(theme)
+            processModeTheme(theme)
+        }
+    }
+
+    private fun processModeTheme(currentThemeName: String) {
+        modeThemeLiveData.value = currentThemeName != lightMode
     }
 }

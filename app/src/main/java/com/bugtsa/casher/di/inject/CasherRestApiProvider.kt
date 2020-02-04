@@ -10,11 +10,6 @@ import javax.inject.Provider
 
 class CasherRestApiProvider: Provider<CasherApi> {
 
-    companion object {
-        private const val READ_TIMEOUT = 20L
-        private const val CONNECTION_TIMEOUT = 60L
-    }
-
     private val casherApi: CasherApi
 
     init {
@@ -24,7 +19,7 @@ class CasherRestApiProvider: Provider<CasherApi> {
                 .build()
 
         val retrofit = Retrofit.Builder()
-                .baseUrl("https://casher-bugtsa.herokuapp.com/")
+                .baseUrl(PROD_URL)
                 .client(okHttpClient)
                 .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
                 .addConverterFactory(GsonConverterFactory.create())
@@ -35,5 +30,11 @@ class CasherRestApiProvider: Provider<CasherApi> {
 
     override fun get(): CasherApi{
         return casherApi
+    }
+
+    companion object {
+        private const val READ_TIMEOUT = 20L
+        private const val CONNECTION_TIMEOUT = 60L
+        private const val PROD_URL = "https://casher-bugtsa.herokuapp.com/"
     }
 }

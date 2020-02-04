@@ -4,7 +4,7 @@ import android.view.*
 import android.widget.TextView
 import com.bugtsa.casher.R
 import com.bugtsa.casher.data.dto.PaymentDto
-import com.bugtsa.casher.data.dto.PaymentsByDayRes
+import com.bugtsa.casher.data.network.PaymentsByDayRes
 import com.bugtsa.casher.ui.OnChangePosition
 import com.bugtsa.casher.utils.autoNotify
 import com.bugtsa.casher.utils.visibility
