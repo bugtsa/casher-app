@@ -43,4 +43,6 @@
     <string name="title_dashboard">Dashboard</string>
     <string name="title_home">Payments</string>
     <string name="title_notifications">Settings</string>
+    <string name="month_range_start">Start Date: %1$s year, %2$s</string>
+    <string name="month_range_end">End Date: %1$s year, %2$s</string>
 </resources>

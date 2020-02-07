@@ -39,7 +39,9 @@
 
     <string name="time_caption">Время</string>
 
-    <string name="title_dashboard">Dashboard</string>
-    <string name="title_home">Home</string>
+    <string name="title_dashboard">Доска</string>
+    <string name="title_home">Дом</string>
     <string name="title_notifications">Notifications</string>
+    <string name="month_range_start">Начальная дата: %1$s год, %2$s</string>
+    <string name="month_range_end">Конечная дана: %1$s год, %2$s</string>
 </resources>

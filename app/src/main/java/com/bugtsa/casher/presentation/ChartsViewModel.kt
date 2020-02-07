@@ -6,10 +6,10 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.bugtsa.casher.data.models.ChartsModel
+import com.bugtsa.casher.global.ErrorHandler
 import com.bugtsa.casher.presentation.optional.RxViewModel
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
-import timber.log.Timber
 import toothpick.Toothpick
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -34,7 +34,7 @@ class ChartsViewModel @Inject constructor(chartsModel: ChartsModel) : RxViewMode
                     val first = list.first() ?: ""
                     val second = list.last() ?: ""
                     rangeMonthLiveData.value = first to second
-                }, { th -> Timber.e(th) })
+                }, ErrorHandler::handle)
                 .also(::addDispose)
     }
 

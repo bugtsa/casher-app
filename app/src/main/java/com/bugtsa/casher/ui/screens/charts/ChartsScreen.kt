@@ -57,7 +57,6 @@ class ChartsScreenFragment : androidx.fragment.app.Fragment(),
 
     override fun onDestroyView() {
         super.onDestroyView()
-//        viewModel.onViewDestroy()
         Toothpick.closeScope(this)
     }
 
@@ -72,8 +71,8 @@ class ChartsScreenFragment : androidx.fragment.app.Fragment(),
     }
 
     private fun bindListeners() {
-        vChooseStartMonth.setOnClickListener(showMonthPicker(startDateDialog, vStartDate, "Start Date:"))
-        vChooseEndMonth.setOnClickListener(showMonthPicker(entDateDialog, vEndDate, "End Date:"))
+        vChooseStartMonth.setOnClickListener(showMonthPicker(startDateDialog, vStartDate, getString(R.string.month_range_start)))
+        vChooseEndMonth.setOnClickListener(showMonthPicker(entDateDialog, vEndDate, getString(R.string.month_range_end)))
     }
 
     private fun bindView() {
@@ -90,7 +89,8 @@ class ChartsScreenFragment : androidx.fragment.app.Fragment(),
         return View.OnClickListener {
             val listener = DatePickerDialog.OnDateSetListener{
                 _, year, month, _ ->
-                textView.text = "$prefixString $year year, ${getMonthName(month, Locale.getDefault(), false)}"
+                val stringMonth = getMonthName(month, Locale.getDefault(), false)
+                textView.text = getString(R.string.month_range_start, year, stringMonth)
             }
             dateDialog.setListener(listener)
             dateDialog.show(requireActivity().supportFragmentManager, "MonthYearPickerDialog")

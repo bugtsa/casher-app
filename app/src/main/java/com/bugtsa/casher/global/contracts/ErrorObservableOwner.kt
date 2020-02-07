@@ -1,4 +1,4 @@
-package com.bugtsa.todo.global.contracts
+package com.bugtsa.casher.global.contracts
 
 import androidx.lifecycle.LiveData
 

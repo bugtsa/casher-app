@@ -3,9 +3,9 @@ package com.bugtsa.casher.presentation.optional
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.bugtsa.todo.global.ErrorHandler
-import com.bugtsa.todo.global.contracts.ErrorObservableOwner
-import com.bugtsa.todo.global.contracts.OnBackPressable
+import com.bugtsa.casher.global.ErrorHandler
+import com.bugtsa.casher.global.contracts.ErrorObservableOwner
+import com.bugtsa.casher.global.contracts.OnBackPressable
 import com.hadilq.liveevent.LiveEvent
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable

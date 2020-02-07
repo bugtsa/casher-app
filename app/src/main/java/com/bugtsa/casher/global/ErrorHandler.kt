@@ -1,9 +1,8 @@
-package com.bugtsa.todo.global
+package com.bugtsa.casher.global
 
-import org.koin.core.KoinComponent
 import timber.log.Timber
 
-object ErrorHandler : KoinComponent {
+object ErrorHandler {
 
     fun handle(throwable: Throwable) {
         Timber.e(throwable)

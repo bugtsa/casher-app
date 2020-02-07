@@ -4,9 +4,9 @@ import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import com.bugtsa.todo.global.ErrorHandler
-import com.bugtsa.todo.global.contracts.ErrorObservableOwner
-import com.bugtsa.todo.global.contracts.OnBackPressable
+import com.bugtsa.casher.global.ErrorHandler
+import com.bugtsa.casher.global.contracts.ErrorObservableOwner
+import com.bugtsa.casher.global.contracts.OnBackPressable
 import com.hadilq.liveevent.LiveEvent
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
