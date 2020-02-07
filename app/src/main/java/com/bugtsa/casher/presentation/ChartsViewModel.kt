@@ -6,6 +6,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.bugtsa.casher.data.models.ChartsModel
+import com.bugtsa.casher.presentation.optional.RxViewModel
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import timber.log.Timber
@@ -19,7 +20,7 @@ class ChartsViewModelFactory @Inject constructor(private val app: Application) :
             Toothpick.openScope(app).getInstance(modelClass) as T
 }
 
-class ChartsViewModel @Inject constructor(chartsModel: ChartsModel) : ViewModel() {
+class ChartsViewModel @Inject constructor(chartsModel: ChartsModel) : RxViewModel() {
 
     private val rangeMonthLiveData = MutableLiveData<Pair<String, String>>()
     fun observeRangeMonth() = rangeMonthLiveData as LiveData<Pair<String, String>>
@@ -34,6 +35,7 @@ class ChartsViewModel @Inject constructor(chartsModel: ChartsModel) : ViewModel(
                     val second = list.last() ?: ""
                     rangeMonthLiveData.value = first to second
                 }, { th -> Timber.e(th) })
+                .also(::addDispose)
     }
 
 

@@ -9,9 +9,9 @@ import com.bugtsa.casher.data.dto.CategoryDto
 import com.bugtsa.casher.data.local.database.entity.category.CategoryDataStore
 import com.bugtsa.casher.data.models.PurchaseModel
 import com.bugtsa.casher.data.network.PaymentsByDayRes
+import com.bugtsa.casher.presentation.optional.RxViewModel
 import io.reactivex.Flowable
 import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.functions.BiFunction
 import io.reactivex.schedulers.Schedulers
 import timber.log.Timber
@@ -26,15 +26,13 @@ class PurchasesViewModelFactory @Inject constructor(private val app: Application
 }
 
 class PurchasesViewModel @Inject constructor(injectPurchaseModel: PurchaseModel,
-                                             injectCategoryDataStore: CategoryDataStore) : ViewModel() {
+                                             injectCategoryDataStore: CategoryDataStore) : RxViewModel() {
 
     private var purchasesModel: PurchaseModel = injectPurchaseModel
     private var categoryDataStore: CategoryDataStore = injectCategoryDataStore
 
     private var isScrollPurchasesList: Boolean = false
     private var paymentsListSize: Int? = null
-
-    private val bag: CompositeDisposable = CompositeDisposable()
 
     private val progressLiveData = MutableLiveData<Boolean>()
     fun observeProgress(): LiveData<Boolean> = progressLiveData
@@ -90,7 +88,7 @@ class PurchasesViewModel @Inject constructor(injectPurchaseModel: PurchaseModel,
                             statusTextLiveData.value = "Server not allow, trying later"
                             Timber.e("PurchasesPresenter", "error at check exist categories $t")
                         })
-                .also { bag.add(it) }
+                .also(::addDispose)
     }
 
     private fun checkNetworkCategoriesListInDatabase(storageCategoriesList: List<CategoryDto>,
@@ -133,7 +131,7 @@ class PurchasesViewModel @Inject constructor(injectPurchaseModel: PurchaseModel,
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({ Timber.d("add categories to database success") },
                         { t -> Timber.e(t, "add categories to database error") })
-                .also { bag.add(it) }
+                .also(::addDispose)
     }
 
     //endregion
@@ -153,7 +151,7 @@ class PurchasesViewModel @Inject constructor(injectPurchaseModel: PurchaseModel,
                         setupPurchaseListLiveData.value = paymentsList
                     }
                 }, { t -> Timber.e(t, "getPurchasesList") })
-                .also { bag.add(it) }
+                .also(::addDispose)
     }
 
     //endregion

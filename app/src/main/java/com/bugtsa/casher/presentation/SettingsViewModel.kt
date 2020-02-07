@@ -14,11 +14,11 @@ import javax.inject.Singleton
 
 @Singleton
 class SettingsViewModelFactory @Inject constructor(private val app: Application) : ViewModelProvider.NewInstanceFactory() {
-    override fun <T : ViewModel?> create(modelClass: Class<T>): T  =
+    override fun <T : ViewModel?> create(modelClass: Class<T>): T =
             Toothpick.openScope(app).getInstance(modelClass) as T
 }
 
-class SettingsViewModel @Inject constructor(private val preferenceRepo: PreferenceRepository): ViewModel() {
+class SettingsViewModel @Inject constructor(private val preferenceRepo: PreferenceRepository) : ViewModel() {
 
     private val modeThemeLiveData = MutableLiveData<Boolean>()
     fun observeModelTheme(): LiveData<Boolean> = modeThemeLiveData

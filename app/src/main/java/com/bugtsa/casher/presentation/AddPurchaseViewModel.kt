@@ -8,6 +8,7 @@ import androidx.lifecycle.ViewModelProvider
 import com.bugtsa.casher.data.dto.CategoryDto
 import com.bugtsa.casher.data.local.database.entity.category.CategoryDataStore
 import com.bugtsa.casher.data.models.PurchaseModel
+import com.bugtsa.casher.presentation.optional.RxViewModel
 import com.bugtsa.casher.utils.ConstantManager.CategoryNetwork.NAME_CATEGORY_PARAMETER
 import com.bugtsa.casher.utils.ConstantManager.Network.CATEGORY_PARAMETER
 import com.bugtsa.casher.utils.ConstantManager.Network.COST_PARAMETER
@@ -42,9 +43,8 @@ class AddPurchaseViewModel @Inject constructor(
         compositeDisposable: CompositeDisposable,
         injectPurchaseModel: PurchaseModel,
         injectCategoryDataStore: CategoryDataStore
-) : ViewModel() {
+) : RxViewModel() {
 
-    private var bag: CompositeDisposable = compositeDisposable
     private var purchaseModel: PurchaseModel = injectPurchaseModel
     private var categoryDataStore: CategoryDataStore = injectCategoryDataStore
 
@@ -73,7 +73,7 @@ class AddPurchaseViewModel @Inject constructor(
     //region ================ Base Methods =================
 
     fun onViewDestroy() {
-        bag.dispose()
+        onCleared()
     }
 
     //endregion
@@ -89,7 +89,7 @@ class AddPurchaseViewModel @Inject constructor(
                     categoriesListLiveData.value = categoriesList
                     Timber.d("get all categories")
                 }, { t -> Timber.e(t, "error at check exist categories $t") })
-                .also { bag.add(it) }
+                .also(::addDispose)
     }
 
     //endregion
@@ -116,7 +116,7 @@ class AddPurchaseViewModel @Inject constructor(
                     showProgressLiveData.value = false
                     completeAddPayment()
                 })
-                .also { bag.add(it) }
+                .also(::addDispose)
     }
 
     //endregion
@@ -138,7 +138,7 @@ class AddPurchaseViewModel @Inject constructor(
                     }
                 },
                         { t -> Timber.e(t, "error at check exist categories") })
-                .also { bag.add(it) }
+                .also(::addDispose)
     }
 
     private fun isContainsCurrentCategoryInDatabase(currentCategory: String, storageCategoriesList: List<String>): Boolean {
@@ -161,7 +161,7 @@ class AddPurchaseViewModel @Inject constructor(
                     Timber.d("add category to database success")
                 },
                         { t -> Timber.e(t, "add category to database error") })
-                .also { bag.add(it) }
+                .also(::addDispose)
     }
 
     private fun addCategoryToServer(pricePayment: String, nameCategory: String) {
@@ -175,7 +175,7 @@ class AddPurchaseViewModel @Inject constructor(
                 .subscribe({ category ->
                     category?.also { addCategoryToDatabase(pricePayment, it) }
                 }, {})
-                .also { bag.add(it) }
+                .also(::addDispose)
     }
 
     //endregion
@@ -199,7 +199,7 @@ class AddPurchaseViewModel @Inject constructor(
 
 
     private fun refreshCurrentDate() {
-        bag.add(Flowable
+        Flowable
                 .interval(10, TimeUnit.SECONDS)
                 .flatMap {
                     Flowable.just(
@@ -207,14 +207,15 @@ class AddPurchaseViewModel @Inject constructor(
                 }
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe({ result -> setupCurrentDate(result) }, { _ -> }))
+                .subscribe({ result -> setupCurrentDate(result) }, { _ -> })
+                .also(::addDispose)
     }
 
     fun checkSetupCustomDateAndTime(checkedCustomDateTime: Boolean) {
         this.checkedCustomDateTime = checkedCustomDateTime
         if (checkedCustomDateTime) {
             showDatePickerLiveData.value = true
-            bag.clear()
+            onCleared()
         } else {
             requestSetupCurrentDate()
         }
