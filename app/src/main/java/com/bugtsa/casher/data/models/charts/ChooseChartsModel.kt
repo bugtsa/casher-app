@@ -1,11 +1,11 @@
-package com.bugtsa.casher.data.models
+package com.bugtsa.casher.data.models.charts
 
 import com.bugtsa.casher.networking.CasherApi
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class ChartsModel @Inject constructor(private val casherApi: CasherApi){
+class ChooseChartsModel @Inject constructor(private val casherApi: CasherApi){
 
     init {
         instance = this
@@ -14,6 +14,6 @@ class ChartsModel @Inject constructor(private val casherApi: CasherApi){
     fun getRangeMonths() = casherApi.getRangeMonths()
 
     companion object {
-        private var instance: ChartsModel? = null
+        private var instance: ChooseChartsModel? = null
     }
 }

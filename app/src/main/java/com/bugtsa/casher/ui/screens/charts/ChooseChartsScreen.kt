@@ -9,8 +9,9 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.lifecycle.ViewModelProvider
 import com.bugtsa.casher.R
-import com.bugtsa.casher.presentation.ChartsViewModel
-import com.bugtsa.casher.presentation.ChartsViewModelFactory
+import com.bugtsa.casher.presentation.chart.ChooseChartsViewModel
+import com.bugtsa.casher.presentation.chart.ChooseChartsViewModel.Companion.SOFT_MODE_DEFAULT
+import com.bugtsa.casher.presentation.chart.ChooseChartsViewModelFactory
 import com.bugtsa.casher.ui.screens.settings.NavigationStackPresentable
 import kotlinx.android.synthetic.main.fragment_choose_charts.*
 import pro.horovodovodo4ka.bones.Phalanx
@@ -22,7 +23,7 @@ import toothpick.Toothpick
 import java.util.*
 
 
-class ChartsScreen : Phalanx(), NavigationStackPresentable {
+class ChooseChartsScreen : Phalanx(), NavigationStackPresentable {
 
     override val seed = { ChartsScreenFragment() }
 
@@ -32,13 +33,14 @@ class ChartsScreen : Phalanx(), NavigationStackPresentable {
 
 @SuppressLint("MissingSuperCall")
 class ChartsScreenFragment : androidx.fragment.app.Fragment(),
-        BonePersisterInterface<ChartsScreen>,
-        FragmentSibling<ChartsScreen> by Page() {
+        BonePersisterInterface<ChooseChartsScreen>,
+        FragmentSibling<ChooseChartsScreen> by Page() {
 
     private val startDateDialog = MonthYearPickerDialog()
     private val endDateDialog = MonthYearPickerDialog()
+    private lateinit var chartPreference: ChartPreference
 
-    private lateinit var viewModel: ChartsViewModel
+    private lateinit var viewModelChoose: ChooseChartsViewModel
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? =
             inflater.inflate(R.layout.fragment_choose_charts, container, false)
@@ -48,8 +50,8 @@ class ChartsScreenFragment : androidx.fragment.app.Fragment(),
 
         val chartsViewModelFactory = Toothpick
                 .openScopes(requireActivity(), this)
-                .getInstance(ChartsViewModelFactory::class.java)
-        viewModel = ViewModelProvider(this, chartsViewModelFactory)[ChartsViewModel::class.java]
+                .getInstance(ChooseChartsViewModelFactory::class.java)
+        viewModelChoose = ViewModelProvider(this, chartsViewModelFactory)[ChooseChartsViewModel::class.java]
         bindView()
         bindListeners()
         bindViewModel()
@@ -74,16 +76,19 @@ class ChartsScreenFragment : androidx.fragment.app.Fragment(),
     private fun bindListeners() {
         vChooseStartMonth.setOnClickListener(showMonthPicker(startDateDialog, vStartDate))
         vChooseEndMonth.setOnClickListener(showMonthPicker(endDateDialog, vEndDate))
-        vShowChart.setOnClickListener { bone.present() }
+        vShowChart.setOnClickListener { bone.present(ChartScreen(chartPreference)) }
     }
 
     private fun bindView() {
+        vShowChart.visibility = View.GONE
     }
 
     private fun bindViewModel() {
-        viewModel.observeRangeMonth().observe(viewLifecycleOwner, androidx.lifecycle.Observer {(startDateRange, endDateRange) ->
+        viewModelChoose.observeRangeMonth().observe(viewLifecycleOwner, androidx.lifecycle.Observer { (startDateRange, endDateRange) ->
             startDateDialog.setRangeDate(startDateRange, endDateRange)
             endDateDialog.setRangeDate(startDateRange, endDateRange)
+            vShowChart.visibility = View.VISIBLE
+            chartPreference = ChartPreference(startDateRange, endDateRange, SOFT_MODE_DEFAULT)
             vStartDate.text = getString(R.string.month_range_start,
                     startDateRange.year.toString(),
                     getMonthName(startDateRange.month, Locale.getDefault(), false))

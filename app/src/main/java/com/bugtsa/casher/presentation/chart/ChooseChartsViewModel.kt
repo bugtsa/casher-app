@@ -1,4 +1,4 @@
-package com.bugtsa.casher.presentation
+package com.bugtsa.casher.presentation.chart
 
 import android.annotation.SuppressLint
 import android.app.Application
@@ -8,7 +8,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import com.bugtsa.casher.data.models.ChartsModel
+import com.bugtsa.casher.data.models.charts.ChooseChartsModel
 import com.bugtsa.casher.global.ErrorHandler
 import com.bugtsa.casher.presentation.optional.RxViewModel
 import com.bugtsa.casher.ui.screens.charts.MonthYearPickerDialog.Companion.MIN_MONTH
@@ -26,18 +26,18 @@ import javax.inject.Singleton
 
 
 @Singleton
-class ChartsViewModelFactory @Inject constructor(private val app: Application) : ViewModelProvider.NewInstanceFactory() {
+class ChooseChartsViewModelFactory @Inject constructor(private val app: Application) : ViewModelProvider.NewInstanceFactory() {
     override fun <T : ViewModel?> create(modelClass: Class<T>): T =
             Toothpick.openScope(app).getInstance(modelClass) as T
 }
 
-class ChartsViewModel @Inject constructor(chartsModel: ChartsModel) : RxViewModel() {
+class ChooseChartsViewModel @Inject constructor(chooseChartsModel: ChooseChartsModel) : RxViewModel() {
 
     private val rangeMonthLiveData = MutableLiveData<Pair<DateRange, DateRange>>()
     fun observeRangeMonth() = rangeMonthLiveData as LiveData<Pair<DateRange, DateRange>>
 
     init {
-        chartsModel.getRangeMonths()
+        chooseChartsModel.getRangeMonths()
                 .map { it.map { payment -> payment.date } }
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -92,9 +92,6 @@ class ChartsViewModel @Inject constructor(chartsModel: ChartsModel) : RxViewMode
         } ?: DateRange(MIN_MONTH, MIN_YEAR)
     }
 
-    data class DateRange(val month: Int,
-                         val year: Int)
-
     companion object {
         private const val LESS_TEN_DAY_SHORT_DATE_FORMAT_LENGTH = 6
         private const val SHORT_DATE_FORMAT_LENGTH = 7
@@ -102,7 +99,11 @@ class ChartsViewModel @Inject constructor(chartsModel: ChartsModel) : RxViewMode
         private const val LESS_TEN_DAYS_SHORT_DATE_FORMAT = "d.MM.yy"
         private const val SHORT_DATE_FORMAT = "dd.MM.yy"
         private const val FULL_DATE_FORMAT = "dd.MM.yy, HH:mm"
+        const val SOFT_MODE_DEFAULT = 1
 
         fun monthValueFromLocalDate(monthLocalDate: Int): Int = monthLocalDate - 1
     }
 }
+
+data class DateRange(val month: Int,
+                     val year: Int)

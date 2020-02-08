@@ -11,7 +11,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.bugtsa.casher.ui.navigation.PurchasesStack
 import com.bugtsa.casher.ui.navigation.TabBar
-import com.bugtsa.casher.ui.screens.charts.ChartsScreen
+import com.bugtsa.casher.ui.screens.charts.ChooseChartsScreen
 import com.bugtsa.casher.ui.screens.purchases.show.PurchasesScreen
 import com.bugtsa.casher.ui.screens.settings.SettingsScreen
 import com.bugtsa.casher.ui.screens.singIn.SingUpScreen
@@ -122,7 +122,7 @@ class MainActivity : AppCompatActivity(),
             RootBone(
                     TabBar(
                             PurchasesStack(SingUpScreen()),
-                            ChartsScreen(),
+                            ChooseChartsScreen(),
                             SettingsScreen()
 //                            SettingsScreen(TestScreen())
                     )

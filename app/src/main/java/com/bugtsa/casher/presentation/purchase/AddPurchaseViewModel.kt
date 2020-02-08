@@ -1,4 +1,4 @@
-package com.bugtsa.casher.presentation
+package com.bugtsa.casher.presentation.purchase
 
 import android.app.Application
 import androidx.lifecycle.LiveData
