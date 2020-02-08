@@ -6,7 +6,7 @@ import javax.inject.Provider
 import javax.inject.Singleton
 
 @Singleton
-class ChartsModelProvider(private val casherApi: CasherApi) : Provider<ChartsModel> {
+class ChooseChartsModelProvider(private val casherApi: CasherApi) : Provider<ChartsModel> {
     override fun get(): ChartsModel {
         return ChartsModel(casherApi)
     }

@@ -34,7 +34,7 @@ class CasherApplicationModule : Module {
                 PurchaseModelProvider(casherApi.get()))
 
         bind(ChartsModel::class.java).toProviderInstance(
-                ChartsModelProvider(casherApi.get()))
+                ChooseChartsModelProvider(casherApi.get()))
 
         val casherDataBaseProvider = DataBaseProvider(application)
         bind(CasherDatabase::class.java).toProviderInstance(casherDataBaseProvider)

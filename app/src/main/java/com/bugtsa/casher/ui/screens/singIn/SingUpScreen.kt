@@ -43,7 +43,7 @@ class SingUpFragment : Fragment(),
     private lateinit var singUpScreenScope: Scope
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        return inflater.inflate(R.layout.fragment_charts, container, false)
+        return inflater.inflate(R.layout.fragment_choose_charts, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

@@ -8,7 +8,7 @@
 
     <string name="changed_date_and_time">"Установленные дата и время: "</string>
 
-    <string name="charts_choose_month">Выберите месяц</string>
+    <string name="charts_choose_date">Выберите дату</string>
     <string name="charts_month_end">Заключительный месяц</string>
     <string name="charts_show_chart">Показать диаграмму</string>
     <string name="charts_month_start">Начальный месяц</string>
