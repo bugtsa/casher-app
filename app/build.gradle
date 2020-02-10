@@ -114,6 +114,8 @@ dependencies {
         transitive = true
     }
 
+    implementation 'com.github.PhilJay:MPAndroidChart:v3.1.0'
+
     // Room Database
     implementation "androidx.room:room-runtime:$room"
     implementation "androidx.room:room-rxjava2:$room"

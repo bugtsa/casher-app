@@ -2,6 +2,7 @@ package com.bugtsa.casher.ui.screens.charts
 
 import android.annotation.SuppressLint
 import android.app.DatePickerDialog
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -15,7 +16,6 @@ import com.bugtsa.casher.presentation.chart.ChooseChartsViewModelFactory
 import com.bugtsa.casher.ui.screens.settings.NavigationStackPresentable
 import kotlinx.android.synthetic.main.fragment_choose_charts.*
 import pro.horovodovodo4ka.bones.Phalanx
-import pro.horovodovodo4ka.bones.extensions.present
 import pro.horovodovodo4ka.bones.persistance.BonePersisterInterface
 import pro.horovodovodo4ka.bones.ui.FragmentSibling
 import pro.horovodovodo4ka.bones.ui.delegates.Page
@@ -76,7 +76,10 @@ class ChartsScreenFragment : androidx.fragment.app.Fragment(),
     private fun bindListeners() {
         vChooseStartMonth.setOnClickListener(showMonthPicker(startDateDialog, vStartDate))
         vChooseEndMonth.setOnClickListener(showMonthPicker(endDateDialog, vEndDate))
-        vShowChart.setOnClickListener { bone.present(ChartScreen(chartPreference)) }
+        val intent = Intent(requireContext(), BarChartActivityMultiDataset::class.java)
+        vShowChart.setOnClickListener { startActivity(intent) }
+
+//        vShowChart.setOnClickListener { bone.present(ChartScreen(chartPreference)) }
     }
 
     private fun bindView() {

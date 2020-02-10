@@ -10,10 +10,12 @@
 
     <string name="charts_choose_date">Choose date</string>
     <string name="charts_month_end">End Month</string>
-    <string name="charts_show_chart">Show Chart</string>
     <string name="charts_month_start">Start Month</string>
+    <string name="charts_show_chart">Show Chart</string>
 
     <string name="current_date_and_time">"Current time and date: "</string>
+
+    <string name="dash" translatable="false">-</string>
 
     <string name="date_purchase">setup date yourself</string>
 
@@ -21,6 +23,9 @@
     <string name="load_data_dialog_negative_button">Stop</string>
     <string name="load_data_dialog_positive_button">Still wait</string>
     <string name="load_data_dialog_title" translatable="false">@string/app_name</string>
+
+    <string name="month_range_end">End Date: %1$s year, %2$s</string>
+    <string name="month_range_start">Start Date: %1$s year, %2$s</string>
 
     <string name="price_purchase">Price payment</string>
     <string name="price_purchase_hint">Write number</string>
@@ -43,6 +48,21 @@
     <string name="title_dashboard">Dashboard</string>
     <string name="title_home">Payments</string>
     <string name="title_notifications">Settings</string>
-    <string name="month_range_start">Start Date: %1$s year, %2$s</string>
-    <string name="month_range_end">End Date: %1$s year, %2$s</string>
+
+    <string name="viewGithub" translatable="false">View on GitHub</string>
+    <string name="actionToggleBarBorders" translatable="false">Toggle Bar Borders</string>
+    <string name="actionToggleValues" translatable="false">Toggle Values</string>
+
+
+    <string name="actionSave" translatable="false">Save to Gallery</string>
+    <string name="actionToggleIcons" translatable="false">Toggle Icons</string>
+    <string name="actionToggleHighlight" translatable="false">Toggle Highlight</string>
+    <string name="actionTogglePinch" translatable="false">Toggle PinchZoom</string>
+    <string name="actionToggleAutoScale" translatable="false">Toggle Auto Scale</string>
+
+    <string name="animateX" translatable="false">Animate X</string>
+    <string name="animateY" translatable="false">Animate Y</string>
+    <string name="animateXY" translatable="false">Animate XY</string>
+
+
 </resources>

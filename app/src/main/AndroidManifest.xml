@@ -21,6 +21,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".ui.screens.charts.BarChartActivityMultiDataset"/>
         <meta-data
             android:name="io.fabric.ApiKey"
             android:value="f3446679e84b6bfeae9ced0a140e112036247777" />
