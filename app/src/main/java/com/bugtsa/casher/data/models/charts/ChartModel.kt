@@ -26,9 +26,9 @@ class ChartModel @Inject constructor(private val casherApi: CasherApi) {
     companion object {
         private var instance: ChartModel? = null
 
-        private const val userIdChartParameter = "userId"
-        private const val monthChartParameter = "month"
-        private const val yearChartParameter = "year"
-        private const val sortModeChartParameter = "sort"
+        const val userIdChartParameter = "userId"
+        const val monthChartParameter = "month"
+        const val yearChartParameter = "year"
+        const val sortModeChartParameter = "sort"
     }
 }

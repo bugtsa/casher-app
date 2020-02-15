@@ -99,7 +99,7 @@ class ChooseChartsViewModel @Inject constructor(chooseChartsModel: ChooseChartsM
         private const val LESS_TEN_DAYS_SHORT_DATE_FORMAT = "d.MM.yy"
         private const val SHORT_DATE_FORMAT = "dd.MM.yy"
         private const val FULL_DATE_FORMAT = "dd.MM.yy, HH:mm"
-        const val SOFT_MODE_DEFAULT = 1
+        const val SORT_MODE_DEFAULT = 1
 
         fun monthValueFromLocalDate(monthLocalDate: Int): Int = monthLocalDate - 1
     }
