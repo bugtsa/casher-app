@@ -1,5 +1,25 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <resources>
+    <string name="actionSave" translatable="false">Save to Gallery</string>
+
+    <string name="actionToggleAutoScale" translatable="false">Toggle Auto Scale</string>
+
+    <string name="actionToggleBarBorders" translatable="false">Toggle Bar Borders</string>
+
+    <string name="actionToggleHighlight" translatable="false">Toggle Highlight</string>
+
+    <string name="actionToggleIcons" translatable="false">Toggle Icons</string>
+
+    <string name="actionTogglePinch" translatable="false">Toggle PinchZoom</string>
+
+    <string name="actionToggleValues" translatable="false">Toggle Values</string>
+
+    <string name="animateX" translatable="false">Animate X</string>
+
+    <string name="animateXY" translatable="false">Animate XY</string>
+
+    <string name="animateY" translatable="false">Animate Y</string>
+
     <string name="app_name">Casher</string>
 
     <string name="cancel_caption">Cancel</string>
@@ -8,6 +28,7 @@
 
     <string name="changed_date_and_time">"Setup time and date: "</string>
 
+    <string name="charts_caption_y_axis">%1$d-%2$d pages</string>
     <string name="charts_choose_date">Choose date</string>
     <string name="charts_month_end">End Month</string>
     <string name="charts_month_start">Start Month</string>
@@ -50,19 +71,5 @@
     <string name="title_notifications">Settings</string>
 
     <string name="viewGithub" translatable="false">View on GitHub</string>
-    <string name="actionToggleBarBorders" translatable="false">Toggle Bar Borders</string>
-    <string name="actionToggleValues" translatable="false">Toggle Values</string>
-
-
-    <string name="actionSave" translatable="false">Save to Gallery</string>
-    <string name="actionToggleIcons" translatable="false">Toggle Icons</string>
-    <string name="actionToggleHighlight" translatable="false">Toggle Highlight</string>
-    <string name="actionTogglePinch" translatable="false">Toggle PinchZoom</string>
-    <string name="actionToggleAutoScale" translatable="false">Toggle Auto Scale</string>
-
-    <string name="animateX" translatable="false">Animate X</string>
-    <string name="animateY" translatable="false">Animate Y</string>
-    <string name="animateXY" translatable="false">Animate XY</string>
-
-
+    <string name="charts_caption_x_axis">will caption</string>
 </resources>

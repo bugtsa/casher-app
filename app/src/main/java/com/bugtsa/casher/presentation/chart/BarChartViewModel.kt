@@ -26,6 +26,9 @@ class BarChartViewModel @Inject constructor(private val barChartModel: BarChartM
 
     private var barData = listOf<Map.Entry<String, String>>()
 
+    private val quantityPortionsLiveData = MutableLiveData<Int>()
+    fun observeQuantityPortions(): LiveData<Int> = quantityPortionsLiveData
+
     private val chartDataLiveData = MutableLiveData<BarPortionData>()
     fun observeChartData(): LiveData<BarPortionData> = chartDataLiveData
 
@@ -36,19 +39,20 @@ class BarChartViewModel @Inject constructor(private val barChartModel: BarChartM
             .subscribe({ res ->
                 res.categorizedMap?.also {
                     barData = it.asIterable().toList()
-                    requestPortion(1,  barData.size / portionSize)
-//                    chartDataLiveData.value = BarPortionData(barData.asIterable().take(portionSize).map { (key, value) ->
-//                        key to value
-//                    }, barData.size / portionSize)
+                    quantityPortionsLiveData.value = barData.size / portionSize
                 }
             }, ErrorHandler::handle)
             .also(::addDispose)
 
+
     fun requestPortion(page: Int, endPage: Int) {
-        val list = barData.asIterable().take(portionSize).map { (key, value) ->
-            key to value
-        }
-        barData = barData.asIterable().drop(portionSize)
+        val list = barData
+                .asIterable()
+                .drop(page * portionSize)
+                .take(portionSize)
+                .map { (key, value) ->
+                    key to value
+                }
         chartDataLiveData.value = BarPortionData(list, page, endPage)
     }
 

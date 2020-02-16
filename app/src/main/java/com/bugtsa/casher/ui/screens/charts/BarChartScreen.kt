@@ -4,7 +4,6 @@ import android.annotation.SuppressLint
 import android.graphics.Color
 import android.graphics.Typeface
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -15,7 +14,6 @@ import androidx.lifecycle.ViewModelProvider
 import com.bugtsa.casher.R
 import com.bugtsa.casher.presentation.chart.BarChartViewModel
 import com.bugtsa.casher.presentation.chart.BarChartViewModelFactory
-import com.bugtsa.casher.presentation.chart.BarPortionData
 import com.github.mikephil.charting.components.Legend
 import com.github.mikephil.charting.data.BarData
 import com.github.mikephil.charting.data.BarDataSet
@@ -30,9 +28,7 @@ import pro.horovodovodo4ka.bones.Phalanx
 import pro.horovodovodo4ka.bones.persistance.BonePersisterInterface
 import pro.horovodovodo4ka.bones.ui.FragmentSibling
 import pro.horovodovodo4ka.bones.ui.delegates.Page
-import timber.log.Timber
 import toothpick.Toothpick
-import java.util.*
 
 class BarChartScreen(chartPreference: ChartPreference) : Phalanx() {
     override val seed = { BarChartFragment() }
@@ -78,18 +74,37 @@ class BarChartFragment : Fragment(), OnSeekBarChangeListener, OnChartValueSelect
         bindViewModel()
     }
 
-    private fun bindViewModel() {
-        bone.chartPreference?.also { preference ->
-            viewModel.requestChartData(preference)
-        }
-        viewModel.observeChartData().observe(viewLifecycleOwner, androidx.lifecycle.Observer { chartData ->
-            setupNewData(chartData)
-        })
+    override fun onSaveInstanceState(outState: Bundle) {
+        super<BonePersisterInterface>.onSaveInstanceState(outState)
+        super<androidx.fragment.app.Fragment>.onSaveInstanceState(outState)
     }
 
-    private fun setupNewData(chartData: BarPortionData) {
-        Timber.d("charData $chartData")
-        showPortion(1, chartData.quantityPortions, chartData.portion)
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super<BonePersisterInterface>.onCreate(savedInstanceState)
+        super<androidx.fragment.app.Fragment>.onCreate(savedInstanceState)
+    }
+
+    override fun onProgressChanged(seekBar: SeekBar, progress: Int, fromUser: Boolean) {
+        if (seekBar == vSeekBarY) {
+            viewModel.requestPortion(progress, vSeekBarY.max)
+        }
+    }
+
+    override fun onStartTrackingTouch(seekBar: SeekBar) {}
+    override fun onStopTrackingTouch(seekBar: SeekBar) {}
+    override fun onValueSelected(e: Entry, h: Highlight) {}
+    override fun onNothingSelected() {}
+
+    private fun bindViewModel() {
+        viewModel.observeChartData().observe(viewLifecycleOwner, androidx.lifecycle.Observer { chartData ->
+            showPortion(chartData.portion)
+        })
+
+        viewModel.observeQuantityPortions().observe(viewLifecycleOwner, androidx.lifecycle.Observer { quantity ->
+            setupAxisTitle(quantity)
+            vSeekBarY.max = quantity
+            vSeekBarY.progress = 0
+        })
     }
 
     private fun setupSeekBars() {
@@ -141,154 +156,79 @@ class BarChartFragment : Fragment(), OnSeekBarChangeListener, OnChartValueSelect
             axisMinimum = 0f // this replaces setStartAtZero(true)
         }
         vChart.axisRight?.isEnabled = false
+
+        bone.chartPreference?.also { preference ->
+            viewModel.requestChartData(preference)
+        }
     }
 
-    override fun onSaveInstanceState(outState: Bundle) {
-        super<BonePersisterInterface>.onSaveInstanceState(outState)
-        super<androidx.fragment.app.Fragment>.onSaveInstanceState(outState)
-    }
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super<BonePersisterInterface>.onCreate(savedInstanceState)
-        super<androidx.fragment.app.Fragment>.onCreate(savedInstanceState)
-    }
-//
 //    override fun onBackPressed() {
 //        super.onBackPressed()
 //        overridePendingTransition(R.anim.move_left_in_activity, R.anim.move_right_out_activity)
 //    }
 
-    override fun onProgressChanged(seekBar: SeekBar, progress: Int, fromUser: Boolean) {
-//        val startYear = 1980
-//        val endYear = startYear + groupCount
-
-        setupText(1, vSeekBarX.max)
-        if (seekBar == vSeekBarX && progress < 1) {
-            viewModel.requestPortion(progress + 1, vSeekBarX.max)
-        }
-    }
-
-    private fun applyData(data: BarData, barValues: ArrayList<BarEntry>, index: Int, portion: List<Pair<String, String>>) {
-        val set = data.getDataSetByIndex(index) as BarDataSet
-        set.apply {
-            values = barValues
-            label = portion[index].first
-        }
-    }
-
     @SuppressLint("NewApi")
-    private fun showPortion(startYear: Int = 1, quantityPortions: Int, portion: List<Pair<String, String>>) {
+    private fun showPortion(portion: List<Pair<String, String>>) {
         val groupSpace = 0.08f
         val barSpace = 0.03f // x4 DataSet
         val barWidth = 0.2f // x4 DataSet
         // (0.2 + 0.03) * 4 + 0.08 = 1.00 -> interval per "group"
         val groupCount = vSeekBarX.progress + 1
 
-        val values1 = ArrayList<BarEntry>()
-        val values2 = ArrayList<BarEntry>()
-        val values3 = ArrayList<BarEntry>()
-        val values4 = ArrayList<BarEntry>()
-
-//        for (i in FIRST_INDEX until FOURTH_INDEX) {
-            values1.add(BarEntry(FIRST_INDEX.toFloat(), portion[FIRST_INDEX].second.toFloat()))
-            values2.add(BarEntry(SECOND_INDEX.toFloat(), portion[SECOND_INDEX].second.toFloat()))
-            values3.add(BarEntry(THIRD_INDEX.toFloat(), portion[THIRD_INDEX].second.toFloat()))
-            values4.add(BarEntry(FOURTH_INDEX.toFloat(), portion[FOURTH_INDEX].second.toFloat()))
-//        }
-        val set1: BarDataSet
-        val set2: BarDataSet
-        val set3: BarDataSet
-        val set4: BarDataSet
+        val listValues = mutableListOf<Triple<Int, String, ArrayList<BarEntry>>>()
+        portion.forEach { (title, cost) ->
+            listValues.add(listValues.size.let { index ->
+                arrayListOf(BarEntry(index.toFloat(), cost.toFloat()))
+                        .let { values ->
+                            Triple(index, title, values)
+                        }
+            })
+        }
         vChart.also { chart ->
             if (chart.data != null && chart.data.dataSetCount > 0) {
-                applyData(chart.data, values1, FIRST_INDEX, portion)
-                applyData(chart.data, values2, SECOND_INDEX, portion)
-                applyData(chart.data, values3, THIRD_INDEX, portion)
-                applyData(chart.data, values4, FOURTH_INDEX, portion)
+                listValues.forEach { (index, title, barValues) ->
+                    (chart.data.getDataSetByIndex(index) as BarDataSet).apply {
+                        values = barValues
+                        label = title
+                    }
+                }
                 chart.data.notifyDataChanged()
                 chart.notifyDataSetChanged()
             } else { // create 4 DataSets
-                set1 = BarDataSet(values1, portion[FIRST_INDEX].first)
-                set1.color = Color.rgb(104, 241, 175)
-                set2 = BarDataSet(values2, portion[SECOND_INDEX].first)
-                set2.color = Color.rgb(164, 228, 251)
-                set3 = BarDataSet(values3, portion[THIRD_INDEX].first)
-                set3.color = Color.rgb(242, 247, 158)
-                set4 = BarDataSet(values4, portion[FOURTH_INDEX].first)
-                set4.color = Color.rgb(255, 102, 0)
-                val data = BarData(set1, set2, set3, set4)
-                data.setValueFormatter(LargeValueFormatter())
-                data.setValueTypeface(tfLight)
-                chart.data = data
+                val listSets = BarData()
+                listValues.forEach { (index, title, values) ->
+                    val basDataSet = BarDataSet(values, title)
+                    basDataSet.color = getColor(index)
+                    listSets.addDataSet(basDataSet)
+                }
+                listSets.setValueFormatter(LargeValueFormatter())
+                listSets.setValueTypeface(tfLight)
+                chart.data = listSets
             }
             // specify the width each bar should have
             chart.barData.barWidth = barWidth
             // restrict the x-axis range
-            chart.xAxis.axisMinimum = startYear.toFloat()
+            chart.xAxis.axisMinimum = START_INDEX.toFloat()
             // barData.getGroupWith(...) is a helper that calculates the width each group needs based on the provided parameters
-            chart.xAxis.axisMaximum = startYear + chart.barData.getGroupWidth(groupSpace, barSpace) * groupCount
-            chart.groupBars(startYear.toFloat(), groupSpace, barSpace)
+            chart.xAxis.axisMaximum = START_INDEX + chart.barData.getGroupWidth(groupSpace, barSpace) * groupCount
+            chart.groupBars(START_INDEX.toFloat(), groupSpace, barSpace)
             chart.invalidate()
         }
-        showNextPortion(quantityPortions)
     }
 
-    private fun showNextPortion(quantityPortions: Int) {
-        vSeekBarX.max = quantityPortions
-//        vSeekBarX.progress = 1
-        vSeekBarY.progress = 100
+    private fun getColor(index: Int): Int {
+        return when (index) {
+            FIRST_INDEX -> Color.rgb(104, 241, 175)
+            SECOND_INDEX -> Color.rgb(164, 228, 251)
+            THIRD_INDEX -> Color.rgb(242, 247, 158)
+            FOURTH_INDEX -> Color.rgb(255, 102, 0)
+            else -> Color.rgb(189, 180, 180)
+        }
     }
 
-    private fun setupText(startYear: Int, endYear: Int) {
-        tvXMax.text = String.format(Locale.ENGLISH, "%d-%d", startYear, endYear)
-        tvYMax.text = vSeekBarY!!.progress.toString()
-    }
-
-//    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-//        when (item.itemId) {
-//            R.id.actionToggleValues -> {
-//                for (set in chart!!.data.dataSets) set.setDrawValues(!set.isDrawValuesEnabled)
-//                chart!!.invalidate()
-//            }
-//            R.id.actionTogglePinch -> {
-//                if (chart!!.isPinchZoomEnabled) chart!!.setPinchZoom(false) else chart!!.setPinchZoom(true)
-//                chart!!.invalidate()
-//            }
-//            R.id.actionToggleAutoScaleMinMax -> {
-//                chart!!.isAutoScaleMinMaxEnabled = !chart!!.isAutoScaleMinMaxEnabled
-//                chart!!.notifyDataSetChanged()
-//            }
-//            R.id.actionToggleBarBorders -> {
-//                for (set in chart!!.data.dataSets) (set as BarDataSet).barBorderWidth = if (set.getBarBorderWidth() == 1f) 0f else 1f
-//                chart!!.invalidate()
-//            }
-//            R.id.actionToggleHighlight -> {
-//                if (chart!!.data != null) {
-//                    chart!!.data.isHighlightEnabled = !chart!!.data.isHighlightEnabled
-//                    chart!!.invalidate()
-//                }
-//            }
-//            R.id.animateX -> {
-//                chart!!.animateX(2000)
-//            }
-//            R.id.animateY -> {
-//                chart!!.animateY(2000)
-//            }
-//            R.id.animateXY -> {
-//                chart!!.animateXY(2000, 2000)
-//            }
-//        }
-//        return true
-//    }
-
-    override fun onStartTrackingTouch(seekBar: SeekBar) {}
-    override fun onStopTrackingTouch(seekBar: SeekBar) {}
-    override fun onValueSelected(e: Entry, h: Highlight) {
-        Log.i("Activity", "Selected: " + e.toString() + ", dataSet: " + h.dataSetIndex)
-    }
-
-    override fun onNothingSelected() {
-        Log.i("Activity", "Nothing selected.")
+    private fun setupAxisTitle(quantityPortions: Int) {
+        tvXMax.text = getString(R.string.charts_caption_x_axis)
+        tvYMax.text = getString(R.string.charts_caption_y_axis, START_INDEX, quantityPortions)
     }
 
     companion object {
@@ -296,5 +236,7 @@ class BarChartFragment : Fragment(), OnSeekBarChangeListener, OnChartValueSelect
         private const val SECOND_INDEX = 1
         private const val THIRD_INDEX = 2
         private const val FOURTH_INDEX = 3
+
+        private const val START_INDEX = 1
     }
 }

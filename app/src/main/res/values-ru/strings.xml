@@ -8,10 +8,11 @@
 
     <string name="changed_date_and_time">"Установленные дата и время: "</string>
 
+    <string name="charts_caption_y_axis">%1$d-%2$d страницы</string>
     <string name="charts_choose_date">Выберите дату</string>
     <string name="charts_month_end">Заключительный месяц</string>
-    <string name="charts_show_chart">Показать диаграмму</string>
     <string name="charts_month_start">Начальный месяц</string>
+    <string name="charts_show_chart">Показать диаграмму</string>
 
     <string name="current_date_and_time">"Текущая дата и время: "</string>
 
@@ -20,6 +21,9 @@
     <string name="load_data_dialog_content">Остановить загрузку?</string>
     <string name="load_data_dialog_negative_button">Остановить</string>
     <string name="load_data_dialog_positive_button">Подождать еще</string>
+
+    <string name="month_range_end">Конечная дана: %1$s год, %2$s</string>
+    <string name="month_range_start">Начальная дата: %1$s год, %2$s</string>
 
     <string name="price_purchase">Цена траты</string>
     <string name="price_purchase_hint">Напишите число</string>
@@ -42,6 +46,5 @@
     <string name="title_dashboard">Доска</string>
     <string name="title_home">Дом</string>
     <string name="title_notifications">Notifications</string>
-    <string name="month_range_start">Начальная дата: %1$s год, %2$s</string>
-    <string name="month_range_end">Конечная дана: %1$s год, %2$s</string>
+    <string name="charts_caption_x_axis">will caption</string>
 </resources>
