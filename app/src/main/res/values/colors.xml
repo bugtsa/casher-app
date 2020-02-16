@@ -10,6 +10,7 @@
     <color name="secondaryDarkColor">@color/blue_600</color>
     <color name="primaryTextColor">@color/grey_800</color>
     <color name="secondaryTextColor">@color/grey_dark_700</color>
+    <color name="textLightColor">@color/white_bt_ee</color>
 
     <color name="yellow_400">#ffee58</color>
     <color name="grey_800">#424242</color>

@@ -10,4 +10,5 @@
     <color name="secondaryDarkColor">@color/red_600</color>
     <color name="primaryTextColor">@color/white_bt_ee</color>
     <color name="secondaryTextColor">@color/white_bt_cc</color>
+    <color name="textLightColor">@color/mdtp_white</color>
 </resources>

@@ -2,13 +2,15 @@ package com.bugtsa.casher.ui.screens.charts
 
 import android.annotation.SuppressLint
 import android.graphics.Color
-import android.graphics.Typeface
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.SeekBar
 import android.widget.SeekBar.OnSeekBarChangeListener
+import androidx.core.content.ContextCompat
+import androidx.core.graphics.BlendModeColorFilterCompat
+import androidx.core.graphics.BlendModeCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.bugtsa.casher.R
@@ -23,7 +25,7 @@ import com.github.mikephil.charting.formatter.LargeValueFormatter
 import com.github.mikephil.charting.formatter.ValueFormatter
 import com.github.mikephil.charting.highlight.Highlight
 import com.github.mikephil.charting.listener.OnChartValueSelectedListener
-import kotlinx.android.synthetic.main.activity_barchart.*
+import kotlinx.android.synthetic.main.fragment_barchart.*
 import pro.horovodovodo4ka.bones.Phalanx
 import pro.horovodovodo4ka.bones.persistance.BonePersisterInterface
 import pro.horovodovodo4ka.bones.ui.FragmentSibling
@@ -48,20 +50,16 @@ class BarChartFragment : Fragment(), OnSeekBarChangeListener, OnChartValueSelect
     protected val months = arrayOf(
             "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Okt", "Nov", "Dec"
     )
-    protected var tfRegular: Typeface? = null
-    @JvmField
-    protected var tfLight: Typeface? = null
 
     private lateinit var viewModel: BarChartViewModel
+    private val commonTextSize = 10f
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        return inflater.inflate(R.layout.activity_barchart, container, false)
+        return inflater.inflate(R.layout.fragment_barchart, container, false)
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        tfRegular = Typeface.createFromAsset(requireActivity().assets, "OpenSans-Regular.ttf")
-        tfLight = Typeface.createFromAsset(requireActivity().assets, "OpenSans-Light.ttf")
 
         val viewModelFactory = Toothpick
                 .openScopes(requireActivity(), this)
@@ -86,7 +84,7 @@ class BarChartFragment : Fragment(), OnSeekBarChangeListener, OnChartValueSelect
 
     override fun onProgressChanged(seekBar: SeekBar, progress: Int, fromUser: Boolean) {
         if (seekBar == vSeekBarY) {
-            viewModel.requestPortion(progress, vSeekBarY.max)
+            viewModel.requestPortion(progress)
         }
     }
 
@@ -113,7 +111,7 @@ class BarChartFragment : Fragment(), OnSeekBarChangeListener, OnChartValueSelect
     }
 
     private fun setupChart() {
-        tvXMax.textSize = 10f
+        tvXMax.textSize = commonTextSize
         vChart.setOnChartValueSelectedListener(this)
         vChart.description?.isEnabled = false
         vChart.setPinchZoom(false)
@@ -121,7 +119,10 @@ class BarChartFragment : Fragment(), OnSeekBarChangeListener, OnChartValueSelect
         vChart.setDrawGridBackground(false)
         // create a custom MarkerView (extend MarkerView) and specify the layout
 // to use for it
-        val mv = MyMarkerView(requireContext(), R.layout.custom_marker_view)
+        val mv = MyMarkerView(requireContext(), R.layout.view_marker_bar_chart)
+        ContextCompat.getDrawable(requireContext(), R.drawable.background_marker_bar_chart)?.also { drawable ->
+            drawable.colorFilter = BlendModeColorFilterCompat.createBlendModeColorFilterCompat(R.color.secondaryColor, BlendModeCompat.SRC_IN)
+        }
         mv.chartView = vChart // For bounds control
         vChart.marker = mv // Set the marker to the chart
 
@@ -130,15 +131,13 @@ class BarChartFragment : Fragment(), OnSeekBarChangeListener, OnChartValueSelect
             horizontalAlignment = Legend.LegendHorizontalAlignment.RIGHT
             orientation = Legend.LegendOrientation.VERTICAL
             setDrawInside(true)
-            typeface = tfLight
             yOffset = 0f
             xOffset = 10f
             yEntrySpace = 0f
-            textSize = 8f
+            textSize = commonTextSize
         }
 
         vChart.xAxis.apply {
-            typeface = tfLight
             granularity = 1f
             setCenterAxisLabels(true)
             valueFormatter = object : ValueFormatter() {
@@ -149,11 +148,11 @@ class BarChartFragment : Fragment(), OnSeekBarChangeListener, OnChartValueSelect
         }
 
         vChart.axisLeft.apply {
-            typeface = tfLight
             valueFormatter = LargeValueFormatter()
             setDrawGridLines(false)
-            spaceTop = 35f
-            axisMinimum = 0f // this replaces setStartAtZero(true)
+            spaceTop = 70f
+            axisMinimum = 0f
+            textSize = commonTextSize
         }
         vChart.axisRight?.isEnabled = false
 
@@ -167,6 +166,8 @@ class BarChartFragment : Fragment(), OnSeekBarChangeListener, OnChartValueSelect
 //        overridePendingTransition(R.anim.move_left_in_activity, R.anim.move_right_out_activity)
 //    }
 
+    private var maxCost = 0f
+
     @SuppressLint("NewApi")
     private fun showPortion(portion: List<Pair<String, String>>) {
         val groupSpace = 0.08f
@@ -177,6 +178,11 @@ class BarChartFragment : Fragment(), OnSeekBarChangeListener, OnChartValueSelect
 
         val listValues = mutableListOf<Triple<Int, String, ArrayList<BarEntry>>>()
         portion.forEach { (title, cost) ->
+            cost.toFloat().also {valueCost ->
+                if (maxCost < valueCost) {
+                    maxCost = valueCost
+                }
+            }
             listValues.add(listValues.size.let { index ->
                 arrayListOf(BarEntry(index.toFloat(), cost.toFloat()))
                         .let { values ->
@@ -190,11 +196,12 @@ class BarChartFragment : Fragment(), OnSeekBarChangeListener, OnChartValueSelect
                     (chart.data.getDataSetByIndex(index) as BarDataSet).apply {
                         values = barValues
                         label = title
+
                     }
                 }
                 chart.data.notifyDataChanged()
                 chart.notifyDataSetChanged()
-            } else { // create 4 DataSets
+            } else {
                 val listSets = BarData()
                 listValues.forEach { (index, title, values) ->
                     val basDataSet = BarDataSet(values, title)
@@ -202,17 +209,18 @@ class BarChartFragment : Fragment(), OnSeekBarChangeListener, OnChartValueSelect
                     listSets.addDataSet(basDataSet)
                 }
                 listSets.setValueFormatter(LargeValueFormatter())
-                listSets.setValueTypeface(tfLight)
                 chart.data = listSets
             }
-            // specify the width each bar should have
-            chart.barData.barWidth = barWidth
-            // restrict the x-axis range
-            chart.xAxis.axisMinimum = START_INDEX.toFloat()
-            // barData.getGroupWith(...) is a helper that calculates the width each group needs based on the provided parameters
-            chart.xAxis.axisMaximum = START_INDEX + chart.barData.getGroupWidth(groupSpace, barSpace) * groupCount
-            chart.groupBars(START_INDEX.toFloat(), groupSpace, barSpace)
-            chart.invalidate()
+            chart.apply {
+                barData.barWidth = barWidth
+                // restrict the x-axis range
+                xAxis.axisMinimum = START_INDEX.toFloat()
+                // barData.getGroupWith(...) is a helper that calculates the width each group needs based on the provided parameters
+                xAxis.axisMaximum = START_INDEX + chart.barData.getGroupWidth(groupSpace, barSpace) * groupCount
+                axisLeft.mAxisMaximum = maxCost + maxCost * 0.1f
+                groupBars(START_INDEX.toFloat(), groupSpace, barSpace)
+                invalidate()
+            }
         }
     }
 

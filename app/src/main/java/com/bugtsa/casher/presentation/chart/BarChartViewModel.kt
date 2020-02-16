@@ -1,6 +1,5 @@
 package com.bugtsa.casher.presentation.chart
 
-import android.annotation.SuppressLint
 import android.app.Application
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -32,7 +31,6 @@ class BarChartViewModel @Inject constructor(private val barChartModel: BarChartM
     private val chartDataLiveData = MutableLiveData<BarPortionData>()
     fun observeChartData(): LiveData<BarPortionData> = chartDataLiveData
 
-    @SuppressLint("NewApi")
     fun requestChartData(preference: ChartPreference) = barChartModel.requestDataForChart(preference)
             .subscribeOn(SchedulersProvider.io())
             .observeOn(SchedulersProvider.ui())
@@ -44,8 +42,7 @@ class BarChartViewModel @Inject constructor(private val barChartModel: BarChartM
             }, ErrorHandler::handle)
             .also(::addDispose)
 
-
-    fun requestPortion(page: Int, endPage: Int) {
+    fun requestPortion(page: Int) {
         val list = barData
                 .asIterable()
                 .drop(page * portionSize)
@@ -53,7 +50,7 @@ class BarChartViewModel @Inject constructor(private val barChartModel: BarChartM
                 .map { (key, value) ->
                     key to value
                 }
-        chartDataLiveData.value = BarPortionData(list, page, endPage)
+        chartDataLiveData.value = BarPortionData(list)
     }
 
     companion object {
@@ -61,6 +58,4 @@ class BarChartViewModel @Inject constructor(private val barChartModel: BarChartM
     }
 }
 
-data class BarPortionData(val portion: List<Pair<String, String>>,
-                          val currentPage: Int,
-                          val quantityPortions: Int)
+data class BarPortionData(val portion: List<Pair<String, String>>)

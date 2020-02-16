@@ -2,7 +2,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/colorPrimary">
+    android:background="@color/primaryColor">
 
     <com.github.mikephil.charting.charts.BarChart
         android:id="@+id/vChart"
@@ -15,10 +15,10 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
         android:layout_margin="8dp"
-        android:layout_toLeftOf="@+id/tvYMax"
-        android:layout_marginRight="5dp"
+        android:layout_toStartOf="@+id/tvYMax"
+        android:layout_marginEnd="5dp"
         android:max="200"
         android:paddingBottom="12dp" />
 
@@ -29,8 +29,9 @@
         android:layout_above="@+id/vSeekBarY"
         android:layout_margin="8dp"
         android:layout_marginBottom="35dp"
-        android:layout_toLeftOf="@+id/tvXMax"
-        android:layout_marginRight="5dp"
+        android:layout_toStartOf="@+id/tvXMax"
+        android:layout_marginEnd="5dp"
+        android:visibility="gone"
         android:max="1500"
         android:paddingBottom="12dp" />
 
@@ -39,11 +40,12 @@
         android:layout_width="60dp"
         android:layout_height="wrap_content"
         android:layout_alignBottom="@+id/vSeekBarX"
-        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
         android:text="@string/dash"
         android:layout_marginBottom="15dp"
-        android:layout_marginRight="10dp"
-        android:gravity="right"
+        android:layout_marginEnd="10dp"
+        android:gravity="end"
+        android:visibility="gone"
         android:textAppearance="?android:attr/textAppearanceSmall" />
 
     <TextView
@@ -51,11 +53,11 @@
         android:layout_width="60dp"
         android:layout_height="wrap_content"
         android:layout_alignBottom="@+id/vSeekBarY"
-        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
         android:text="@string/dash"
         android:layout_marginBottom="15dp"
-        android:layout_marginRight="10dp"
-        android:gravity="right"
+        android:layout_marginEnd="10dp"
+        android:gravity="end"
         android:textAppearance="?android:attr/textAppearanceSmall" />
 
 </RelativeLayout>
