@@ -14,17 +14,25 @@ class BarChartModel @Inject constructor(private val casherApi: CasherApi) {
         instance = this
     }
 
-    fun requestDataForChart(preference: ChartPreference): Single<ChartDataRes> {
+    fun requestDataForChart(preference: ChartPreference): Single<List<ChartDataRes>> {
         val map = hashMapOf<String, String>()
         map[ChartModel.userIdChartParameter] = userIdDefault
-        map[ChartModel.monthChartParameter] = preference.endDate.month.toString()
-        map[ChartModel.yearChartParameter] = preference.endDate.year.toString()
+        map[START_MONTH_PARAMETER] = preference.startDate.month.toString()
+        map[START_YEAR_PARAMETER] = preference.startDate.year.toString()
+        map[END_MONTH_PARAMETER] = preference.endDate.month.toString()
+        map[END_YEAR_PARAMETER] = preference.endDate.year.toString()
         map[ChartModel.sortModeChartParameter] = preference.sortMode.toString()
-        return casherApi.getChartData(map)
+        return casherApi.getRangeMonthChartData(map)
     }
 
     companion object {
-        private const val userIdDefault = "0"
         private var  instance: BarChartModel? = null
+
+        private const val userIdDefault = "0"
+
+        private const val START_MONTH_PARAMETER = "startMonth"
+        private const val START_YEAR_PARAMETER = "startYear"
+        private const val END_MONTH_PARAMETER = "endMonth"
+        private const val END_YEAR_PARAMETER = "endYear"
     }
 }

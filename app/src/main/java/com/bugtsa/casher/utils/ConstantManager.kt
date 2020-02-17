@@ -10,6 +10,7 @@ class ConstantManager {
         const val CATEGORY_NAME_METHOD = "category"
         const val NAME_CATEGORY_PARAMETER = "name"
         const val CHARTS_NAME_METHOD = "charts"
+        const val CATEGORIZED_NAME_METHOD = "/categorized"
     }
 
     object Network {

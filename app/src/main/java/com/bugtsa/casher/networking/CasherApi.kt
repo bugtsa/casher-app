@@ -6,6 +6,7 @@ import com.bugtsa.casher.data.network.CategoryRes
 import com.bugtsa.casher.data.network.PaymentRes
 import com.bugtsa.casher.data.network.PaymentsByDayRes
 import com.bugtsa.casher.data.network.chart.ChartDataRes
+import com.bugtsa.casher.utils.ConstantManager.CategoryNetwork.CATEGORIZED_NAME_METHOD
 import com.bugtsa.casher.utils.ConstantManager.CategoryNetwork.CATEGORY_NAME_METHOD
 import com.bugtsa.casher.utils.ConstantManager.CategoryNetwork.CHARTS_NAME_METHOD
 import com.bugtsa.casher.utils.ConstantManager.Network.LAST_PAGE_PAYMENT_NAME_METHOD
@@ -36,6 +37,9 @@ interface CasherApi {
     @GET("$CHARTS_NAME_METHOD/rangeMonth")
     fun getRangeMonths(): Single<List<PaymentRes>>
 
-    @GET("$CHARTS_NAME_METHOD/date&user/categorized")
-    fun getChartData(@QueryMap params: Map<String, String> ): Single<ChartDataRes>
+    @GET("$CHARTS_NAME_METHOD/date&user$CATEGORIZED_NAME_METHOD")
+    fun getOneMonthChartData(@QueryMap params: Map<String, String>): Single<ChartDataRes>
+
+    @GET("$CHARTS_NAME_METHOD$CATEGORIZED_NAME_METHOD/range")
+    fun getRangeMonthChartData(@QueryMap params: Map<String, String>): Single<List<ChartDataRes>>
 }

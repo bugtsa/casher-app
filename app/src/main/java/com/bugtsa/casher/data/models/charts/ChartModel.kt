@@ -20,7 +20,7 @@ class ChartModel @Inject constructor(private val casherApi: CasherApi) {
         map[monthChartParameter] = preference.endDate.month.toString()
         map[yearChartParameter] = preference.endDate.year.toString()
         map[sortModeChartParameter] = preference.sortMode.toString()
-        return casherApi.getChartData(map)
+        return casherApi.getOneMonthChartData(map)
     }
 
     companion object {

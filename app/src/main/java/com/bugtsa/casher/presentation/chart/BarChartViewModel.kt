@@ -35,7 +35,7 @@ class BarChartViewModel @Inject constructor(private val barChartModel: BarChartM
             .subscribeOn(SchedulersProvider.io())
             .observeOn(SchedulersProvider.ui())
             .subscribe({ res ->
-                res.categorizedMap?.also {
+                res.first().categorizedMap?.also {
                     barData = it.asIterable().toList()
                     quantityPortionsLiveData.value = barData.size / portionSize
                 }
