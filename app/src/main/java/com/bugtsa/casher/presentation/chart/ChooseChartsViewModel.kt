@@ -11,6 +11,7 @@ import androidx.lifecycle.ViewModelProvider
 import com.bugtsa.casher.data.models.charts.ChooseChartsModel
 import com.bugtsa.casher.global.ErrorHandler
 import com.bugtsa.casher.presentation.optional.RxViewModel
+import com.bugtsa.casher.ui.screens.charts.ChartPreference
 import com.bugtsa.casher.ui.screens.charts.MonthYearPickerDialog.Companion.MIN_MONTH
 import com.bugtsa.casher.ui.screens.charts.MonthYearPickerDialog.Companion.MIN_YEAR
 import com.bugtsa.casher.utils.ConstantManager.Constants.EMPTY
@@ -36,17 +37,29 @@ class ChooseChartsViewModel @Inject constructor(chooseChartsModel: ChooseChartsM
     private val rangeMonthLiveData = MutableLiveData<Pair<DateRange, DateRange>>()
     fun observeRangeMonth() = rangeMonthLiveData as LiveData<Pair<DateRange, DateRange>>
 
+    private lateinit var startRange: DateRange
+    private lateinit var endRange: DateRange
+    private var sortType = SORT_MODE_DEFAULT
+
     init {
         chooseChartsModel.getRangeMonths()
                 .map { it.map { payment -> payment.date } }
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({ list ->
-                    val first = processAndCheckDate(list.first() ?: EMPTY)
-                    val second = processAndCheckDate(list.last() ?: EMPTY)
-                    rangeMonthLiveData.value = first to second
+                    startRange = processAndCheckDate(list.first() ?: EMPTY)
+                    endRange = processAndCheckDate(list.last() ?: EMPTY)
+                    rangeMonthLiveData.value = startRange to endRange
                 }, ErrorHandler::handle)
                 .also(::addDispose)
+    }
+
+    fun setupTypeSort(sortType: Int) {
+        this.sortType = sortType
+    }
+
+    fun getPreference(): ChartPreference {
+        return ChartPreference(startRange, endRange, sortType)
     }
 
     private fun processAndCheckDate(date: String): DateRange {
@@ -99,7 +112,11 @@ class ChooseChartsViewModel @Inject constructor(chooseChartsModel: ChooseChartsM
         private const val LESS_TEN_DAYS_SHORT_DATE_FORMAT = "d.MM.yy"
         private const val SHORT_DATE_FORMAT = "dd.MM.yy"
         private const val FULL_DATE_FORMAT = "dd.MM.yy, HH:mm"
-        const val SORT_MODE_DEFAULT = 1
+
+        const val SORT_ASC = 1
+        const val SORT_DESC = 2
+        const val SORT_UNSORTED = 0
+        const val SORT_MODE_DEFAULT = 2
 
         fun monthValueFromLocalDate(monthLocalDate: Int): Int = monthLocalDate - 1
     }

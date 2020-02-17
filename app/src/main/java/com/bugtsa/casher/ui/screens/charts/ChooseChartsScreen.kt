@@ -10,7 +10,9 @@ import android.widget.TextView
 import androidx.lifecycle.ViewModelProvider
 import com.bugtsa.casher.R
 import com.bugtsa.casher.presentation.chart.ChooseChartsViewModel
-import com.bugtsa.casher.presentation.chart.ChooseChartsViewModel.Companion.SORT_MODE_DEFAULT
+import com.bugtsa.casher.presentation.chart.ChooseChartsViewModel.Companion.SORT_ASC
+import com.bugtsa.casher.presentation.chart.ChooseChartsViewModel.Companion.SORT_DESC
+import com.bugtsa.casher.presentation.chart.ChooseChartsViewModel.Companion.SORT_UNSORTED
 import com.bugtsa.casher.presentation.chart.ChooseChartsViewModelFactory
 import com.bugtsa.casher.ui.screens.settings.NavigationStackPresentable
 import kotlinx.android.synthetic.main.fragment_choose_charts.*
@@ -38,7 +40,6 @@ class ChartsScreenFragment : androidx.fragment.app.Fragment(),
 
     private val startDateDialog = MonthYearPickerDialog()
     private val endDateDialog = MonthYearPickerDialog()
-    private lateinit var chartPreference: ChartPreference
 
     private lateinit var viewModelChoose: ChooseChartsViewModel
 
@@ -76,11 +77,21 @@ class ChartsScreenFragment : androidx.fragment.app.Fragment(),
     private fun bindListeners() {
         vChooseStartMonth.setOnClickListener(showMonthPicker(startDateDialog, vStartDate))
         vChooseEndMonth.setOnClickListener(showMonthPicker(endDateDialog, vEndDate))
-        vShowChart.setOnClickListener { bone.show(BarChartScreen(chartPreference)) }
+        vShowChart.setOnClickListener { bone.show(BarChartScreen(viewModelChoose.getPreference())) }
     }
 
     private fun bindView() {
         vShowChart.visibility = View.GONE
+
+        vSortTypeRadio.setOnCheckedChangeListener { _, checkedId ->
+            val sortType = when (checkedId) {
+                vTypeSortAsc.id -> SORT_ASC
+                vTypeSortDesc.id -> SORT_DESC
+                vTypeUnSort.id -> SORT_UNSORTED
+                else -> SORT_UNSORTED
+            }
+            viewModelChoose.setupTypeSort(sortType)
+        }
     }
 
     private fun bindViewModel() {
@@ -88,7 +99,6 @@ class ChartsScreenFragment : androidx.fragment.app.Fragment(),
             startDateDialog.setRangeDate(startDateRange, endDateRange)
             endDateDialog.setRangeDate(startDateRange, endDateRange)
             vShowChart.visibility = View.VISIBLE
-            chartPreference = ChartPreference(startDateRange, endDateRange, SORT_MODE_DEFAULT)
             vStartDate.text = getString(R.string.month_range_start,
                     startDateRange.year.toString(),
                     getMonthName(startDateRange.month, Locale.getDefault(), false))
@@ -100,8 +110,7 @@ class ChartsScreenFragment : androidx.fragment.app.Fragment(),
 
     private fun showMonthPicker(dateDialog: MonthYearPickerDialog, textView: TextView): View.OnClickListener? {
         return View.OnClickListener {
-            val listener = DatePickerDialog.OnDateSetListener{
-                _, year, month, _ ->
+            val listener = DatePickerDialog.OnDateSetListener { _, year, month, _ ->
                 val stringMonth = getMonthName(month, Locale.getDefault(), false)
                 textView.text = getString(R.string.month_range_start, year.toString(), stringMonth)
             }

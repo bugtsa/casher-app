@@ -28,6 +28,7 @@
 
     <string name="changed_date_and_time">"Setup time and date: "</string>
 
+    <string name="charts_caption_x_axis">will caption</string>
     <string name="charts_caption_y_axis">%1$d-%2$d pages</string>
     <string name="charts_choose_date">Choose date</string>
     <string name="charts_month_end">End Month</string>
@@ -62,6 +63,10 @@
 
     <string name="sing_up_in_app">Sing Up in App</string>
 
+    <string name="sort_type_asc">ascending</string>
+    <string name="sort_type_desc">descending</string>
+    <string name="sort_type_un_sort">unsorted</string>
+
     <string name="switch_theme_mode">Switch theme mode</string>
 
     <string name="time_caption">Time</string>
@@ -71,5 +76,4 @@
     <string name="title_notifications">Settings</string>
 
     <string name="viewGithub" translatable="false">View on GitHub</string>
-    <string name="charts_caption_x_axis">will caption</string>
 </resources>
