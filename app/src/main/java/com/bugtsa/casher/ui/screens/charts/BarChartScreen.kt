@@ -16,6 +16,7 @@ import androidx.lifecycle.ViewModelProvider
 import com.bugtsa.casher.R
 import com.bugtsa.casher.presentation.chart.BarChartViewModel
 import com.bugtsa.casher.presentation.chart.BarChartViewModelFactory
+import com.bugtsa.casher.presentation.chart.PortionData
 import com.github.mikephil.charting.components.Legend
 import com.github.mikephil.charting.data.BarData
 import com.github.mikephil.charting.data.BarDataSet
@@ -94,13 +95,13 @@ class BarChartFragment : Fragment(), OnSeekBarChangeListener, OnChartValueSelect
     override fun onNothingSelected() {}
 
     private fun bindViewModel() {
-        viewModel.observeChartData().observe(viewLifecycleOwner, androidx.lifecycle.Observer { chartData ->
-            showPortion(chartData.portion)
+        viewModel.observeChartPortionData().observe(viewLifecycleOwner, androidx.lifecycle.Observer { chartData ->
+            showPortion(chartData)
         })
 
-        viewModel.observeQuantityPortions().observe(viewLifecycleOwner, androidx.lifecycle.Observer { quantity ->
-            setupAxisTitle(quantity)
-            vSeekBarY.max = quantity
+        viewModel.observeReadinessDataChart().observe(viewLifecycleOwner, androidx.lifecycle.Observer { quantityPortions ->
+            setupAxisTitle(quantityPortions.value)
+            vSeekBarY.max = MaxValueSeekBar(quantityPortions.value).value
             vSeekBarY.progress = 0
         })
     }
@@ -139,6 +140,7 @@ class BarChartFragment : Fragment(), OnSeekBarChangeListener, OnChartValueSelect
 
         vChart.xAxis.apply {
             granularity = 1f
+            setDrawLabels(false)
             setCenterAxisLabels(true)
             valueFormatter = object : ValueFormatter() {
                 override fun getFormattedValue(value: Float): String {
@@ -169,7 +171,7 @@ class BarChartFragment : Fragment(), OnSeekBarChangeListener, OnChartValueSelect
     private var maxCost = 0f
 
     @SuppressLint("NewApi")
-    private fun showPortion(portion: List<Pair<String, String>>) {
+    private fun showPortion(data: PortionData) {
         val groupSpace = 0.08f
         val barSpace = 0.03f // x4 DataSet
         val barWidth = 0.2f // x4 DataSet
@@ -177,7 +179,7 @@ class BarChartFragment : Fragment(), OnSeekBarChangeListener, OnChartValueSelect
         val groupCount = vSeekBarX.progress + 1
 
         val listValues = mutableListOf<Triple<Int, String, ArrayList<BarEntry>>>()
-        portion.forEach { (title, cost) ->
+        data.portion.forEach { (title, cost) ->
             cost.toFloat().also {valueCost ->
                 if (maxCost < valueCost) {
                     maxCost = valueCost
@@ -190,13 +192,16 @@ class BarChartFragment : Fragment(), OnSeekBarChangeListener, OnChartValueSelect
                         }
             })
         }
+        vTitleChart.text = getString(R.string.charts_caption_x_axis,
+                data.pageNumber.value.toString(),
+                data.requestDate.month,
+                data.requestDate.year)
         vChart.also { chart ->
             if (chart.data != null && chart.data.dataSetCount > 0) {
                 listValues.forEach { (index, title, barValues) ->
                     (chart.data.getDataSetByIndex(index) as BarDataSet).apply {
                         values = barValues
                         label = title
-
                     }
                 }
                 chart.data.notifyDataChanged()
@@ -247,4 +252,8 @@ class BarChartFragment : Fragment(), OnSeekBarChangeListener, OnChartValueSelect
 
         private const val START_INDEX = 1
     }
+}
+
+class MaxValueSeekBar(private val maxValue: Int) {
+    val value get() = maxValue - 1
 }

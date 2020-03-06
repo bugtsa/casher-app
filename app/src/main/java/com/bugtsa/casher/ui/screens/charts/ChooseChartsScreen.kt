@@ -18,6 +18,7 @@ import com.bugtsa.casher.presentation.chart.ChooseChartsViewModel.Companion.mont
 import com.bugtsa.casher.presentation.chart.ChooseChartsViewModelFactory
 import com.bugtsa.casher.presentation.chart.DateRange
 import com.bugtsa.casher.ui.screens.settings.NavigationStackPresentable
+import com.bugtsa.casher.utils.getMonthName
 import kotlinx.android.synthetic.main.fragment_choose_charts.*
 import pro.horovodovodo4ka.bones.Phalanx
 import pro.horovodovodo4ka.bones.extensions.show
@@ -116,16 +117,16 @@ class ChartsScreenFragment : androidx.fragment.app.Fragment(),
             vShowChart.visibility = View.VISIBLE
             vStartDate.text = getString(R.string.month_range_start,
                     startDateRange.year.toString(),
-                    getMonthName(startDateRange.month, Locale.getDefault(), false))
+                    startDateRange.month.getMonthName(Locale.getDefault(), false))
             vEndDate.text = getString(R.string.month_range_end,
                     endDateRange.year.toString(),
-                    getMonthName(endDateRange.month, Locale.getDefault(), false))
+                    endDateRange.month.getMonthName(Locale.getDefault(), false))
         })
     }
 
     private fun bindDataSetListener(textView: TextView, changedDateRange: DateRangeChangeListener): DatePickerDialog.OnDateSetListener {
         return DatePickerDialog.OnDateSetListener { _, year, month, _ ->
-            val stringMonth = getMonthName(monthCalendarValue(month), Locale.getDefault(), false)
+            val stringMonth = monthCalendarValue(month).getMonthName(Locale.getDefault(), false)
             textView.text = getString(R.string.month_range_start, year.toString(), stringMonth)
             if (changedDateRange is StartDateRangeChangeListener) {
                 changedDateRange.startOnChanged(DateRange(month, year))
@@ -141,15 +142,6 @@ class ChartsScreenFragment : androidx.fragment.app.Fragment(),
             dateDialog.setListener(dateSetListener)
             dateDialog.show(requireActivity().supportFragmentManager, "MonthYearPickerDialog")
         }
-    }
-
-    private fun getMonthName(index: Int, locale: Locale, shortName: Boolean): String? {
-        var format = "%tB"
-        if (shortName) format = "%tb"
-        val calendar = Calendar.getInstance(locale)
-        calendar[Calendar.MONTH] = index
-        calendar[Calendar.DAY_OF_MONTH] = 1
-        return java.lang.String.format(locale, format, calendar)
     }
 }
 

@@ -9,7 +9,7 @@ import android.view.View
 import android.widget.NumberPicker
 import androidx.fragment.app.DialogFragment
 import com.bugtsa.casher.R
-import com.bugtsa.casher.presentation.chart.DialogDateRange
+import com.bugtsa.casher.presentation.chart.UiDateRange
 import java.text.DateFormatSymbols
 import java.util.*
 
@@ -28,7 +28,7 @@ class MonthYearPickerDialog : DialogFragment() {
         this.listener = listener
     }
 
-    fun setRangeDate(minDate: DialogDateRange, maxDate: DialogDateRange) {
+    fun setRangeDate(minDate: UiDateRange, maxDate: UiDateRange) {
         minMonth = minDate.month
         minYear = minDate.year
         maxYear = maxDate.year

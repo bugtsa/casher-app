@@ -16,6 +16,7 @@ import com.bugtsa.casher.ui.screens.charts.ChartPreference
 import com.bugtsa.casher.ui.screens.charts.MonthYearPickerDialog.Companion.MIN_MONTH
 import com.bugtsa.casher.ui.screens.charts.MonthYearPickerDialog.Companion.MIN_YEAR
 import com.bugtsa.casher.utils.ConstantManager.Constants.EMPTY
+import com.bugtsa.casher.utils.getMonthName
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import toothpick.Toothpick
@@ -35,8 +36,8 @@ class ChooseChartsViewModelFactory @Inject constructor(private val app: Applicat
 
 class ChooseChartsViewModel @Inject constructor(chooseChartsModel: ChooseChartsModel) : RxViewModel() {
 
-    private val dialogsRangeMonthLiveData = MutableLiveData<Pair<DialogDateRange, DialogDateRange>>()
-    fun observeDialogsRangeMonth() = dialogsRangeMonthLiveData as LiveData<Pair<DialogDateRange, DialogDateRange>>
+    private val dialogsRangeMonthLiveData = MutableLiveData<Pair<UiDateRange, UiDateRange>>()
+    fun observeDialogsRangeMonth() = dialogsRangeMonthLiveData as LiveData<Pair<UiDateRange, UiDateRange>>
 
     //    private var defaultStartDate = DateRange(1, 1)
     private lateinit var startRange: DateRange
@@ -52,7 +53,7 @@ class ChooseChartsViewModel @Inject constructor(chooseChartsModel: ChooseChartsM
                 .subscribe({ list ->
                     startRange = processAndCheckDate(list.first() ?: EMPTY)
                     endRange = processAndCheckDate(list.last() ?: EMPTY)
-                    dialogsRangeMonthLiveData.value = DialogDateRange(startRange) to DialogDateRange(endRange)
+                    dialogsRangeMonthLiveData.value = UiDateRange(startRange) to UiDateRange(endRange)
                 }, ErrorHandler::handle)
                 .also(::addDispose)
     }
@@ -138,8 +139,30 @@ data class DateRange(val month: Int,
 
 data class ChangedDateRange(val dateRange: DateRange)
 
-class DialogDateRange(private val dateRange: DateRange) {
+class UiDateRange(dateRange: DateRange) {
 
-    val month: Int get() = monthCalendarValue(dateRange.month)
+    val month: Int = monthCalendarValue(dateRange.month)
     val year: Int = dateRange.year
+}
+
+class UiStringDateRange {
+    val month: String
+    val year: String
+
+    constructor(dateRange: UiDateRange) {
+      month  = dateRange.month.getMonthName(Locale.getDefault(), false)
+      year  = dateRange.year.toString()
+    }
+
+    constructor(default: DefaultDateRange) {
+        month = default.value.month.getMonthName(Locale.getDefault(), false)
+        year = default.value.year.toString()
+    }
+}
+
+class DefaultDateRange {
+    val value: DateRange get() {
+        val cal: Calendar = Calendar.getInstance()
+        return DateRange(cal.get(Calendar.MONTH), cal.get(Calendar.YEAR))
+    }
 }

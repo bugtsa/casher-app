@@ -23,34 +23,42 @@ class BarChartViewModelFactory @Inject constructor(private val application: Appl
 
 class BarChartViewModel @Inject constructor(private val barChartModel: BarChartModel) : RxViewModel() {
 
-    private var barData = mutableListOf<Map.Entry<String, String>>()
+    private lateinit var chartData: ChartData
 
-    private val quantityPortionsLiveData = MutableLiveData<Int>()
-    fun observeQuantityPortions(): LiveData<Int> = quantityPortionsLiveData
+    private val readinessChartLiveData = MutableLiveData<QuantityPortions>()
+    fun observeReadinessDataChart(): LiveData<QuantityPortions> = readinessChartLiveData
 
-    private val chartDataLiveData = MutableLiveData<BarPortionData>()
-    fun observeChartData(): LiveData<BarPortionData> = chartDataLiveData
+    private val chartPortionDataLiveData = MutableLiveData<PortionData>()
+    fun observeChartPortionData(): LiveData<PortionData> = chartPortionDataLiveData
 
     fun requestChartData(preference: ChartPreference) = barChartModel.requestDataForChart(preference)
             .subscribeOn(SchedulersProvider.io())
             .observeOn(SchedulersProvider.ui())
             .subscribe({ res ->
-                res.first().categorizedMap?.also {
-                    barData.addAll(it.asIterable().toList())
-                    quantityPortionsLiveData.value = barData.size / portionSize
+                res.first().also { data ->
+                    val dateRange  = data.requestMonth?.let { month ->
+                        data.requestYear?.let { year ->
+                            UiStringDateRange(UiDateRange(DateRange(month.toInt(), year.toInt())))
+                        }
+                    } ?: UiStringDateRange(DefaultDateRange())
+                    val list = data.categorizedMap?.let { map ->
+                         map.asIterable().toList()
+                    } ?: mutableListOf()
+                    chartData = ChartData(dateRange, list)
+                    readinessChartLiveData.value = QuantityPortions(list.size)
                 }
             }, ErrorHandler::handle)
             .also(::addDispose)
 
     fun requestPortion(page: Int) {
-        val list = barData
+        val list = chartData.list
                 .asIterable()
                 .drop(page * portionSize)
                 .take(portionSize)
                 .map { (key, value) ->
                     key to value
                 }
-        chartDataLiveData.value = BarPortionData(list)
+        chartPortionDataLiveData.value = PortionData(chartData.date, PageNumber(page), list)
     }
 
     companion object {
@@ -58,4 +66,17 @@ class BarChartViewModel @Inject constructor(private val barChartModel: BarChartM
     }
 }
 
-data class BarPortionData(val portion: List<Pair<String, String>>)
+class QuantityPortions(private val barDataSize: Int) {
+    val value get() = barDataSize / BarChartViewModel.portionSize
+}
+
+class PageNumber(private val page: Int) {
+    val value: Int get() = page + 1
+}
+
+data class ChartData(val date: UiStringDateRange,
+                     val list: List<Map.Entry<String, String>>)
+
+data class PortionData(val requestDate: UiStringDateRange,
+                       val pageNumber: PageNumber,
+                       val portion: List<Pair<String, String>>)
