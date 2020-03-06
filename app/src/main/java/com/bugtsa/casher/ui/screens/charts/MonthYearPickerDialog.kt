@@ -9,7 +9,7 @@ import android.view.View
 import android.widget.NumberPicker
 import androidx.fragment.app.DialogFragment
 import com.bugtsa.casher.R
-import com.bugtsa.casher.presentation.chart.DateRange
+import com.bugtsa.casher.presentation.chart.DialogDateRange
 import java.text.DateFormatSymbols
 import java.util.*
 
@@ -24,13 +24,11 @@ class MonthYearPickerDialog : DialogFragment() {
     private var minYear = MIN_YEAR
     private var maxYear = currentYear
 
-
-
     fun setListener(listener: DatePickerDialog.OnDateSetListener?) {
         this.listener = listener
     }
 
-    fun setRangeDate(minDate: DateRange, maxDate: DateRange) {
+    fun setRangeDate(minDate: DialogDateRange, maxDate: DialogDateRange) {
         minMonth = minDate.month
         minYear = minDate.year
         maxYear = maxDate.year
@@ -52,7 +50,7 @@ class MonthYearPickerDialog : DialogFragment() {
         yearPicker.maxValue = maxYear
         yearPicker.value = currentYear
         builder.setView(dialog) // Add action buttons
-                .setPositiveButton(android.R.string.ok) { _, _ -> listener?.onDateSet(null, yearPicker.value, monthPicker.value - 1, 0) }
+                .setPositiveButton(android.R.string.ok) { _, _ -> listener?.onDateSet(null, yearPicker.value, monthPicker.value, 0) }
                 .setNegativeButton(R.string.cancel_caption) { _, _ -> this@MonthYearPickerDialog.dialog?.cancel() }
         return builder.create()
     }

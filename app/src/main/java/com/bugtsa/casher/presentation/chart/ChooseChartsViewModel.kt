@@ -10,6 +10,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.bugtsa.casher.data.models.charts.ChooseChartsModel
 import com.bugtsa.casher.global.ErrorHandler
+import com.bugtsa.casher.presentation.chart.ChooseChartsViewModel.Companion.monthCalendarValue
 import com.bugtsa.casher.presentation.optional.RxViewModel
 import com.bugtsa.casher.ui.screens.charts.ChartPreference
 import com.bugtsa.casher.ui.screens.charts.MonthYearPickerDialog.Companion.MIN_MONTH
@@ -34,10 +35,12 @@ class ChooseChartsViewModelFactory @Inject constructor(private val app: Applicat
 
 class ChooseChartsViewModel @Inject constructor(chooseChartsModel: ChooseChartsModel) : RxViewModel() {
 
-    private val rangeMonthLiveData = MutableLiveData<Pair<DateRange, DateRange>>()
-    fun observeRangeMonth() = rangeMonthLiveData as LiveData<Pair<DateRange, DateRange>>
+    private val dialogsRangeMonthLiveData = MutableLiveData<Pair<DialogDateRange, DialogDateRange>>()
+    fun observeDialogsRangeMonth() = dialogsRangeMonthLiveData as LiveData<Pair<DialogDateRange, DialogDateRange>>
 
+    //    private var defaultStartDate = DateRange(1, 1)
     private lateinit var startRange: DateRange
+
     private lateinit var endRange: DateRange
     private var sortType = SORT_MODE_DEFAULT
 
@@ -49,7 +52,7 @@ class ChooseChartsViewModel @Inject constructor(chooseChartsModel: ChooseChartsM
                 .subscribe({ list ->
                     startRange = processAndCheckDate(list.first() ?: EMPTY)
                     endRange = processAndCheckDate(list.last() ?: EMPTY)
-                    rangeMonthLiveData.value = startRange to endRange
+                    dialogsRangeMonthLiveData.value = DialogDateRange(startRange) to DialogDateRange(endRange)
                 }, ErrorHandler::handle)
                 .also(::addDispose)
     }
@@ -60,6 +63,14 @@ class ChooseChartsViewModel @Inject constructor(chooseChartsModel: ChooseChartsM
 
     fun getPreference(): ChartPreference {
         return ChartPreference(startRange, endRange, sortType)
+    }
+
+    fun setupStartRange(changedStartRange: ChangedDateRange) {
+        startRange = changedStartRange.dateRange
+    }
+
+    fun setupEndRange(changedDateRange: ChangedDateRange) {
+        endRange = changedDateRange.dateRange
     }
 
     private fun processAndCheckDate(date: String): DateRange {
@@ -82,7 +93,7 @@ class ChooseChartsViewModel @Inject constructor(chooseChartsModel: ChooseChartsM
                 LocalDate.parse(date, shortFormatter)
             else -> LocalDate.parse(date, fullFormatter)
         }.let { localDate ->
-            DateRange(monthValueFromLocalDate(localDate.monthValue), localDate.year)
+            DateRange(localDate.monthValue, localDate.year)
         }
     }
 
@@ -118,9 +129,17 @@ class ChooseChartsViewModel @Inject constructor(chooseChartsModel: ChooseChartsM
         const val SORT_UNSORTED = 0
         const val SORT_MODE_DEFAULT = 2
 
-        fun monthValueFromLocalDate(monthLocalDate: Int): Int = monthLocalDate - 1
+        fun monthCalendarValue(monthValue: Int): Int = monthValue - 1
     }
 }
 
 data class DateRange(val month: Int,
                      val year: Int)
+
+data class ChangedDateRange(val dateRange: DateRange)
+
+class DialogDateRange(private val dateRange: DateRange) {
+
+    val month: Int get() = monthCalendarValue(dateRange.month)
+    val year: Int = dateRange.year
+}

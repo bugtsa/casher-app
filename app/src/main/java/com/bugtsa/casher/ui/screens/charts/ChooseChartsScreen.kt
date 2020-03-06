@@ -9,11 +9,14 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.lifecycle.ViewModelProvider
 import com.bugtsa.casher.R
+import com.bugtsa.casher.presentation.chart.ChangedDateRange
 import com.bugtsa.casher.presentation.chart.ChooseChartsViewModel
 import com.bugtsa.casher.presentation.chart.ChooseChartsViewModel.Companion.SORT_ASC
 import com.bugtsa.casher.presentation.chart.ChooseChartsViewModel.Companion.SORT_DESC
 import com.bugtsa.casher.presentation.chart.ChooseChartsViewModel.Companion.SORT_UNSORTED
+import com.bugtsa.casher.presentation.chart.ChooseChartsViewModel.Companion.monthCalendarValue
 import com.bugtsa.casher.presentation.chart.ChooseChartsViewModelFactory
+import com.bugtsa.casher.presentation.chart.DateRange
 import com.bugtsa.casher.ui.screens.settings.NavigationStackPresentable
 import kotlinx.android.synthetic.main.fragment_choose_charts.*
 import pro.horovodovodo4ka.bones.Phalanx
@@ -42,6 +45,18 @@ class ChartsScreenFragment : androidx.fragment.app.Fragment(),
     private val endDateDialog = MonthYearPickerDialog()
 
     private lateinit var viewModelChoose: ChooseChartsViewModel
+
+    private val startDateChangeListener = object : StartDateRangeChangeListener {
+        override fun startOnChanged(dateRange: DateRange) {
+            viewModelChoose.setupStartRange(ChangedDateRange(dateRange))
+        }
+    }
+
+    private val endDateChangeListener = object : EndDateRangeChangeListener {
+        override fun endOnChanged(dateRange: DateRange) {
+            viewModelChoose.setupEndRange(ChangedDateRange(dateRange))
+        }
+    }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? =
             inflater.inflate(R.layout.fragment_choose_charts, container, false)
@@ -75,8 +90,8 @@ class ChartsScreenFragment : androidx.fragment.app.Fragment(),
     }
 
     private fun bindListeners() {
-        vChooseStartMonth.setOnClickListener(showMonthPicker(startDateDialog, vStartDate))
-        vChooseEndMonth.setOnClickListener(showMonthPicker(endDateDialog, vEndDate))
+        vChooseStartMonth.setOnClickListener(showMonthPicker(startDateDialog, vStartDate, startDateChangeListener))
+        vChooseEndMonth.setOnClickListener(showMonthPicker(endDateDialog, vEndDate, endDateChangeListener))
         vShowChart.setOnClickListener { bone.show(BarChartScreen(viewModelChoose.getPreference())) }
     }
 
@@ -95,7 +110,7 @@ class ChartsScreenFragment : androidx.fragment.app.Fragment(),
     }
 
     private fun bindViewModel() {
-        viewModelChoose.observeRangeMonth().observe(viewLifecycleOwner, androidx.lifecycle.Observer { (startDateRange, endDateRange) ->
+        viewModelChoose.observeDialogsRangeMonth().observe(viewLifecycleOwner, androidx.lifecycle.Observer { (startDateRange, endDateRange) ->
             startDateDialog.setRangeDate(startDateRange, endDateRange)
             endDateDialog.setRangeDate(startDateRange, endDateRange)
             vShowChart.visibility = View.VISIBLE
@@ -108,13 +123,22 @@ class ChartsScreenFragment : androidx.fragment.app.Fragment(),
         })
     }
 
-    private fun showMonthPicker(dateDialog: MonthYearPickerDialog, textView: TextView): View.OnClickListener? {
-        return View.OnClickListener {
-            val listener = DatePickerDialog.OnDateSetListener { _, year, month, _ ->
-                val stringMonth = getMonthName(month, Locale.getDefault(), false)
-                textView.text = getString(R.string.month_range_start, year.toString(), stringMonth)
+    private fun bindDataSetListener(textView: TextView, changedDateRange: DateRangeChangeListener): DatePickerDialog.OnDateSetListener {
+        return DatePickerDialog.OnDateSetListener { _, year, month, _ ->
+            val stringMonth = getMonthName(monthCalendarValue(month), Locale.getDefault(), false)
+            textView.text = getString(R.string.month_range_start, year.toString(), stringMonth)
+            if (changedDateRange is StartDateRangeChangeListener) {
+                changedDateRange.startOnChanged(DateRange(month, year))
+            } else if (changedDateRange is EndDateRangeChangeListener) {
+                changedDateRange.endOnChanged(DateRange(month, year))
             }
-            dateDialog.setListener(listener)
+        }
+    }
+
+    private fun showMonthPicker(dateDialog: MonthYearPickerDialog, textView: TextView, changedDateRange: DateRangeChangeListener): View.OnClickListener? {
+        return View.OnClickListener {
+            val dateSetListener = bindDataSetListener(textView, changedDateRange)
+            dateDialog.setListener(dateSetListener)
             dateDialog.show(requireActivity().supportFragmentManager, "MonthYearPickerDialog")
         }
     }
@@ -128,3 +152,13 @@ class ChartsScreenFragment : androidx.fragment.app.Fragment(),
         return java.lang.String.format(locale, format, calendar)
     }
 }
+
+interface StartDateRangeChangeListener : DateRangeChangeListener {
+    fun startOnChanged(dateRange: DateRange)
+}
+
+interface EndDateRangeChangeListener : DateRangeChangeListener {
+    fun endOnChanged(dateRange: DateRange)
+}
+
+interface DateRangeChangeListener

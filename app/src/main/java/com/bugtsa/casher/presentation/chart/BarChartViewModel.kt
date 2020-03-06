@@ -23,7 +23,7 @@ class BarChartViewModelFactory @Inject constructor(private val application: Appl
 
 class BarChartViewModel @Inject constructor(private val barChartModel: BarChartModel) : RxViewModel() {
 
-    private var barData = listOf<Map.Entry<String, String>>()
+    private var barData = mutableListOf<Map.Entry<String, String>>()
 
     private val quantityPortionsLiveData = MutableLiveData<Int>()
     fun observeQuantityPortions(): LiveData<Int> = quantityPortionsLiveData
@@ -36,7 +36,7 @@ class BarChartViewModel @Inject constructor(private val barChartModel: BarChartM
             .observeOn(SchedulersProvider.ui())
             .subscribe({ res ->
                 res.first().categorizedMap?.also {
-                    barData = it.asIterable().toList()
+                    barData.addAll(it.asIterable().toList())
                     quantityPortionsLiveData.value = barData.size / portionSize
                 }
             }, ErrorHandler::handle)
