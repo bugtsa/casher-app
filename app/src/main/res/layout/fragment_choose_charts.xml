@@ -93,9 +93,19 @@
         android:id="@+id/vShowChart"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/charts_show_chart"
+        android:text="@string/charts_show_bar_chart"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/vChooseEndMonth" />
+
+    <Button
+        android:id="@+id/vShowPieChart"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/charts_show_pie_chart"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/vShowChart" />
 </androidx.constraintlayout.widget.ConstraintLayout>

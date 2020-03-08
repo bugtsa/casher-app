@@ -28,12 +28,15 @@
 
     <string name="changed_date_and_time">"Setup time and date: "</string>
 
+    <string name="charts_caption_pie">Pie Chart at %1$s %2$s year</string>
+    <string name="charts_caption_legend_pie">Category payments</string>
     <string name="charts_caption_x_axis">%1$s page at %2$s %3$s year</string>
     <string name="charts_caption_y_axis">%1$d-%2$d pages</string>
     <string name="charts_choose_date">Choose date</string>
     <string name="charts_month_end">End Month</string>
     <string name="charts_month_start">Start Month</string>
-    <string name="charts_show_chart">Show Chart</string>
+    <string name="charts_show_bar_chart">Bar Chart</string>
+    <string name="charts_show_pie_chart">Pie Chart</string>
 
     <string name="current_date_and_time">"Current time and date: "</string>
 

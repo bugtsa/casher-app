@@ -94,6 +94,7 @@ class ChartsScreenFragment : androidx.fragment.app.Fragment(),
         vChooseStartMonth.setOnClickListener(showMonthPicker(startDateDialog, vStartDate, startDateChangeListener))
         vChooseEndMonth.setOnClickListener(showMonthPicker(endDateDialog, vEndDate, endDateChangeListener))
         vShowChart.setOnClickListener { bone.show(BarChartScreen(viewModelChoose.getPreference())) }
+        vShowPieChart.setOnClickListener { bone.show(PieChartScreen(viewModelChoose.getPreference())) }
     }
 
     private fun bindView() {

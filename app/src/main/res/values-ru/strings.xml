@@ -8,12 +8,15 @@
 
     <string name="changed_date_and_time">"Установленные дата и время: "</string>
 
+    <string name="charts_caption_pie">Пирог-диаграмма за %1$s %2$s года</string>
+    <string name="charts_caption_legend_pie">Категории расходов</string>
     <string name="charts_caption_x_axis">%1$s страница за %2$s %3$s года</string>
     <string name="charts_caption_y_axis">%1$d-%2$d страницы</string>
     <string name="charts_choose_date">Выберите дату</string>
     <string name="charts_month_end">Заключительный месяц</string>
     <string name="charts_month_start">Начальный месяц</string>
-    <string name="charts_show_chart">Показать диаграмму</string>
+    <string name="charts_show_bar_chart">Столбцы-диаграмма</string>
+    <string name="charts_show_pie_chart">Пирог-диаграмма</string>
 
     <string name="current_date_and_time">"Текущая дата и время: "</string>
 
