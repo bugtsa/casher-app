@@ -7,7 +7,7 @@ import com.bugtsa.casher.data.dto.PaymentDto
 import com.bugtsa.casher.data.network.PaymentsByDayRes
 import com.bugtsa.casher.ui.OnChangePosition
 import com.bugtsa.casher.utils.autoNotify
-import com.bugtsa.casher.utils.visibility
+import com.bugtsa.casher.global.extentions.visibility
 import kotlinx.android.synthetic.main.item_payment_caption.view.*
 import kotlinx.android.synthetic.main.item_purchase.view.*
 import kotlin.properties.Delegates

@@ -1,4 +1,4 @@
-package com.bugtsa.casher.utils
+package com.bugtsa.casher.global.extentions
 
 import android.view.View
 import java.util.*

@@ -15,7 +15,7 @@ class SingUpPresenter @Inject constructor(
 
     fun requestAccountName() {
         if (!TextUtils.isEmpty(preferenceProvider.getAccountName())) {
-            singUpView.showMainController()
+            singUpView.showPurchasesScreen()
         } else {
             singUpView.requestAccountName()
         }

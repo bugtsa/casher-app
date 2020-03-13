@@ -16,7 +16,7 @@ import com.bugtsa.casher.ui.screens.charts.ChartPreference
 import com.bugtsa.casher.ui.screens.charts.MonthYearPickerDialog.Companion.MIN_MONTH
 import com.bugtsa.casher.ui.screens.charts.MonthYearPickerDialog.Companion.MIN_YEAR
 import com.bugtsa.casher.utils.ConstantManager.Constants.EMPTY
-import com.bugtsa.casher.utils.getMonthName
+import com.bugtsa.casher.global.extentions.getMonthName
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import toothpick.Toothpick
@@ -39,7 +39,6 @@ class ChooseChartsViewModel @Inject constructor(chooseChartsModel: ChooseChartsM
     private val dialogsRangeMonthLiveData = MutableLiveData<Pair<UiDateRange, UiDateRange>>()
     fun observeDialogsRangeMonth() = dialogsRangeMonthLiveData as LiveData<Pair<UiDateRange, UiDateRange>>
 
-    //    private var defaultStartDate = DateRange(1, 1)
     private lateinit var startRange: DateRange
 
     private lateinit var endRange: DateRange

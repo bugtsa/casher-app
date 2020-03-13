@@ -17,6 +17,7 @@ import com.google.android.gms.common.AccountPicker
 import com.google.android.gms.common.GoogleApiAvailability
 import pro.horovodovodo4ka.bones.Phalanx
 import pro.horovodovodo4ka.bones.extensions.present
+import pro.horovodovodo4ka.bones.extensions.show
 import pro.horovodovodo4ka.bones.persistance.BonePersisterInterface
 import pro.horovodovodo4ka.bones.ui.FragmentSibling
 import pro.horovodovodo4ka.bones.ui.delegates.Page
@@ -43,7 +44,7 @@ class SingUpFragment : Fragment(),
     private lateinit var singUpScreenScope: Scope
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        return inflater.inflate(R.layout.fragment_choose_charts, container, false)
+        return inflater.inflate(R.layout.fragment_chart, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -54,7 +55,6 @@ class SingUpFragment : Fragment(),
 
         presenter.onAttachView(this)
         presenter.requestAccountName()
-//        test_label.text = getString(R.string.sing_up_in_app)
 
         refreshUI()
     }
@@ -85,8 +85,8 @@ class SingUpFragment : Fragment(),
 
     //region ================= Request Play Services =================
 
-    override fun showMainController() {
-        bone.present(PurchasesScreen())
+    override fun showPurchasesScreen() {
+        bone.show(PurchasesScreen())
     }
 
     private fun accountNameIntent() {

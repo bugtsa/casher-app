@@ -124,7 +124,6 @@ class MainActivity : AppCompatActivity(),
                             PurchasesStack(SingUpScreen()),
                             ChooseChartsScreen(),
                             SettingsScreen()
-//                            SettingsScreen(TestScreen())
                     )
             )
         }

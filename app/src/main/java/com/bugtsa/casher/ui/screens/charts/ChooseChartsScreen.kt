@@ -9,6 +9,7 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.lifecycle.ViewModelProvider
 import com.bugtsa.casher.R
+import com.bugtsa.casher.global.extentions.getMonthName
 import com.bugtsa.casher.presentation.chart.ChangedDateRange
 import com.bugtsa.casher.presentation.chart.ChooseChartsViewModel
 import com.bugtsa.casher.presentation.chart.ChooseChartsViewModel.Companion.SORT_ASC
@@ -18,8 +19,9 @@ import com.bugtsa.casher.presentation.chart.ChooseChartsViewModel.Companion.mont
 import com.bugtsa.casher.presentation.chart.ChooseChartsViewModelFactory
 import com.bugtsa.casher.presentation.chart.DateRange
 import com.bugtsa.casher.ui.screens.settings.NavigationStackPresentable
-import com.bugtsa.casher.utils.getMonthName
 import kotlinx.android.synthetic.main.fragment_choose_charts.*
+import pro.horovodovodo4ka.bones.Bone
+import pro.horovodovodo4ka.bones.Finger
 import pro.horovodovodo4ka.bones.Phalanx
 import pro.horovodovodo4ka.bones.extensions.show
 import pro.horovodovodo4ka.bones.persistance.BonePersisterInterface
@@ -27,7 +29,6 @@ import pro.horovodovodo4ka.bones.ui.FragmentSibling
 import pro.horovodovodo4ka.bones.ui.delegates.Page
 import toothpick.Toothpick
 import java.util.*
-
 
 class ChooseChartsScreen : Phalanx(), NavigationStackPresentable {
 

@@ -120,7 +120,6 @@ class PurchasesViewModel @Inject constructor(injectPurchaseModel: PurchaseModel,
 
     private fun performCheckStoragePaymentsList() {
         getPaymentsByDay()
-
     }
 
     //region ================= DataBase =================

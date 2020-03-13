@@ -15,7 +15,7 @@ import com.bugtsa.casher.presentation.purchase.PurchasesViewModelFactory
 import com.bugtsa.casher.ui.OnChangePosition
 import com.bugtsa.casher.ui.adapters.PurchaseAdapter
 import com.bugtsa.casher.ui.screens.purchases.add.AddPurchaseScreen
-import com.bugtsa.casher.utils.visibility
+import com.bugtsa.casher.global.extentions.visibility
 import kotlinx.android.synthetic.main.fragment_purchases.*
 import pro.horovodovodo4ka.bones.Bone
 import pro.horovodovodo4ka.bones.Finger
