@@ -8,12 +8,14 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.EditorInfo
+import android.widget.EditText
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.bugtsa.casher.R
-import com.bugtsa.casher.global.extentions.hideKeyboard
+import com.bugtsa.casher.global.extentions.*
 import com.bugtsa.casher.presentation.SingUpViewModel
 import com.bugtsa.casher.presentation.SingUpViewModelFactory
 import com.bugtsa.casher.ui.activities.MainActivity
@@ -65,6 +67,7 @@ class SingUpFragment : Fragment(),
 
         viewModel.requestAccountName()
 
+        initClickListeners()
         bindViews()
         bindViewModel()
 
@@ -149,19 +152,8 @@ class SingUpFragment : Fragment(),
     }
 
     private fun bindViews() {
-        RxTextView.textChanges(vLogin)
-                .debounce(TIME_DURATION_DEBOUNCE, TimeUnit.MILLISECONDS)
-                .map { it.toString().trim() to vPassword.text.toString().trim() }
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(viewModel::checkReadySignIn)
-                .addTo(bag)
-
-        RxTextView.textChanges(vPassword)
-                .debounce(TIME_DURATION_DEBOUNCE, TimeUnit.MILLISECONDS)
-                .map { vLogin.text.toString().trim() to it.toString().trim() }
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(viewModel::checkReadySignIn)
-                .addTo(bag)
+        vLogin.setupLoginChangesListener(R.color.colorAccent)
+        vPassword.setupPasswordChangesListener(R.color.colorAccent)
     }
 
     private fun processReadyLoginButton(isReady: Boolean) {
@@ -177,6 +169,69 @@ class SingUpFragment : Fragment(),
         vSingIn.isEnabled = stateStartLoginButton.isEnable
         vSingIn.background = ContextCompat.getDrawable(requireContext(), stateStartLoginButton.backgroundInt)
         vSingIn.setTextColor(ContextCompat.getColor(requireContext(), stateStartLoginButton.textColorInt))
+    }
+
+    private fun EditText.setupLoginChangesListener(colorAccentResId: Int) {
+        RxTextView.textChanges(this)
+                .debounce(TIME_DURATION_DEBOUNCE, TimeUnit.MILLISECONDS)
+                .map { it.toString().trim() to vPassword.text.toString().trim() }
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(viewModel::checkReadySignIn)
+                .addTo(bag)
+
+        viewModel.observeVisibilityLoginCancelBtn().observe(viewLifecycleOwner, Observer { isVisible ->
+            val drawable = if (isVisible) {
+                getDrawable(
+                        colorAccentResId,
+                        R.drawable.ic_cancel,
+                        requireContext())
+            } else null
+
+            setCompoundDrawablesWithIntrinsicBounds(null, null, drawable, null)
+        })
+
+        setOnTouchListener(getOnTouchRightDrawableClickListener { resetInput() })
+    }
+
+    private fun EditText.setupPasswordChangesListener(colorAccentResId: Int) {
+        var isPasswordVisible = false
+        setupPassVisibility()
+        RxTextView.textChanges(this)
+                .debounce(TIME_DURATION_DEBOUNCE, TimeUnit.MILLISECONDS)
+                .map { vLogin.text.toString().trim() to it.toString().trim() }
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(viewModel::checkReadySignIn)
+                .addTo(bag)
+
+        viewModel.observePasswordMaybeCancel().observe(viewLifecycleOwner, Observer { isMaybeCancel ->
+            if (isMaybeCancel) {
+                showStatePassVisibility(colorAccentResId,
+                        isPasswordVisible,
+                        requireContext())
+            } else {
+                setCompoundDrawablesWithIntrinsicBounds(null, null, null, null)
+            }
+        })
+        setOnTouchListener(getOnTouchRightDrawableClickListener {
+            isPasswordVisible = togglePassVisibility(isPasswordVisible)
+            showStatePassVisibility(colorAccentResId,
+                    isPasswordVisible,
+                    requireContext())
+        })
+    }
+
+    private fun initClickListeners() {
+        vSingIn.setOnClickListener {
+            viewModel.checkLoginPassword(vLogin.text.toString(), vPassword.text.toString())
+            hideKeyboard()
+        }
+        vPassword.setOnEditorActionListener { _, i, _ ->
+            if (i == EditorInfo.IME_ACTION_GO) {
+                viewModel.checkLoginPassword(vLogin.text.toString(), vPassword.text.toString())
+                hideKeyboard()
+            }
+            false
+        }
     }
 
     sealed class ReadyToLogin(val isEnable: Boolean,
@@ -196,7 +251,7 @@ class SingUpFragment : Fragment(),
     }
 
     companion object {
-        private const val TIME_DURATION_DEBOUNCE: Long = 400
+        private const val TIME_DURATION_DEBOUNCE: Long = 200
     }
 
 }

@@ -26,6 +26,12 @@ class SingUpViewModel @Inject constructor(
     private val readyToSignInLiveData = MutableLiveData<Boolean>()
     fun observeReadyToSignIn(): LiveData<Boolean> = readyToSignInLiveData
 
+    private val visibilityCancelLoginBtnLiveData = MutableLiveData<Boolean>()
+    fun observeVisibilityLoginCancelBtn(): LiveData<Boolean> = visibilityCancelLoginBtnLiveData
+
+    private val passwordMaybeCancelLiveData = MutableLiveData<Boolean>()
+    fun observePasswordMaybeCancel(): LiveData<Boolean> = passwordMaybeCancelLiveData
+
     fun requestAccountName() {
 //        if (!TextUtils.isEmpty(preferenceProvider.getAccountName())) {
 //            singUpView.showPurchasesScreen()
@@ -36,12 +42,17 @@ class SingUpViewModel @Inject constructor(
 
     fun checkReadySignIn(authPair: Pair<String, String>) {
         authPair.also { (login, password) ->
+            visibilityCancelLoginBtnLiveData.postValue(login.isNotEmpty())
+            passwordMaybeCancelLiveData.postValue(password.isNotEmpty())
             readyToSignInLiveData.value = isReadyToLogin(login, password)
         }
     }
 
+    fun checkLoginPassword(toString: String, toString1: String) {
+        TODO("Not yet implemented")
+    }
+
     private fun isReadyToLogin(login: String, password: String): Boolean {
-        return login.isEmpty().not() &&
-                password.isEmpty().not()
+        return login.isNotEmpty() && password.isNotEmpty()
     }
 }
