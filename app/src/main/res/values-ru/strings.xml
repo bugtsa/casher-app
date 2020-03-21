@@ -3,6 +3,7 @@
     <string name="app_name">Русходничек</string>
 
     <string name="auth_login">Имя пользователя…</string>
+    <string name="auth_need_input_valid_email">Необходимо ввести корректный e-mail</string>
     <string name="auth_password">Пароль…</string>
     <string name="auth_sign_in">Войти</string>
 

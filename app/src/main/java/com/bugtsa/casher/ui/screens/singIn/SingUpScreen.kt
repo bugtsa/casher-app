@@ -1,13 +1,17 @@
 package com.bugtsa.casher.ui.screens.singIn
 
+import android.accounts.AccountManager
 import android.annotation.SuppressLint
+import android.app.Activity
 import android.content.ActivityNotFoundException
+import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.WindowManager
 import android.view.inputmethod.EditorInfo
 import android.widget.EditText
 import androidx.core.content.ContextCompat
@@ -17,10 +21,13 @@ import androidx.lifecycle.ViewModelProvider
 import com.bugtsa.casher.R
 import com.bugtsa.casher.global.extentions.*
 import com.bugtsa.casher.presentation.SingUpViewModel
+import com.bugtsa.casher.presentation.SingUpViewModel.FocusFieldAuth.Email
+import com.bugtsa.casher.presentation.SingUpViewModel.FocusFieldAuth.Password
 import com.bugtsa.casher.presentation.SingUpViewModelFactory
 import com.bugtsa.casher.ui.activities.MainActivity
 import com.bugtsa.casher.ui.screens.purchases.show.PurchasesScreen
 import com.bugtsa.casher.ui.screens.settings.NavigationStackPresentable
+import com.bugtsa.casher.utils.ConstantManager.Constants.EMPTY
 import com.google.android.gms.auth.GoogleAuthUtil
 import com.google.android.gms.common.AccountPicker
 import com.google.android.gms.common.GoogleApiAvailability
@@ -95,6 +102,14 @@ class SingUpFragment : Fragment(),
         bag.clear()
     }
 
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == REQUEST_CODE_EMAIL && resultCode == Activity.RESULT_OK) {
+            val accountName = data?.getStringExtra(AccountManager.KEY_ACCOUNT_NAME)
+            vLogin.setText(accountName)
+        }
+    }
+
     //region ================= SingUpView methods =================
 
     override fun requestAccountName() {
@@ -149,6 +164,39 @@ class SingUpFragment : Fragment(),
 
     private fun bindViewModel() {
         viewModel.observeReadyToSignIn().observe(viewLifecycleOwner, Observer(::processReadyLoginButton))
+
+        viewModel.observeRequestEmail().observe(viewLifecycleOwner, Observer {
+            requestUserEmail()
+        })
+
+        viewModel.observeKeyboardState().observe(viewLifecycleOwner, Observer { (field, state) ->
+            val view = when (field) {
+                Email -> vLogin
+                Password -> vPassword
+            }
+            when (state) {
+                AllHidden -> {
+                    view.requestFocus()
+                    requireActivity().window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE or WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE)
+                    hideKeyboard()
+                }
+                SoftShown -> {
+                    if (viewModel.observeKeyboardIsShown().value == false) {
+                        view.requestFocus()
+                        requireActivity().window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN)
+                        showKeyboard(view)
+                    }
+                }
+            }
+        })
+
+        viewModel.observeCorrectEmail().observe(viewLifecycleOwner, Observer { isCorrectEmail ->
+            if (isCorrectEmail) {
+                setupNeedEmailError()
+            } else {
+                setupCorrectEmail()
+            }
+        })
     }
 
     private fun bindViews() {
@@ -190,7 +238,39 @@ class SingUpFragment : Fragment(),
             setCompoundDrawablesWithIntrinsicBounds(null, null, drawable, null)
         })
 
-        setOnTouchListener(getOnTouchRightDrawableClickListener { resetInput() })
+        setOnTouchListener(getOnTouchIncludeRightDrawableClick(
+                {
+                    if (text.toString().isEmpty()) {
+                        if (hasFocus()) {
+                            viewModel.requestEmail()
+                        } else {
+                            viewModel.requestShowKeyboard(Email)
+                            requestFocus()
+                        }
+                    }
+                },
+                { resetInput() }
+        ))
+    }
+
+    private fun setupNeedEmailError() {
+        vLoginTextInputLayout.error = getString(R.string.auth_need_input_valid_email)
+        vPasswordTextInputLayout.error = ERROR_EMPTY_EMAIL
+    }
+
+    private fun setupCorrectEmail() {
+        vLoginTextInputLayout.error = EMPTY
+        vPasswordTextInputLayout.error = EMPTY
+    }
+
+    private fun requestUserEmail() {
+        try {
+            val intent = AccountPicker.newChooseAccountIntent(null, null,
+                    arrayOf(GoogleAuthUtil.GOOGLE_ACCOUNT_TYPE), false, null, null, null, null)
+            startActivityForResult(intent, REQUEST_CODE_EMAIL)
+        } catch (e: ActivityNotFoundException) {
+
+        }
     }
 
     private fun EditText.setupPasswordChangesListener(colorAccentResId: Int) {
@@ -252,6 +332,8 @@ class SingUpFragment : Fragment(),
 
     companion object {
         private const val TIME_DURATION_DEBOUNCE: Long = 200
+        private const val REQUEST_CODE_EMAIL = 11110
+        private const val ERROR_EMPTY_EMAIL = " "
     }
 
 }
