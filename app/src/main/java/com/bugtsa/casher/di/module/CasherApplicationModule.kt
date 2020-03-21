@@ -16,10 +16,13 @@ import com.bugtsa.casher.di.inject.category.LocalCategoryDateStoreProvider
 import com.bugtsa.casher.di.inject.chart.BarChartModelProvider
 import com.bugtsa.casher.di.inject.chart.ChartModelProvider
 import com.bugtsa.casher.di.inject.chart.ChooseChartsModelProvider
+import com.bugtsa.casher.di.inject.network.AuthApiProvider
+import com.bugtsa.casher.di.inject.network.CasherRestApiProvider
 import com.bugtsa.casher.di.inject.payment.LocalPaymentDataStoreProvider
 import com.bugtsa.casher.di.inject.payment.PaymentDaoProvider
 import com.bugtsa.casher.domain.prefs.LocalSettingsRepository
 import com.bugtsa.casher.domain.prefs.PreferenceRepository
+import com.bugtsa.casher.networking.AuthApi
 import com.bugtsa.casher.networking.CasherApi
 import io.reactivex.disposables.CompositeDisposable
 import toothpick.config.Module
@@ -31,6 +34,9 @@ class CasherApplicationModule : Module {
 
         val casherApi = CasherRestApiProvider()
         bind(CasherApi::class.java).toProviderInstance(casherApi)
+
+        val authApi = AuthApiProvider()
+        bind(AuthApi::class.java).toProviderInstance(authApi)
 
         bind(Application::class.java).toProviderInstance(ApplicationProvider(application))
         bind(LocalSettingsRepository::class.java).toProviderInstance(PreferenceRepository(application))

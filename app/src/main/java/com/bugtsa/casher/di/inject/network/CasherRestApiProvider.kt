@@ -1,4 +1,4 @@
-package com.bugtsa.casher.di.inject
+package com.bugtsa.casher.di.inject.network
 
 import com.bugtsa.casher.networking.CasherApi
 import okhttp3.OkHttpClient
@@ -19,7 +19,7 @@ class CasherRestApiProvider: Provider<CasherApi> {
                 .build()
 
         val retrofit = Retrofit.Builder()
-                .baseUrl(PROD_URL)
+                .baseUrl(RESOURCE_URL)
                 .client(okHttpClient)
                 .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
                 .addConverterFactory(GsonConverterFactory.create())
@@ -35,6 +35,6 @@ class CasherRestApiProvider: Provider<CasherApi> {
     companion object {
         private const val READ_TIMEOUT = 20L
         private const val CONNECTION_TIMEOUT = 60L
-        private const val PROD_URL = "https://casher-bugtsa.herokuapp.com/"
+        private const val RESOURCE_URL = "https://casher-bugtsa.herokuapp.com/"
     }
 }
