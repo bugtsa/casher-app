@@ -74,4 +74,31 @@
         <item name="android:windowBackground">@android:color/transparent</item>
     </style>
 
+    <style name="AuthErrorTextAppearance" parent="@android:style/TextAppearance">
+        <item name="android:textColor">@color/colorAccentDanger</item>
+    </style>
+
+    <style name="AuthHintTextAppearance" parent="@android:style/TextAppearance">
+        <item name="android:textColor">@color/secondaryTextColor</item>
+    </style>
+
+    <style name="AuthInputLayout" parent="Widget.Design.TextInputLayout">
+        <item name="colorAccent">@color/colorAccent</item>
+        <item name="android:textColorHint">@color/secondaryTextColor</item>
+        <item name="hintTextColor">@color/colorAccent</item>
+        <item name="colorControlNormal">@color/secondaryTextColor</item>
+        <item name="colorControlActivated">@color/colorAccent</item>
+        <item name="colorControlHighlight">@color/secondaryTextColor</item>
+        <item name="errorTextAppearance">@style/AuthErrorTextAppearance</item>
+        <item name="hintTextAppearance">@style/AuthHintTextAppearance</item>
+    </style>
+
+    <style name="AppTheme.SignInCursor">
+        <item name="colorAccent">@color/primaryDarkColor</item>
+    </style>
+
+    <style name="AppTheme.SignInEditText" parent="AppTheme.SignInCursor">
+        <item name="android:textSize">24sp</item>
+    </style>
+
 </resources>

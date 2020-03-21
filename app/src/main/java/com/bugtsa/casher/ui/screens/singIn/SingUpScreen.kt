@@ -2,28 +2,38 @@ package com.bugtsa.casher.ui.screens.singIn
 
 import android.annotation.SuppressLint
 import android.content.ActivityNotFoundException
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
 import com.bugtsa.casher.R
+import com.bugtsa.casher.global.extentions.hideKeyboard
+import com.bugtsa.casher.presentation.SingUpViewModel
+import com.bugtsa.casher.presentation.SingUpViewModelFactory
 import com.bugtsa.casher.ui.activities.MainActivity
 import com.bugtsa.casher.ui.screens.purchases.show.PurchasesScreen
 import com.bugtsa.casher.ui.screens.settings.NavigationStackPresentable
 import com.google.android.gms.auth.GoogleAuthUtil
 import com.google.android.gms.common.AccountPicker
 import com.google.android.gms.common.GoogleApiAvailability
+import com.jakewharton.rxbinding2.widget.RxTextView
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.rxkotlin.addTo
+import kotlinx.android.synthetic.main.fragment_auth.*
 import pro.horovodovodo4ka.bones.Phalanx
-import pro.horovodovodo4ka.bones.extensions.present
 import pro.horovodovodo4ka.bones.extensions.show
 import pro.horovodovodo4ka.bones.persistance.BonePersisterInterface
 import pro.horovodovodo4ka.bones.ui.FragmentSibling
 import pro.horovodovodo4ka.bones.ui.delegates.Page
-import toothpick.Scope
 import toothpick.Toothpick
-import javax.inject.Inject
+import java.util.concurrent.TimeUnit
 
 class SingUpScreen : Phalanx(), NavigationStackPresentable {
     override val seed = { SingUpFragment() }
@@ -38,23 +48,30 @@ class SingUpFragment : Fragment(),
         FragmentSibling<SingUpScreen> by Page(),
         SingUpView {
 
-    @Inject
-    lateinit var presenter: SingUpPresenter
+    private lateinit var viewModel: SingUpViewModel
 
-    private lateinit var singUpScreenScope: Scope
+    private val bag = CompositeDisposable()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        return inflater.inflate(R.layout.fragment_chart, container, false)
+        return inflater.inflate(R.layout.fragment_auth, container, false)
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
+    override fun onActivityCreated(savedInstanceState: Bundle?) {
+        super.onActivityCreated(savedInstanceState)
 
-        singUpScreenScope = Toothpick.openScopes(activity, this)
-        Toothpick.inject(this, singUpScreenScope)
+        val singUpViewModelFactory = Toothpick.openScopes(activity, this)
+                .getInstance(SingUpViewModelFactory::class.java)
+        viewModel = ViewModelProvider(this, singUpViewModelFactory)[SingUpViewModel::class.java]
 
-        presenter.onAttachView(this)
-        presenter.requestAccountName()
+        viewModel.requestAccountName()
+
+        bindViews()
+        bindViewModel()
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            vLogin.setAutofillHints(View.AUTOFILL_HINT_USERNAME)
+            vPassword.setAutofillHints(View.AUTOFILL_HINT_PASSWORD)
+        }
 
         refreshUI()
     }
@@ -67,6 +84,12 @@ class SingUpFragment : Fragment(),
     override fun onCreate(savedInstanceState: Bundle?) {
         super<BonePersisterInterface>.onCreate(savedInstanceState)
         super<androidx.fragment.app.Fragment>.onCreate(savedInstanceState)
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        hideKeyboard()
+        bag.clear()
     }
 
     //region ================= SingUpView methods =================
@@ -120,5 +143,60 @@ class SingUpFragment : Fragment(),
     }
 
     //endregion
+
+    private fun bindViewModel() {
+        viewModel.observeReadyToSignIn().observe(viewLifecycleOwner, Observer(::processReadyLoginButton))
+    }
+
+    private fun bindViews() {
+        RxTextView.textChanges(vLogin)
+                .debounce(TIME_DURATION_DEBOUNCE, TimeUnit.MILLISECONDS)
+                .map { it.toString().trim() to vPassword.text.toString().trim() }
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(viewModel::checkReadySignIn)
+                .addTo(bag)
+
+        RxTextView.textChanges(vPassword)
+                .debounce(TIME_DURATION_DEBOUNCE, TimeUnit.MILLISECONDS)
+                .map { vLogin.text.toString().trim() to it.toString().trim() }
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(viewModel::checkReadySignIn)
+                .addTo(bag)
+    }
+
+    private fun processReadyLoginButton(isReady: Boolean) {
+        val stateStartLoginButton = when (isReady) {
+            true -> ReadyToLogin.ReadyAuthEnter(true,
+                    R.drawable.button_background_state_enabled,
+                    R.color.colorPrimary)
+            false -> ReadyToLogin.NotReadyAuthEnter(false,
+                    R.drawable.button_background_state_disabled,
+                    R.color.primaryTextColor)
+        }
+
+        vSingIn.isEnabled = stateStartLoginButton.isEnable
+        vSingIn.background = ContextCompat.getDrawable(requireContext(), stateStartLoginButton.backgroundInt)
+        vSingIn.setTextColor(ContextCompat.getColor(requireContext(), stateStartLoginButton.textColorInt))
+    }
+
+    sealed class ReadyToLogin(val isEnable: Boolean,
+                              val backgroundInt: Int,
+                              val textColorInt: Int) {
+
+
+        data class ReadyAuthEnter(val isClickableReady: Boolean,
+                                  val backgroundIntReady: Int,
+                                  val textColorIntReady: Int)
+            : ReadyToLogin(isClickableReady, backgroundIntReady, textColorIntReady)
+
+        data class NotReadyAuthEnter(val isClickableNotReady: Boolean,
+                                     val backgroundIntNotReady: Int,
+                                     val textColorIntNotReady: Int)
+            : ReadyToLogin(isClickableNotReady, backgroundIntNotReady, textColorIntNotReady)
+    }
+
+    companion object {
+        private const val TIME_DURATION_DEBOUNCE: Long = 400
+    }
 
 }

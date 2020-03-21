@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="colorAccent">@color/yellow_400</color>
+    <color name="colorAccentDanger">@color/red_600</color>
 
     <color name="primaryColor">@color/pink_300</color>
     <color name="primaryLightColor">@color/pink_200</color>
