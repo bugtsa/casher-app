@@ -7,7 +7,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.bugtsa.casher.data.dto.CategoryDto
 import com.bugtsa.casher.data.local.database.entity.category.CategoryDataStore
-import com.bugtsa.casher.data.models.PurchaseModel
+import com.bugtsa.casher.data.models.PurchaseRepository
 import com.bugtsa.casher.presentation.optional.RxViewModel
 import com.bugtsa.casher.utils.ConstantManager.CategoryNetwork.NAME_CATEGORY_PARAMETER
 import com.bugtsa.casher.utils.ConstantManager.Network.CATEGORY_PARAMETER
@@ -41,11 +41,11 @@ class AddPurchaseViewModelFactory @Inject constructor(
 
 class AddPurchaseViewModel @Inject constructor(
         compositeDisposable: CompositeDisposable,
-        injectPurchaseModel: PurchaseModel,
+        injectPurchaseRepository: PurchaseRepository,
         injectCategoryDataStore: CategoryDataStore
 ) : RxViewModel() {
 
-    private var purchaseModel: PurchaseModel = injectPurchaseModel
+    private var purchaseRepository: PurchaseRepository = injectPurchaseRepository
     private var categoryDataStore: CategoryDataStore = injectCategoryDataStore
 
     private var customDate: String = ""
@@ -104,7 +104,7 @@ class AddPurchaseViewModel @Inject constructor(
                 .add(CATEGORY_PARAMETER, nameCategory)
                 .add(DATE_PARAMETER, getActualDateAndTime())
                 .build()
-        purchaseModel.addPayment(partFormBody)
+        purchaseRepository.addPayment(partFormBody)
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({ payment ->
@@ -169,7 +169,7 @@ class AddPurchaseViewModel @Inject constructor(
                 .add(NAME_CATEGORY_PARAMETER, nameCategory)
                 .build()
 
-        purchaseModel.addCategory(categoryFormBody)
+        purchaseRepository.addCategory(categoryFormBody)
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({ category ->

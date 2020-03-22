@@ -72,7 +72,7 @@ class SingUpFragment : Fragment(),
                 .getInstance(SingUpViewModelFactory::class.java)
         viewModel = ViewModelProvider(this, singUpViewModelFactory)[SingUpViewModel::class.java]
 
-        viewModel.requestAccountName()
+//        viewModel.requestAccountName()
 
         initClickListeners()
         bindViews()
@@ -84,6 +84,13 @@ class SingUpFragment : Fragment(),
         }
 
         refreshUI()
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        vLogin.setText("bugtsa")
+        vPassword.setText("password")
     }
 
     override fun onSaveInstanceState(outState: Bundle) {

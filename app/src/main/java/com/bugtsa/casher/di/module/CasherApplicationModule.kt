@@ -1,25 +1,28 @@
 package com.bugtsa.casher.di.module
 
 import android.app.Application
+import com.bugtsa.casher.data.AuthRepository
 import com.bugtsa.casher.data.local.database.CasherDatabase
 import com.bugtsa.casher.data.local.database.entity.category.CategoryDao
 import com.bugtsa.casher.data.local.database.entity.category.CategoryDataStore
 import com.bugtsa.casher.data.local.database.entity.payment.PaymentDao
 import com.bugtsa.casher.data.local.database.entity.payment.PaymentDataStore
-import com.bugtsa.casher.data.models.PurchaseModel
+import com.bugtsa.casher.data.models.PurchaseRepository
 import com.bugtsa.casher.data.models.charts.BarChartModel
 import com.bugtsa.casher.data.models.charts.ChartModel
-import com.bugtsa.casher.data.models.charts.ChooseChartsModel
+import com.bugtsa.casher.data.models.charts.ChooseChartsRepository
 import com.bugtsa.casher.di.inject.*
 import com.bugtsa.casher.di.inject.category.CategoryDaoProvider
 import com.bugtsa.casher.di.inject.category.LocalCategoryDateStoreProvider
-import com.bugtsa.casher.di.inject.chart.BarChartModelProvider
-import com.bugtsa.casher.di.inject.chart.ChartModelProvider
-import com.bugtsa.casher.di.inject.chart.ChooseChartsModelProvider
+import com.bugtsa.casher.di.retositories.chart.BarChartRepositoryProvider
+import com.bugtsa.casher.di.retositories.chart.ChartRepositoryProvider
+import com.bugtsa.casher.di.retositories.chart.ChooseChartsRepositoryProvider
 import com.bugtsa.casher.di.inject.network.AuthApiProvider
 import com.bugtsa.casher.di.inject.network.CasherRestApiProvider
 import com.bugtsa.casher.di.inject.payment.LocalPaymentDataStoreProvider
 import com.bugtsa.casher.di.inject.payment.PaymentDaoProvider
+import com.bugtsa.casher.di.retositories.AuthRepositoryProvider
+import com.bugtsa.casher.di.retositories.PurchaseRepositoryProvider
 import com.bugtsa.casher.domain.prefs.LocalSettingsRepository
 import com.bugtsa.casher.domain.prefs.PreferenceRepository
 import com.bugtsa.casher.networking.AuthApi
@@ -41,14 +44,17 @@ class CasherApplicationModule : Module {
         bind(Application::class.java).toProviderInstance(ApplicationProvider(application))
         bind(LocalSettingsRepository::class.java).toProviderInstance(PreferenceRepository(application))
 
-        bind(PurchaseModel::class.java).toProviderInstance(
-                PurchaseModelProvider(casherApi.get()))
-        bind(ChooseChartsModel::class.java).toProviderInstance(
-                ChooseChartsModelProvider(casherApi.get()))
+        bind(AuthRepository::class.java).toProviderInstance(
+                AuthRepositoryProvider(authApi.get())
+        )
+        bind(PurchaseRepository::class.java).toProviderInstance(
+                PurchaseRepositoryProvider(casherApi.get()))
+        bind(ChooseChartsRepository::class.java).toProviderInstance(
+                ChooseChartsRepositoryProvider(casherApi.get()))
         bind(ChartModel::class.java).toProviderInstance(
-                ChartModelProvider(casherApi.get()))
+                ChartRepositoryProvider(casherApi.get()))
         bind(BarChartModel::class.java).toProviderInstance(
-                BarChartModelProvider(casherApi.get())
+                BarChartRepositoryProvider(casherApi.get())
         )
 
         val casherDataBaseProvider = DataBaseProvider(application)

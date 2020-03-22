@@ -14,7 +14,7 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class PurchaseModel @Inject constructor(private val casherRestApi: CasherApi) {
+class PurchaseRepository @Inject constructor(private val casherRestApi: CasherApi) {
 
     init {
         instance = this
@@ -46,7 +46,7 @@ class PurchaseModel @Inject constructor(private val casherRestApi: CasherApi) {
                     .timeout(ADD_DATA_TIMEOUT, TimeUnit.MILLISECONDS, Single.error(Throwable()))
 
     companion object {
-        private var instance: PurchaseModel? = null
+        private var instance: PurchaseRepository? = null
 
         private val CATEGORY_TIMEOUT = TimeUnit.SECONDS.toMillis(30)
         private val PAYMENT_TIMEOUT = TimeUnit.SECONDS.toMillis(45)

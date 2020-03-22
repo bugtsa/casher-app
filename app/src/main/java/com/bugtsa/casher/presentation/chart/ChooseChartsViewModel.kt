@@ -8,7 +8,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import com.bugtsa.casher.data.models.charts.ChooseChartsModel
+import com.bugtsa.casher.data.models.charts.ChooseChartsRepository
 import com.bugtsa.casher.global.ErrorHandler
 import com.bugtsa.casher.presentation.chart.ChooseChartsViewModel.Companion.monthCalendarValue
 import com.bugtsa.casher.presentation.optional.RxViewModel
@@ -34,7 +34,7 @@ class ChooseChartsViewModelFactory @Inject constructor(private val app: Applicat
             Toothpick.openScope(app).getInstance(modelClass) as T
 }
 
-class ChooseChartsViewModel @Inject constructor(chooseChartsModel: ChooseChartsModel) : RxViewModel() {
+class ChooseChartsViewModel @Inject constructor(chooseChartsRepository: ChooseChartsRepository) : RxViewModel() {
 
     private val dialogsRangeMonthLiveData = MutableLiveData<Pair<UiDateRange, UiDateRange>>()
     fun observeDialogsRangeMonth() = dialogsRangeMonthLiveData as LiveData<Pair<UiDateRange, UiDateRange>>
@@ -45,7 +45,7 @@ class ChooseChartsViewModel @Inject constructor(chooseChartsModel: ChooseChartsM
     private var sortType = SORT_MODE_DEFAULT
 
     init {
-        chooseChartsModel.getRangeMonths()
+        chooseChartsRepository.getRangeMonths()
                 .map { it.map { payment -> payment.date } }
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())

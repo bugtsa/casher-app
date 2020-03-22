@@ -5,10 +5,13 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import com.bugtsa.casher.data.AuthRepository
 import com.bugtsa.casher.domain.prefs.PreferenceRepository
+import com.bugtsa.casher.global.ErrorHandler
 import com.bugtsa.casher.global.extentions.AllHidden
 import com.bugtsa.casher.global.extentions.KeyboardState
 import com.bugtsa.casher.global.extentions.SoftShown
+import com.bugtsa.casher.global.rx.SchedulersProvider
 import com.bugtsa.casher.presentation.optional.RxAndroidViewModel
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.GoogleApiAvailability
@@ -26,7 +29,8 @@ class SingUpViewModelFactory @Inject constructor(private val app: Application) :
 }
 
 class SingUpViewModel @Inject constructor(
-        private val preferenceProvider: PreferenceRepository,
+        private val preferenceRepository: PreferenceRepository,
+        private val authRepository: AuthRepository,
         app: Application
 ) : RxAndroidViewModel(app) {
     private val actionSingInLiveData = MutableLiveData<Boolean>()
@@ -79,7 +83,16 @@ class SingUpViewModel @Inject constructor(
     }
 
     fun checkLoginPassword(login: String, password: String) {
-        validEmailLiveData.value = isValidEmail(login)
+//        validEmailLiveData.value = isValidEmail(login)
+        authRepository.observeCredential(login, password)
+                .subscribeOn(SchedulersProvider.io())
+                .observeOn(SchedulersProvider.ui())
+                .subscribe({ res ->
+                    res.email?.also { email ->
+                        preferenceRepository.saveAccountName(email)
+                    }
+                }, ErrorHandler::handle)
+                .also(::addDispose)
     }
 
     fun requestEmail() {

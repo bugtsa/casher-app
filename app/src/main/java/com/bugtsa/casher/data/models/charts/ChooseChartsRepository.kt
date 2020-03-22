@@ -9,7 +9,7 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class ChooseChartsModel @Inject constructor(private val casherApi: CasherApi){
+class ChooseChartsRepository @Inject constructor(private val casherApi: CasherApi){
 
     init {
         instance = this
@@ -20,7 +20,7 @@ class ChooseChartsModel @Inject constructor(private val casherApi: CasherApi){
             .timeout(RANGE_MONTH_TIMEOUT, TimeUnit.MILLISECONDS, Single.error(Throwable()))
 
     companion object {
-        private var instance: ChooseChartsModel? = null
+        private var instance: ChooseChartsRepository? = null
 
         private val RANGE_MONTH_TIMEOUT = TimeUnit.MINUTES.toMillis(1)
     }
