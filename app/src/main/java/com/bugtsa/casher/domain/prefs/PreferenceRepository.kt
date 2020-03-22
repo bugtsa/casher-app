@@ -28,6 +28,30 @@ class PreferenceRepository @Inject constructor(application: Application) : Provi
 		saveString(THEME_MODE_KEY, themeMode)
 	}
 
+	override fun getUserEmail(): String {
+		TODO("Not yet implemented")
+	}
+
+	override fun saveUserEmail(email: String) {
+		TODO("Not yet implemented")
+	}
+
+	override fun getAccessToken(): String {
+		TODO("Not yet implemented")
+	}
+
+	override fun saveAccessToken(accessToken: String) {
+		TODO("Not yet implemented")
+	}
+
+	override fun getRefreshToken(): String {
+		TODO("Not yet implemented")
+	}
+
+	override fun saveRefreshToken(refreshToken: String) {
+		TODO("Not yet implemented")
+	}
+
 	override fun getModeTheme(): String {
 		return getString(THEME_MODE_KEY)
 	}
@@ -42,6 +66,9 @@ class PreferenceRepository @Inject constructor(application: Application) : Provi
 
 	companion object {
 		private const val ACCOUNT_NAME_KEY = "ACCOUNT_NAME_KEY"
+		private const val USER_EMAIL_KEY = "USER_EMAIL_KEY"
+		private const val ACCESS_TOKEN_KEY = "ACCESS_TOKEN_KEY"
+		private const val REFRESH_TOKEN_KEY = "REFRESH_TOKEN_KEY"
 		const val THEME_MODE_KEY = "THEME_MODE_KEY"
 	}
 }
