@@ -6,6 +6,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.bugtsa.casher.data.AuthRepository
+import com.bugtsa.casher.data.error.AuthApiError
 import com.bugtsa.casher.domain.prefs.PreferenceRepository
 import com.bugtsa.casher.global.ErrorHandler
 import com.bugtsa.casher.global.extentions.AllHidden
@@ -15,6 +16,8 @@ import com.bugtsa.casher.global.rx.SchedulersProvider
 import com.bugtsa.casher.presentation.optional.RxAndroidViewModel
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.GoogleApiAvailability
+import com.google.gson.Gson
+import retrofit2.HttpException
 import toothpick.Toothpick
 import java.util.regex.Matcher
 import java.util.regex.Pattern
@@ -57,6 +60,12 @@ class SingUpViewModel @Inject constructor(
     private val validEmailLiveData = MutableLiveData<Boolean>().apply { value = false }
     fun observeCorrectEmail(): LiveData<Boolean> = validEmailLiveData
 
+    private val routeToPaymentsViewLiveData = MutableLiveData<Boolean>()
+    fun observeRouteToPaymentsView(): LiveData<Boolean> = routeToPaymentsViewLiveData
+
+    private val wrongUserCredentialLiveData = MutableLiveData<String>()
+    fun observeWrongUserCredential(): LiveData<String> = wrongUserCredentialLiveData
+
     init {
 //        keyboardInteractor.observeKeyboardIsShown()
 //                .distinctUntilChanged()
@@ -64,14 +73,6 @@ class SingUpViewModel @Inject constructor(
 //                .observeOn(SchedulersProvider.ui())
 //                .subscribe(keyboardIsShownLiveData::setValue, ErrorHandler::handle)
 //                .also(::addDispose)
-    }
-
-    fun requestAccountName() {
-//        if (!TextUtils.isEmpty(preferenceProvider.getAccountName())) {
-//            singUpView.showPurchasesScreen()
-//        } else {
-//            singUpView.requestAccountName()
-//        }
     }
 
     fun checkReadySignIn(authPair: Pair<String, String>) {
@@ -83,15 +84,18 @@ class SingUpViewModel @Inject constructor(
     }
 
     fun checkLoginPassword(login: String, password: String) {
-//        validEmailLiveData.value = isValidEmail(login)
         authRepository.observeCredential(login, password)
                 .subscribeOn(SchedulersProvider.io())
                 .observeOn(SchedulersProvider.ui())
-                .subscribe({ res ->
-                    res.email?.also { email ->
-                        preferenceRepository.saveAccountName(email)
-                    }
-                }, ErrorHandler::handle)
+//                .map { res -> AuthDto(res) }
+                .subscribe({ authDto ->
+                    preferenceRepository.saveUserEmail(authDto.email)
+                    preferenceRepository.saveAccessToken(authDto.accessToken)
+                    preferenceRepository.saveRefreshToken(authDto.refreshToken)
+                    routeToPaymentsViewLiveData.value = true
+                }, { throwable ->
+                    processAuthError(throwable)
+                })
                 .also(::addDispose)
     }
 
@@ -123,8 +127,28 @@ class SingUpViewModel @Inject constructor(
         return login.isNotEmpty() && password.isNotEmpty()
     }
 
+    private fun processAuthError(throwable: Throwable) {
+        if (throwable is HttpException && throwable.code() == AuthRepository.UNAUTORIZED_USER) {
+            val response = throwable.response()
+            val message: AuthApiError = Gson().fromJson(response?.errorBody()?.charStream(), AuthApiError::class.java)
+            if (message.errorDescription?.contains(IS_NOT_KNOWN_ERROR_DESCRIPTION) == true) {
+                val userNameOrEmail = message.errorDescription.replace(USER_ERROR_DESCRIPTION, EMPTY_REPLACE)
+                        .replace(IS_NOT_KNOWN_ERROR_DESCRIPTION, EMPTY_REPLACE)
+                        .trim()
+                wrongUserCredentialLiveData.value = userNameOrEmail
+            }
+        }
+        ErrorHandler.handle(throwable)
+    }
+
     sealed class FocusFieldAuth {
         object Email : FocusFieldAuth()
         object Password : FocusFieldAuth()
+    }
+
+    companion object {
+        private const val USER_ERROR_DESCRIPTION = "User"
+        private const val IS_NOT_KNOWN_ERROR_DESCRIPTION = "is not known"
+        private const val EMPTY_REPLACE = ""
     }
 }

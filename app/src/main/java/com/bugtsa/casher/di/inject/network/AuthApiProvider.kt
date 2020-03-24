@@ -9,7 +9,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 import java.util.concurrent.TimeUnit
 import javax.inject.Provider
 
-class AuthApiProvider: Provider<AuthApi> {
+class AuthApiProvider : Provider<AuthApi> {
 
     private val authApi: AuthApi
 
@@ -47,6 +47,7 @@ class AuthApiProvider: Provider<AuthApi> {
         private const val READ_TIMEOUT = 15L
         private const val CONNECTION_TIMEOUT = 40L
         private const val AUTH_URL = "https://casher-auth.herokuapp.com/"
+        private const val AUTH_LOCAL_URL = "http://localhost:9090/"
 
         const val AUTHORIZATION_CLIENT_APP = "USER_CLIENT_APP"
         private const val AUTHORIZATION_PASSWORD = "password"

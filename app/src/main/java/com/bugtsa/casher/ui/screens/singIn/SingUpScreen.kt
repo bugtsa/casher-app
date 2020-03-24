@@ -72,8 +72,6 @@ class SingUpFragment : Fragment(),
                 .getInstance(SingUpViewModelFactory::class.java)
         viewModel = ViewModelProvider(this, singUpViewModelFactory)[SingUpViewModel::class.java]
 
-//        viewModel.requestAccountName()
-
         initClickListeners()
         bindViews()
         bindViewModel()
@@ -84,13 +82,6 @@ class SingUpFragment : Fragment(),
         }
 
         refreshUI()
-    }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-
-        vLogin.setText("bugtsa")
-        vPassword.setText("password")
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -199,10 +190,18 @@ class SingUpFragment : Fragment(),
 
         viewModel.observeCorrectEmail().observe(viewLifecycleOwner, Observer { isCorrectEmail ->
             if (isCorrectEmail) {
-                setupNeedEmailError()
+                setupAuthError(loginErrorText = getString(R.string.auth_need_input_valid_email))
             } else {
                 setupCorrectEmail()
             }
+        })
+
+        viewModel.observeRouteToPaymentsView().observe(viewLifecycleOwner, Observer {
+            showPurchasesScreen()
+        })
+
+        viewModel.observeWrongUserCredential().observe(viewLifecycleOwner, Observer { wrongInput ->
+            setupAuthError(loginErrorText = getString(R.string.auth_wrong_login_or_password, wrongInput))
         })
     }
 
@@ -260,9 +259,9 @@ class SingUpFragment : Fragment(),
         ))
     }
 
-    private fun setupNeedEmailError() {
-        vLoginTextInputLayout.error = getString(R.string.auth_need_input_valid_email)
-        vPasswordTextInputLayout.error = ERROR_EMPTY_EMAIL
+    private fun setupAuthError(loginErrorText: String = ERROR_EMPTY_EMAIL, passwordError: String = ERROR_EMPTY_EMAIL) {
+        vLoginTextInputLayout.error = loginErrorText
+        vPasswordTextInputLayout.error = passwordError
     }
 
     private fun setupCorrectEmail() {
