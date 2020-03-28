@@ -115,8 +115,8 @@ abstract class BaseFragment : Fragment() {
     private fun initializeSmallDialog(window: Window) {
         window.clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND)
         window.setLayout(
-                requireContext().resources.getDimensionPixelSize(R.dimen.dialog_progress_load_size),
-                requireContext().resources.getDimensionPixelSize(R.dimen.dialog_progress_load_size))
+                requireContext().resources.getDimensionPixelSize(R.dimen.base_dialog_progress_load_size),
+                requireContext().resources.getDimensionPixelSize(R.dimen.base_dialog_progress_load_size))
         window.setContentView(R.layout.view_progress_small_dialog)
     }
 }

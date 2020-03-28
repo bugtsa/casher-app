@@ -21,7 +21,7 @@
             style="@style/AppTheme.SignInEditText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="@dimen/spacing_normal_16"
+            android:layout_margin="@dimen/spacing_normal_y_16"
             android:hint="@string/auth_login"
             android:inputType="text" />
     </com.google.android.material.textfield.TextInputLayout>
@@ -41,7 +41,7 @@
             style="@style/AppTheme.SignInEditText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="@dimen/spacing_normal_16"
+            android:layout_margin="@dimen/spacing_normal_y_16"
             android:hint="@string/auth_password"
             android:inputType="textPassword" />
 

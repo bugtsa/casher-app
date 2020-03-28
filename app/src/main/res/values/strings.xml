@@ -24,9 +24,9 @@
 
     <string name="auth_login">Login or e-mail</string>
     <string name="auth_need_input_valid_email">Need input correct e-mail</string>
-    <string name="auth_wrong_login_or_password">Wrong login %1$s or password</string>
     <string name="auth_password">Password…</string>
     <string name="auth_sign_in">Sign In</string>
+    <string name="auth_wrong_login_or_password">Wrong login %1$s or password</string>
 
     <string name="cancel_caption">Cancel</string>
 
@@ -75,6 +75,10 @@
     <string name="sort_type_asc">ascending</string>
     <string name="sort_type_desc">descending</string>
     <string name="sort_type_un_sort">unsorted</string>
+
+    <string name="splash_beta_title">Beta</string>
+    <string name="splash_hint_caption">Hints</string>
+    <string name="splash_status_title">Downloading</string>
 
     <string name="switch_theme_mode">Switch theme mode</string>
 

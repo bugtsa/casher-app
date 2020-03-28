@@ -14,7 +14,7 @@ import com.bugtsa.casher.ui.navigation.TabBar
 import com.bugtsa.casher.ui.screens.charts.ChooseChartsScreen
 import com.bugtsa.casher.ui.screens.purchases.show.PurchasesScreen
 import com.bugtsa.casher.ui.screens.settings.SettingsScreen
-import com.bugtsa.casher.ui.screens.singIn.SingUpScreen
+import com.bugtsa.casher.ui.screens.auth.SingUpScreen
 import com.crashlytics.android.Crashlytics
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.GoogleApiAvailability

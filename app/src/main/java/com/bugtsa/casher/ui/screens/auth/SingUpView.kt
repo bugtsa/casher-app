@@ -1,4 +1,4 @@
-package com.bugtsa.casher.ui.screens.singIn
+package com.bugtsa.casher.ui.screens.auth
 
 interface SingUpView {
 	fun requestAccountName()

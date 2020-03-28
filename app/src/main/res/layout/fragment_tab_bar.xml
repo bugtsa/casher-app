@@ -20,7 +20,7 @@
         android:id="@+id/navigation_bar"
         android:layout_width="@dimen/zeros"
         android:layout_height="wrap_content"
-        app:elevation="@dimen/spacing_xx_small_8"
+        app:elevation="@dimen/spacing_small_x_8"
         app:itemBackground="@color/primaryColor"
         app:itemIconTint="@color/bottom_nav_color"
         app:itemTextColor="@color/primaryTextColor"

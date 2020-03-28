@@ -12,7 +12,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center_horizontal"
-        android:padding="@dimen/spacing_x_small_4"
+        android:padding="@dimen/spacing_small_y_4"
         android:textColor="@color/primaryDarkColor"
         android:textSize="@dimen/font_xx_medium_18"
         android:theme="@style/AccentText"

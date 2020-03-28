@@ -4,9 +4,9 @@
 
     <string name="auth_login">Имя пользователя или e-mail</string>
     <string name="auth_need_input_valid_email">Необходимо ввести корректный e-mail</string>
-    <string name="auth_wrong_login_or_password">Неправильный логин %1$s или пароль</string>
     <string name="auth_password">Пароль…</string>
     <string name="auth_sign_in">Войти</string>
+    <string name="auth_wrong_login_or_password">Неправильный логин %1$s или пароль</string>
 
     <string name="cancel_caption">Отмена</string>
 
@@ -52,6 +52,10 @@
     <string name="sort_type_asc">по убыванию</string>
     <string name="sort_type_desc">по возрастанию</string>
     <string name="sort_type_un_sort">неотсортированные</string>
+
+    <string name="splash_beta_title">Beta</string>
+    <string name="splash_hint_caption">Подсказка</string>
+    <string name="splash_status_title">Идет загрузка</string>
 
     <string name="switch_theme_mode">Переключить тему</string>
 

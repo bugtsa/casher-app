@@ -35,9 +35,9 @@
         android:id="@+id/change_theme"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/spacing_normal_16"
-        android:layout_marginEnd="@dimen/spacing_normal_16"
-        android:layout_marginBottom="@dimen/spacing_xxx_medium_32"
+        android:layout_marginStart="@dimen/spacing_normal_y_16"
+        android:layout_marginEnd="@dimen/spacing_normal_y_16"
+        android:layout_marginBottom="@dimen/spacing_medium_32"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
         android:text="@string/switch_theme_mode"/>
