@@ -8,14 +8,11 @@ import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import android.view.WindowManager
 import android.view.inputmethod.EditorInfo
 import android.widget.EditText
 import androidx.core.content.ContextCompat
-import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.bugtsa.casher.R
@@ -24,7 +21,10 @@ import com.bugtsa.casher.presentation.SingUpViewModel
 import com.bugtsa.casher.presentation.SingUpViewModel.FocusFieldAuth.Email
 import com.bugtsa.casher.presentation.SingUpViewModel.FocusFieldAuth.Password
 import com.bugtsa.casher.presentation.SingUpViewModelFactory
+import com.bugtsa.casher.presentation.optional.ProgressState.Hide
+import com.bugtsa.casher.presentation.optional.ProgressState.Progress
 import com.bugtsa.casher.ui.activities.MainActivity
+import com.bugtsa.casher.ui.screens.BaseFragment
 import com.bugtsa.casher.ui.screens.purchases.show.PurchasesScreen
 import com.bugtsa.casher.ui.screens.settings.NavigationStackPresentable
 import com.bugtsa.casher.utils.ConstantManager.Constants.EMPTY
@@ -52,7 +52,7 @@ class SingUpScreen : Phalanx(), NavigationStackPresentable {
 }
 
 @SuppressLint("MissingSuperCall")
-class SingUpFragment : Fragment(),
+class SingUpFragment(override val layout: Int = R.layout.fragment_auth) : BaseFragment(),
         BonePersisterInterface<SingUpScreen>,
         FragmentSibling<SingUpScreen> by Page(),
         SingUpView {
@@ -60,10 +60,6 @@ class SingUpFragment : Fragment(),
     private lateinit var viewModel: SingUpViewModel
 
     private val bag = CompositeDisposable()
-
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        return inflater.inflate(R.layout.fragment_auth, container, false)
-    }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
@@ -86,12 +82,12 @@ class SingUpFragment : Fragment(),
 
     override fun onSaveInstanceState(outState: Bundle) {
         super<BonePersisterInterface>.onSaveInstanceState(outState)
-        super<androidx.fragment.app.Fragment>.onSaveInstanceState(outState)
+        super<BaseFragment>.onSaveInstanceState(outState)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super<BonePersisterInterface>.onCreate(savedInstanceState)
-        super<androidx.fragment.app.Fragment>.onCreate(savedInstanceState)
+        super<BaseFragment>.onCreate(savedInstanceState)
     }
 
     override fun onDestroy() {
@@ -192,7 +188,7 @@ class SingUpFragment : Fragment(),
             if (isCorrectEmail) {
                 setupAuthError(loginErrorText = getString(R.string.auth_need_input_valid_email))
             } else {
-                setupCorrectEmail()
+                setupCorrectHints()
             }
         })
 
@@ -202,6 +198,20 @@ class SingUpFragment : Fragment(),
 
         viewModel.observeWrongUserCredential().observe(viewLifecycleOwner, Observer { wrongInput ->
             setupAuthError(loginErrorText = getString(R.string.auth_wrong_login_or_password, wrongInput))
+        })
+
+        viewModel.observerProgressStateLiveData().observe(viewLifecycleOwner, Observer { progressState ->
+            when (progressState) {
+                is Progress ->
+                    showProgress(cancelable = progressState.isCancelable)
+                is Hide -> hideProgress()
+            }
+        })
+
+        viewModel.observeRemoveHintErrorLiveData().observe(viewLifecycleOwner, Observer { isRemove ->
+            if(isRemove){
+                setupCorrectHints()
+            }
         })
     }
 
@@ -228,7 +238,9 @@ class SingUpFragment : Fragment(),
     private fun EditText.setupLoginChangesListener(colorAccentResId: Int) {
         RxTextView.textChanges(this)
                 .debounce(TIME_DURATION_DEBOUNCE, TimeUnit.MILLISECONDS)
-                .map { it.toString().trim() to vPassword.text.toString().trim() }
+                .map { login ->
+                    login.toString().trim() to vPassword.text.toString().trim()
+                }
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(viewModel::checkReadySignIn)
                 .addTo(bag)
@@ -264,7 +276,7 @@ class SingUpFragment : Fragment(),
         vPasswordTextInputLayout.error = passwordError
     }
 
-    private fun setupCorrectEmail() {
+    private fun setupCorrectHints() {
         vLoginTextInputLayout.error = EMPTY
         vPasswordTextInputLayout.error = EMPTY
     }
@@ -284,7 +296,9 @@ class SingUpFragment : Fragment(),
         setupPassVisibility()
         RxTextView.textChanges(this)
                 .debounce(TIME_DURATION_DEBOUNCE, TimeUnit.MILLISECONDS)
-                .map { vLogin.text.toString().trim() to it.toString().trim() }
+                .map { password ->
+                    vLogin.text.toString().trim() to password.toString().trim()
+                }
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(viewModel::checkReadySignIn)
                 .addTo(bag)

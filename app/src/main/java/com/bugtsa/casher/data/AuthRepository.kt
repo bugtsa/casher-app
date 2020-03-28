@@ -46,6 +46,5 @@ class AuthRepository @Inject constructor(private val authApi: AuthApi) {
         private const val PASSWORD = "password"
         private const val USER_NAME = "username"
         private val AUTH_TIMEOUT = TimeUnit.SECONDS.toMillis(30)
-        const val UNAUTORIZED_USER = 401
     }
 }

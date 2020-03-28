@@ -13,6 +13,7 @@ import com.bugtsa.casher.global.extentions.AllHidden
 import com.bugtsa.casher.global.extentions.KeyboardState
 import com.bugtsa.casher.global.extentions.SoftShown
 import com.bugtsa.casher.global.rx.SchedulersProvider
+import com.bugtsa.casher.presentation.optional.ProgressState
 import com.bugtsa.casher.presentation.optional.RxAndroidViewModel
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.GoogleApiAvailability
@@ -66,6 +67,9 @@ class SingUpViewModel @Inject constructor(
     private val wrongUserCredentialLiveData = MutableLiveData<String>()
     fun observeWrongUserCredential(): LiveData<String> = wrongUserCredentialLiveData
 
+    private val removeHintErrorLiveData = MutableLiveData<Boolean>()
+    fun observeRemoveHintErrorLiveData(): LiveData<Boolean> = removeHintErrorLiveData
+
     init {
 //        keyboardInteractor.observeKeyboardIsShown()
 //                .distinctUntilChanged()
@@ -77,23 +81,26 @@ class SingUpViewModel @Inject constructor(
 
     fun checkReadySignIn(authPair: Pair<String, String>) {
         authPair.also { (login, password) ->
-            visibilityCancelLoginBtnLiveData.postValue(login.isNotEmpty())
-            passwordMaybeCancelLiveData.postValue(password.isNotEmpty())
+            removeHintErrorLiveData.value = true
+            visibilityCancelLoginBtnLiveData.value = login.isNotEmpty()
+            passwordMaybeCancelLiveData.value = password.isNotEmpty()
             readyToSignInLiveData.value = isReadyToLogin(login, password)
         }
     }
 
     fun checkLoginPassword(login: String, password: String) {
+        progressStateLiveData.value = ProgressState.Progress(isCancelable = true)
         authRepository.observeCredential(login, password)
                 .subscribeOn(SchedulersProvider.io())
                 .observeOn(SchedulersProvider.ui())
-//                .map { res -> AuthDto(res) }
                 .subscribe({ authDto ->
+                    progressStateLiveData.value = ProgressState.Hide
                     preferenceRepository.saveUserEmail(authDto.email)
                     preferenceRepository.saveAccessToken(authDto.accessToken)
                     preferenceRepository.saveRefreshToken(authDto.refreshToken)
                     routeToPaymentsViewLiveData.value = true
                 }, { throwable ->
+                    progressStateLiveData.value = ProgressState.Hide
                     processAuthError(throwable)
                 })
                 .also(::addDispose)
@@ -128,7 +135,7 @@ class SingUpViewModel @Inject constructor(
     }
 
     private fun processAuthError(throwable: Throwable) {
-        if (throwable is HttpException && throwable.code() == AuthRepository.UNAUTORIZED_USER) {
+        if (throwable is HttpException && throwable.code() == UNAUTORIZED_USER) {
             val response = throwable.response()
             val message: AuthApiError = Gson().fromJson(response?.errorBody()?.charStream(), AuthApiError::class.java)
             if (message.errorDescription?.contains(IS_NOT_KNOWN_ERROR_DESCRIPTION) == true) {
@@ -150,5 +157,6 @@ class SingUpViewModel @Inject constructor(
         private const val USER_ERROR_DESCRIPTION = "User"
         private const val IS_NOT_KNOWN_ERROR_DESCRIPTION = "is not known"
         private const val EMPTY_REPLACE = ""
+        private const val UNAUTORIZED_USER = 401
     }
 }
