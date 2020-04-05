@@ -58,25 +58,6 @@ class PurchasesFragment : Fragment(R.layout.fragment_purchases), PurchasesView,
         refreshUI()
     }
 
-    private fun bindViewModel() {
-        viewModel.observeProgress().observe(viewLifecycleOwner, Observer {
-            showProgressBar(it)
-        })
-        viewModel.observeStatusText().observe(viewLifecycleOwner, Observer {
-            setupStatusText(it)
-        })
-        viewModel.observePurchaseList().observe(viewLifecycleOwner, Observer {
-            setupPurchaseList(it)
-        })
-        viewModel.observeScrollToPosition().observe(viewLifecycleOwner, Observer {
-            scrollToPosition(it)
-        })
-        viewModel.observeBottomBarVisibility().observe(viewLifecycleOwner, Observer {
-            if (it) showBottomScroll()
-            else hideBottomScroll()
-        })
-    }
-
     override fun onDestroyView() {
         super.onDestroyView()
         Toothpick.closeScope(this)
@@ -184,4 +165,23 @@ class PurchasesFragment : Fragment(R.layout.fragment_purchases), PurchasesView,
     }
 
     //endregion
+
+    private fun bindViewModel() {
+        viewModel.observeProgress().observe(viewLifecycleOwner, Observer {
+            showProgressBar(it)
+        })
+        viewModel.observeStatusText().observe(viewLifecycleOwner, Observer {
+            setupStatusText(it)
+        })
+        viewModel.observePurchaseList().observe(viewLifecycleOwner, Observer {
+            setupPurchaseList(it)
+        })
+        viewModel.observeScrollToPosition().observe(viewLifecycleOwner, Observer {
+            scrollToPosition(it)
+        })
+        viewModel.observeBottomBarVisibility().observe(viewLifecycleOwner, Observer {
+            if (it) showBottomScroll()
+            else hideBottomScroll()
+        })
+    }
 }
