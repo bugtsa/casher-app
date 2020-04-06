@@ -69,20 +69,24 @@ open class SettingsScreenFragment : Fragment(),
 
     private fun bindViewModel() {
         viewModel.observeModelTheme().observe(viewLifecycleOwner, Observer { isChecked ->
-            change_theme.isChecked = isChecked
+//            change_theme.isChecked = isChecked
+        })
+
+        viewModel.observeUserLogin().observe(viewLifecycleOwner, Observer { userLogin ->
+
         })
     }
 
     private fun bindListeners() {
-        change_theme.setOnCheckedChangeListener { _, isChecked ->
-            val currentTheme = when {
-                Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q && isChecked -> ThemeHelper.darkMode
-                Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q && !isChecked -> ThemeHelper.lightMode
-                Build.VERSION.SDK_INT < Build.VERSION_CODES.Q && isChecked -> ThemeHelper.batterySaverMode
-                else -> ThemeHelper.default
-            }
-            viewModel.saveModeTheme(currentTheme)
-        }
+//        change_theme.setOnCheckedChangeListener { _, isChecked ->
+//            val currentTheme = when {
+//                Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q && isChecked -> ThemeHelper.darkMode
+//                Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q && !isChecked -> ThemeHelper.lightMode
+//                Build.VERSION.SDK_INT < Build.VERSION_CODES.Q && isChecked -> ThemeHelper.batterySaverMode
+//                else -> ThemeHelper.default
+//            }
+//            viewModel.saveModeTheme(currentTheme)
+//        }
     }
 
     override fun onRefresh() {
@@ -92,13 +96,13 @@ open class SettingsScreenFragment : Fragment(),
 
         val title = getString(R.string.settings_title)
         when (title) {
-            null -> toolbar.visibility = View.GONE
+            null -> vToolbar.visibility = View.GONE
             else -> {
-                toolbar.visibility = View.VISIBLE
-                toolbar.title = title
+                vToolbar.visibility = View.VISIBLE
+                vToolbar.title = title
 
-                if (bone.phalanxes.size > 1) addNavigationToToolbar(toolbar, R.drawable.ic_arrow_back_white)
-                else removeNavigationFromToolbar(toolbar)
+                if (bone.phalanxes.size > 1) addNavigationToToolbar(vToolbar, R.drawable.ic_arrow_back_white)
+                else removeNavigationFromToolbar(vToolbar)
             }
         }
     }

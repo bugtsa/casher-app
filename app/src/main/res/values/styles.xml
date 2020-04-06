@@ -101,4 +101,35 @@
         <item name="android:textSize">24sp</item>
     </style>
 
+    <style name="AppTheme.ProfileRoot">
+        <item name="android:background">@color/primaryTextColor</item>
+    </style>
+
+    <style name="AppTheme.BaseProfileTitle">
+        <item name="android:textSize">16sp</item>
+        <item name="android:maxLines">4</item>
+        <item name="android:ellipsize">end</item>
+        <item name="android:textColor">@color/secondaryTextColor</item>
+    </style>
+
+    <style name="AppTheme.ProfileTitle" parent="AppTheme.BaseProfileTitle" />
+
+    <style name="AppTheme.ProfileEllipsizedTitle" parent="AppTheme.BaseProfileTitle">
+        <item name="android:maxLines">1</item>
+        <item name="android:ellipsize">end</item>
+    </style>
+
+    <style name="AppTheme.BaseProfileGroupSubtitle">
+        <item name="android:textSize">14sp</item>
+        <item name="android:maxLines">1</item>
+        <item name="android:ellipsize">end</item>
+        <item name="android:textColor">@color/primaryTextColor</item>
+    </style>
+
+    <style name="AppTheme.ProfileGroupSubtitle" parent="AppTheme.BaseProfileGroupSubtitle" />
+
+    <style name="AppTheme.ProfileGroupAvatar">
+        <item name="android:background">@drawable/circle_ph</item>
+    </style>
+
 </resources>

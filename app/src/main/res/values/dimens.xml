@@ -11,6 +11,8 @@
     <dimen name="font_xx_medium_18">18sp</dimen>
     <dimen name="font_xxx_medium_24">24sp</dimen>
 
+    <dimen name="profile_group_header_height">144dp</dimen>
+
     <dimen name="spacing_big_bigger_100">100dp</dimen>
     <dimen name="spacing_big_bigger_x_96">96dp</dimen>
     <dimen name="spacing_bigger_56">56dp</dimen>
