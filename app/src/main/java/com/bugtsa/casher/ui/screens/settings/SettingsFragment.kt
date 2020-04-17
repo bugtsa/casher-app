@@ -2,17 +2,20 @@ package com.bugtsa.casher.ui.screens.settings
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.content.res.TypedArray
 import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.fragment.app.Fragment
+import android.widget.CompoundButton
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.bugtsa.casher.R
+import com.bugtsa.casher.global.recycler.entities.*
 import com.bugtsa.casher.presentation.SettingsViewModel
 import com.bugtsa.casher.presentation.SettingsViewModelFactory
+import com.bugtsa.casher.ui.screens.base.BaseListFragment
 import com.bugtsa.casher.utils.ThemeHelper
 import kotlinx.android.synthetic.main.fragment_settings.*
 import pro.horovodovodo4ka.bones.Bone
@@ -34,7 +37,7 @@ open class SettingsScreen(rootPhalanx: Bone? = null) : Finger(rootPhalanx) {
 }
 
 @SuppressLint("MissingSuperCall")
-open class SettingsScreenFragment : Fragment(),
+class SettingsScreenFragment : BaseListFragment(),
         BonePersisterInterface<SettingsScreen>,
         FingerNavigatorInterface<SettingsScreen> by FingerNavigator(R.id.settings_container) {
 
@@ -61,33 +64,15 @@ open class SettingsScreenFragment : Fragment(),
                 .getInstance(SettingsViewModelFactory::class.java)
         viewModel = ViewModelProvider(this, viewModelFactory)[SettingsViewModel::class.java]
 
-        bindListeners()
         bindViewModel()
 
         onRefresh()
     }
 
-    private fun bindViewModel() {
-        viewModel.observeModelTheme().observe(viewLifecycleOwner, Observer { isChecked ->
-//            change_theme.isChecked = isChecked
-        })
-
-        viewModel.observeUserLogin().observe(viewLifecycleOwner, Observer { userLogin ->
-
-        })
+    override fun onListItemClick(v: View, position: Int) {
     }
 
-    private fun bindListeners() {
-//        change_theme.setOnCheckedChangeListener { _, isChecked ->
-//            val currentTheme = when {
-//                Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q && isChecked -> ThemeHelper.darkMode
-//                Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q && !isChecked -> ThemeHelper.lightMode
-//                Build.VERSION.SDK_INT < Build.VERSION_CODES.Q && isChecked -> ThemeHelper.batterySaverMode
-//                else -> ThemeHelper.default
-//            }
-//            viewModel.saveModeTheme(currentTheme)
-//        }
-    }
+    override fun onItemsAddedToList() = Unit
 
     override fun onRefresh() {
         super<FingerNavigatorInterface>.onRefresh()
@@ -109,15 +94,51 @@ open class SettingsScreenFragment : Fragment(),
 
     override fun onSaveInstanceState(outState: Bundle) {
         super<BonePersisterInterface>.onSaveInstanceState(outState)
-        super<androidx.fragment.app.Fragment>.onSaveInstanceState(outState)
+        super<BaseListFragment>.onSaveInstanceState(outState)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super<BonePersisterInterface>.onCreate(savedInstanceState)
-        super<androidx.fragment.app.Fragment>.onCreate(savedInstanceState)
+        super<BaseListFragment>.onCreate(savedInstanceState)
     }
 
-    // endregion
+    private fun loadProfileStyle(): TypedArray = requireContext().obtainStyledAttributes(R.style.ProfileView, R.styleable.ProfileViewAttrs)
 
+    private fun bindViewModel() {
+        viewModel.observeUserLogin().observe(viewLifecycleOwner, Observer { userLogin ->
+            val items = mutableListOf<ListItem>().apply {
+
+                val attributes = loadProfileStyle()
+                val emptySpaceColor = attributes.getResourceId(R.styleable.ProfileViewAttrs_emptySpaceColor, 0)
+                attributes.recycle()
+
+                add(SpaceItem(DEFAULT_SPACE, emptySpaceColor))
+                add(DataItem(getString(R.string.profile_username), userLogin))
+                add(DividerItem(leftMargin = DEFAULT_SPACE, rightMargin = DEFAULT_SPACE))
+                add(SwitchItem(
+                        getString(R.string.switch_theme_mode),
+                        CompoundButton.OnCheckedChangeListener { _, isChecked ->
+                            bindCheckedListener(isChecked)
+                        },
+                        state = viewModel.observeModelTheme()
+                ))
+            }
+            adapter.setItems(items)
+        })
+    }
+
+    private fun bindCheckedListener(isChecked: Boolean) {
+        val currentTheme = when {
+            Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q && isChecked -> ThemeHelper.darkMode
+            Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q && !isChecked -> ThemeHelper.lightMode
+            Build.VERSION.SDK_INT < Build.VERSION_CODES.Q && isChecked -> ThemeHelper.batterySaverMode
+            else -> ThemeHelper.default
+        }
+        viewModel.saveModeTheme(currentTheme)
+    }
+
+    companion object {
+        private const val DEFAULT_SPACE = 16
+    }
 
 }

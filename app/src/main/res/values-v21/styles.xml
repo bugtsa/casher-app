@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="BaseToolbar.V21" parent="BaseToolbar">
+        <item name="android:elevation">@dimen/toolbar_base_elevation</item>
+    </style>
+
+    <style name="AppToolbar" parent="BaseToolbar.V21" />
+
+    <style name="PopupMenuOverlapAnchor" parent="@style/Theme.AppCompat.Light">
+        <item name="android:overlapAnchor">true</item>
+        <item name="android:dropDownVerticalOffset">0dp</item>
+        <item name="android:dropDownHorizontalOffset">0dp</item>
+    </style>
+</resources>

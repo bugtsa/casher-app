@@ -1,8 +1,10 @@
-package com.bugtsa.casher.ui.screens
+package com.bugtsa.casher.ui.screens.base
 
+import android.content.Context
 import android.os.Bundle
 import android.view.*
 import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import com.bugtsa.casher.R
 import io.reactivex.Completable
@@ -21,8 +23,22 @@ abstract class BaseFragment : Fragment() {
 
     private var creationDialogDisposable: Disposable? = null
 
+    protected lateinit var homeActivity: AppCompatActivity
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? =
             inflater.inflate(layout, null)
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        if (context is AppCompatActivity) {
+            homeActivity = context
+        }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        homeActivity.setSupportActionBar(null)
+    }
 
     protected open fun showProgress(
             cancelAction: (() -> Unit)? = null,

@@ -61,6 +61,10 @@
     <string name="price_purchase">Price payment</string>
     <string name="price_purchase_hint">Write number</string>
 
+    <string name="profile_expandable_view_hide_button">Collapse</string>
+    <string name="profile_expandable_view_text">More information</string>
+    <string name="profile_username">Username</string>
+
     <string name="screen_add_purchase">Add purchase</string>
 
     <string name="settings_title">Settings</string>

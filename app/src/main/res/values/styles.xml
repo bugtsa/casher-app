@@ -1,58 +1,5 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <resources>
-
-    <!-- Base application theme. -->
-    <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
-        <!-- Customize your theme here. -->
-        <item name="android:forceDarkAllowed">true</item>
-        <item name="colorPrimary">@color/colorPrimary</item>
-        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
-        <item name="colorAccent">@color/colorAccent</item>
-    </style>
-
-    <style name="AppTheme.NoActionBar.PopupOverlay" parent="ThemeOverlay.AppCompat.Dark"/>
-
-    <style name="MatchWrap">
-        <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">wrap_content</item>
-    </style>
-
-    <style name="MatchDouble">
-        <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">match_parent</item>
-    </style>
-
-    <style name="WrapDouble">
-        <item name="android:layout_width">wrap_content</item>
-        <item name="android:layout_height">wrap_content</item>
-    </style>
-
-    <style name="EditText" parent="MatchWrap">
-        <item name="android:textColor">@color/primaryDarkColor</item>
-        <item name="android:textColorHint">@color/secondaryTextColor</item>
-        <item name="android:textSize">@dimen/font_medium_14</item>
-    </style>
-
-    <style name="TilPurchase" parent="MatchWrap">
-        <item name="android:padding">@dimen/spacing_small_x_8</item>
-    </style>
-
-    <style name="DatePurchase" parent="MatchWrap">
-        <item name="android:layout_marginLeft">@dimen/spacing_small_x_8</item>
-        <item name="android:layout_marginRight">@dimen/spacing_small_x_8</item>
-        <item name="android:layout_marginTop">@dimen/spacing_small_x_8</item>
-        <item name="android:layout_marginBottom">@dimen/spacing_small_x_8</item>
-    </style>
-
-    <style name="EditText.ManualCode">
-        <item name="android:hint">@string/price_purchase</item>
-    </style>
-
-    <style name="EditText.Category">
-        <item name="android:hint">@string/category_purchase</item>
-        <item name="android:layout_marginLeft">@dimen/spacing_small_x_8</item>
-        <item name="android:layout_marginRight">@dimen/spacing_small_x_8</item>
-    </style>
-
     <style name="AccentButton" parent="Base.Widget.AppCompat.Button">
         <item name="colorButtonNormal">@color/colorAccent</item>
         <item name="android:textColorHint">@color/primaryTextColor</item>
@@ -62,17 +9,56 @@
         <item name="android:textColor">@color/primaryTextColor</item>
     </style>
 
-    <style name="ProgressDialog" parent="Theme.AppCompat.Light.Dialog.Alert">
-        <item name="android:background">@drawable/background_progress_dialog</item>
-        <item name="android:windowIsTranslucent">true</item>
-        <item name="android:windowBackground">@android:color/transparent</item>
+    <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
+        <!-- Customize your theme here. -->
+        <item name="android:forceDarkAllowed">true</item>
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
     </style>
 
-    <style name="FullScreenProgressDialog" parent="Theme.AppCompat.Light.Dialog.Alert">
-        <item name="android:background">@null</item>
-        <item name="android:windowIsFloating">false</item>
-        <item name="android:windowBackground">@android:color/transparent</item>
+    <style name="AppTheme.BaseProfileGroupSubtitle">
+        <item name="android:textSize">14sp</item>
+        <item name="android:maxLines">1</item>
+        <item name="android:ellipsize">end</item>
+        <item name="android:textColor">@color/primaryTextColor</item>
     </style>
+
+    <style name="AppTheme.BaseProfileTitle">
+        <item name="android:textSize">16sp</item>
+        <item name="android:maxLines">4</item>
+        <item name="android:ellipsize">end</item>
+        <item name="android:textColor">@color/secondaryTextColor</item>
+    </style>
+
+    <style name="AppTheme.NoActionBar.PopupOverlay" parent="ThemeOverlay.AppCompat.Dark"/>
+
+    <style name="AppTheme.ProfileEllipsizedTitle" parent="AppTheme.BaseProfileTitle">
+        <item name="android:maxLines">1</item>
+        <item name="android:ellipsize">end</item>
+    </style>
+
+    <style name="AppTheme.ProfileGroupAvatar">
+        <item name="android:background">@drawable/circle_ph</item>
+    </style>
+
+    <style name="AppTheme.ProfileGroupSubtitle" parent="AppTheme.BaseProfileGroupSubtitle"/>
+
+    <style name="AppTheme.ProfileRoot">
+        <item name="android:background">@color/primaryTextColor</item>
+    </style>
+
+    <style name="AppTheme.ProfileTitle" parent="AppTheme.BaseProfileTitle"/>
+
+    <style name="AppTheme.SignInCursor">
+        <item name="colorAccent">@color/primaryDarkColor</item>
+    </style>
+
+    <style name="AppTheme.SignInEditText" parent="AppTheme.SignInCursor">
+        <item name="android:textSize">24sp</item>
+    </style>
+
+    <style name="AppToolbar" parent="BaseToolbar"/>
 
     <style name="AuthErrorTextAppearance" parent="@android:style/TextAppearance">
         <item name="android:textColor">@color/colorAccentDanger</item>
@@ -93,43 +79,95 @@
         <item name="hintTextAppearance">@style/AuthHintTextAppearance</item>
     </style>
 
-    <style name="AppTheme.SignInCursor">
-        <item name="colorAccent">@color/primaryDarkColor</item>
+    <style name="BaseToolbar">
+        <item name="android:background">@color/primaryColor</item>
+        <item name="android:layout_height">?attr/actionBarSize</item>
+        <item name="titleTextColor">@color/primaryTextColor</item>
     </style>
 
-    <style name="AppTheme.SignInEditText" parent="AppTheme.SignInCursor">
-        <item name="android:textSize">24sp</item>
+    <style name="DatePurchase" parent="MatchWrap">
+        <item name="android:layout_marginLeft">@dimen/spacing_small_x_8</item>
+        <item name="android:layout_marginRight">@dimen/spacing_small_x_8</item>
+        <item name="android:layout_marginTop">@dimen/spacing_small_x_8</item>
+        <item name="android:layout_marginBottom">@dimen/spacing_small_x_8</item>
     </style>
 
-    <style name="AppTheme.ProfileRoot">
-        <item name="android:background">@color/primaryTextColor</item>
+    <style name="EditText" parent="MatchWrap">
+        <item name="android:textColor">@color/primaryDarkColor</item>
+        <item name="android:textColorHint">@color/secondaryTextColor</item>
+        <item name="android:textSize">@dimen/font_medium_14</item>
     </style>
 
-    <style name="AppTheme.BaseProfileTitle">
-        <item name="android:textSize">16sp</item>
-        <item name="android:maxLines">4</item>
-        <item name="android:ellipsize">end</item>
+    <style name="EditText.Category">
+        <item name="android:hint">@string/category_purchase</item>
+        <item name="android:layout_marginLeft">@dimen/spacing_small_x_8</item>
+        <item name="android:layout_marginRight">@dimen/spacing_small_x_8</item>
+    </style>
+
+    <style name="EditText.ManualCode">
+        <item name="android:hint">@string/price_purchase</item>
+    </style>
+
+    <style name="FullScreenProgressDialog" parent="Theme.AppCompat.Light.Dialog.Alert">
+        <item name="android:background">@null</item>
+        <item name="android:windowIsFloating">false</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
+    </style>
+
+    <style name="HolderData">
+        <item name="android:fontFamily">sans-serif</item>
+        <item name="android:lineSpacingExtra">6sp</item>
+        <item name="android:textColor">@color/secondaryLightColor</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:textStyle">normal</item>
+    </style>
+
+    <style name="HolderLabel">
+        <item name="android:focusableInTouchMode">false</item>
+        <item name="android:fontFamily">sans-serif</item>
+        <item name="android:lineSpacingExtra">4sp</item>
+        <item name="android:textColor">@color/colorPrimaryDark</item>
+        <item name="android:textSize">12sp</item>
+        <item name="android:textStyle">normal</item>
+    </style>
+
+    <style name="LabelItemText">
+        <item name="android:textSize">12sp</item>
+        <item name="android:fontFamily">sans-serif</item>
+        <item name="android:textStyle">normal</item>
+        <item name="android:textAllCaps">true</item>
         <item name="android:textColor">@color/secondaryTextColor</item>
     </style>
 
-    <style name="AppTheme.ProfileTitle" parent="AppTheme.BaseProfileTitle" />
-
-    <style name="AppTheme.ProfileEllipsizedTitle" parent="AppTheme.BaseProfileTitle">
-        <item name="android:maxLines">1</item>
-        <item name="android:ellipsize">end</item>
+    <style name="MatchDouble">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">match_parent</item>
     </style>
 
-    <style name="AppTheme.BaseProfileGroupSubtitle">
-        <item name="android:textSize">14sp</item>
-        <item name="android:maxLines">1</item>
-        <item name="android:ellipsize">end</item>
-        <item name="android:textColor">@color/primaryTextColor</item>
+    <style name="MatchWrap">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
     </style>
 
-    <style name="AppTheme.ProfileGroupSubtitle" parent="AppTheme.BaseProfileGroupSubtitle" />
-
-    <style name="AppTheme.ProfileGroupAvatar">
-        <item name="android:background">@drawable/circle_ph</item>
+    <style name="ProfileView">
+        <item name="secondaryDividerColor">@color/secondaryLightColor</item>
+        <item name="emptySpaceColor">@color/textLightColor</item>
+        <item name="backgroundColor">@color/primaryColor</item>
+        <item name="leaveTextColor">@color/colorAccentDanger</item>
     </style>
 
+    <style name="ProgressDialog" parent="Theme.AppCompat.Light.Dialog.Alert">
+        <item name="android:background">@drawable/background_progress_dialog</item>
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
+    </style>
+
+    <style name="TilPurchase" parent="MatchWrap">
+        <item name="android:padding">@dimen/spacing_small_x_8</item>
+    </style>
+
+    <style name="WrapDouble">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+    </style>
 </resources>

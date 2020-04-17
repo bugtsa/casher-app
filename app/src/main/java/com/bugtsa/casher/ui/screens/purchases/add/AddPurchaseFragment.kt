@@ -14,7 +14,7 @@ import com.borax12.materialdaterangepicker.time.TimePickerDialog
 import com.bugtsa.casher.R
 import com.bugtsa.casher.presentation.purchase.AddPurchaseViewModel
 import com.bugtsa.casher.presentation.purchase.AddPurchaseViewModelFactory
-import com.bugtsa.casher.ui.screens.BaseFragment
+import com.bugtsa.casher.ui.screens.base.BaseFragment
 import com.maxproj.calendarpicker.Builder
 import kotlinx.android.synthetic.main.fragment_add_purchase.*
 import pro.horovodovodo4ka.bones.Bone

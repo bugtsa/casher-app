@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/primaryColor"
+        android:orientation="vertical"
+        android:paddingStart="@dimen/spacing_normal_y_16"
+        android:paddingLeft="@dimen/spacing_normal_y_16"
+        android:paddingTop="@dimen/spacing_small_x_8"
+        android:paddingEnd="@dimen/spacing_normal_y_16"
+        android:paddingRight="@dimen/spacing_normal_y_16"
+        android:paddingBottom="@dimen/spacing_small_x_8">
+
+    <Switch
+            android:id="@+id/vSwitchHolder"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingStart="@dimen/spacing_small_x_8"
+            android:textSize="@dimen/font_x_medium_16" />
+</LinearLayout>

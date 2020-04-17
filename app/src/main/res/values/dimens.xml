@@ -29,5 +29,7 @@
 
     <dimen name="splash_earth_logo_size_250">250dp</dimen>
 
+    <dimen name="toolbar_base_elevation">4dp</dimen>
+
     <dimen name="zeros">0dp</dimen>
 </resources>

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="ProfileViewAttrs">
+        <attr name="secondaryDividerColor" format="color" />
+        <attr name="emptySpaceColor" format="color" />
+        <attr name="backgroundColor" format="color" />
+        <attr name="leaveTextColor" format="color" />
+    </declare-styleable>
+</resources>

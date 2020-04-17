@@ -9,7 +9,7 @@ import com.bugtsa.casher.R
 import com.bugtsa.casher.presentation.SplashViewModel
 import com.bugtsa.casher.presentation.SplashViewModelFactory
 import com.bugtsa.casher.ui.navigation.TabBar
-import com.bugtsa.casher.ui.screens.BaseFragment
+import com.bugtsa.casher.ui.screens.base.BaseFragment
 import com.bugtsa.casher.ui.screens.charts.ChooseChartsScreen
 import com.bugtsa.casher.ui.screens.purchases.show.PurchasesScreen
 import com.bugtsa.casher.ui.screens.settings.NavigationStackPresentable

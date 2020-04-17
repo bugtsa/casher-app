@@ -24,14 +24,9 @@ import com.bugtsa.casher.presentation.SingUpViewModelFactory
 import com.bugtsa.casher.presentation.optional.ProgressState.Hide
 import com.bugtsa.casher.presentation.optional.ProgressState.Progress
 import com.bugtsa.casher.ui.activities.MainActivity
-import com.bugtsa.casher.ui.activities.RootBone
-import com.bugtsa.casher.ui.navigation.TabBar
-import com.bugtsa.casher.ui.screens.BaseFragment
+import com.bugtsa.casher.ui.screens.base.BaseFragment
 import com.bugtsa.casher.ui.screens.auth.SplashFragment.Companion.switchToMainScreen
-import com.bugtsa.casher.ui.screens.charts.ChooseChartsScreen
-import com.bugtsa.casher.ui.screens.purchases.show.PurchasesScreen
 import com.bugtsa.casher.ui.screens.settings.NavigationStackPresentable
-import com.bugtsa.casher.ui.screens.settings.SettingsScreen
 import com.bugtsa.casher.utils.ConstantManager.Constants.EMPTY
 import com.google.android.gms.auth.GoogleAuthUtil
 import com.google.android.gms.common.AccountPicker
@@ -44,7 +39,6 @@ import kotlinx.android.synthetic.main.fragment_auth.*
 import pro.horovodovodo4ka.bones.Finger
 import pro.horovodovodo4ka.bones.Phalanx
 import pro.horovodovodo4ka.bones.extensions.closest
-import pro.horovodovodo4ka.bones.extensions.show
 import pro.horovodovodo4ka.bones.persistance.BonePersisterInterface
 import pro.horovodovodo4ka.bones.ui.FragmentSibling
 import pro.horovodovodo4ka.bones.ui.delegates.Page
@@ -85,6 +79,9 @@ class SingUpFragment(override val layout: Int = R.layout.fragment_auth) : BaseFr
         }
 
         refreshUI()
+
+        vLogin.setText("bugtsa")
+        vPassword.setText("password")
     }
 
     override fun onSaveInstanceState(outState: Bundle) {

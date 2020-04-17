@@ -38,6 +38,10 @@
     <string name="price_purchase">Цена траты</string>
     <string name="price_purchase_hint">Напишите число</string>
 
+    <string name="profile_expandable_view_hide_button">Свернуть</string>
+    <string name="profile_expandable_view_text">Дополнительная информация</string>
+    <string name="profile_username">Ник пользователя</string>
+
     <string name="screen_add_purchase">Добавить трату</string>
 
     <string name="settings_title">Настройки</string>
