@@ -3,6 +3,7 @@ package com.bugtsa.casher.global.recycler.delegates
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
+import androidx.core.view.isVisible
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
@@ -10,7 +11,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bugtsa.casher.R
 import com.bugtsa.casher.global.extentions.convertDpToPx
 import com.bugtsa.casher.global.extentions.inflate
-import com.bugtsa.casher.global.extentions.visibility
 import com.bugtsa.casher.global.recycler.delegates.holders.BaseViewHolder
 import com.bugtsa.casher.global.recycler.entities.DividerItem
 import com.bugtsa.casher.global.recycler.entities.ListItem
@@ -52,10 +52,10 @@ class DividerDelegateAdapter : AdapterDelegate<List<ListItem>>() {
 
             root.setBackgroundColor(ContextCompat.getColor(divider.context, dividerItem.backgroundOther))
 
-            root.visibility { dividerItem.initiallyVisible }
+            root.isVisible = dividerItem.initiallyVisible
             visibleLiveData = dividerItem.visible
             visibleObserver = Observer {
-                root.visibility { it }
+                root.isVisible = it
             }
 
             visibleLiveData?.observe((root.context as LifecycleOwner), visibleObserver)

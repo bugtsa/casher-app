@@ -5,8 +5,11 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.core.content.ContextCompat
+import androidx.core.view.updateLayoutParams
+import androidx.core.view.updateMargins
 import androidx.recyclerview.widget.RecyclerView
 import com.bugtsa.casher.R
+import com.bugtsa.casher.global.extentions.convertDpToPx
 import com.bugtsa.casher.global.extentions.inflate
 import com.bugtsa.casher.global.recycler.entities.LabelItem
 import com.bugtsa.casher.global.recycler.entities.ListItem
@@ -23,9 +26,9 @@ class LabelDelegateAdapter : AdapterDelegate<List<ListItem>>() {
         val item = items[position] as LabelItem
 
         with(layout) {
-//            val topBottomMargins = vLabel.context.convertDpToPx(item.topBottomMargins)
+            val topBottomMargins = vLabel.context.convertDpToPx(item.topBottomMargins)
 
-//            vLabel.updateLayoutParams<ViewGroup.MarginLayoutParams> { updateMargins(top = topBottomMargins, bottom = topBottomMargins) }
+            vLabel.updateLayoutParams<ViewGroup.MarginLayoutParams> { updateMargins(top = topBottomMargins, bottom = topBottomMargins) }
 
             vLabel.text = item.textLabel
             vLabel.isAllCaps = item.isAllCaps

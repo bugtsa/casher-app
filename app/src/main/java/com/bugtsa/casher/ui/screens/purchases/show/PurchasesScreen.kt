@@ -5,6 +5,7 @@ import android.content.Context
 import android.os.Bundle
 import android.view.View
 import androidx.core.content.ContextCompat
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -15,7 +16,6 @@ import com.bugtsa.casher.presentation.purchase.PurchasesViewModelFactory
 import com.bugtsa.casher.ui.OnChangePosition
 import com.bugtsa.casher.ui.adapters.PurchaseAdapter
 import com.bugtsa.casher.ui.screens.purchases.add.AddPurchaseScreen
-import com.bugtsa.casher.global.extentions.visibility
 import kotlinx.android.synthetic.main.fragment_purchases.*
 import pro.horovodovodo4ka.bones.Bone
 import pro.horovodovodo4ka.bones.Finger
@@ -24,7 +24,6 @@ import pro.horovodovodo4ka.bones.persistance.BonePersisterInterface
 import pro.horovodovodo4ka.bones.ui.FingerNavigatorInterface
 import pro.horovodovodo4ka.bones.ui.delegates.FingerNavigator
 import toothpick.Toothpick
-
 
 class PurchasesScreen(rootPhalanx: Bone? = null) : Finger(rootPhalanx) {
 
@@ -97,7 +96,7 @@ class PurchasesFragment : Fragment(R.layout.fragment_purchases), PurchasesView,
 
     override fun scrollToPosition(position: Int) {
         purchases.scrollToPosition(position)
-        bottom_scroll.visibility { false }
+        bottom_scroll.isVisible = false
     }
 
     override fun setupPurchaseList(paymentsByDayList: List<PaymentsByDayRes>) {
@@ -107,16 +106,16 @@ class PurchasesFragment : Fragment(R.layout.fragment_purchases), PurchasesView,
 
     override fun setupStatusText(status: String) {
         status_tv.text = status
-        status_tv.visibility { true }
+        status_tv.isVisible = true
     }
 
     override fun showProgressBar(isVisible: Boolean) {
         setupStatusText("")
-        progress_purchase.visibility { isVisible }
+        progress_purchase.isVisible =  isVisible
     }
 
     override fun showPaymentList(isVisible: Boolean) {
-        purchases.visibility { isVisible }
+        purchases.isVisible = isVisible
     }
 
     //endregion

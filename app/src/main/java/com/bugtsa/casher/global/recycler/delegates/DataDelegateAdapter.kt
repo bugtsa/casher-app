@@ -7,10 +7,10 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
+import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
 import com.bugtsa.casher.R
 import com.bugtsa.casher.global.extentions.inflate
-import com.bugtsa.casher.global.extentions.visibility
 import com.bugtsa.casher.global.recycler.entities.DataItem
 import com.bugtsa.casher.global.recycler.entities.ListItem
 import com.hannesdorfmann.adapterdelegates4.AdapterDelegate
@@ -30,11 +30,10 @@ class DataDelegateAdapter : AdapterDelegate<List<ListItem>>() {
             rootLay.background = ContextCompat.getDrawable(label.context, item.backgroundRes)
 
             if (item.textLabel != null) {
-                //TODO: Need use core.visibility
-                label.visibility { true }
+                label.isVisible = true
                 label.text = item.textLabel
             } else {
-                label.visibility { false }
+                label.isVisible = false
             }
 
             data.text = item.textData
@@ -42,10 +41,10 @@ class DataDelegateAdapter : AdapterDelegate<List<ListItem>>() {
             label.setTextColor(ContextCompat.getColor(label.context, item.labelTextColor))
 
             if (item.iconRes != null) {
-                imageIcon.visibility { true }
+                imageIcon.isVisible = true
                 imageIcon.setImageResource(item.iconRes)
             } else {
-                imageIcon.visibility { false }
+                imageIcon.isVisible = false
             }
         }
     }

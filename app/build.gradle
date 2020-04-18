@@ -28,7 +28,7 @@ project.ext {
     room = "2.2.5"
     rxbinding = "2.2.0"
     rxkotlin = "2.4.0"
-    version = "1"
+    version = "2"
 }
 
 detekt {
@@ -59,6 +59,15 @@ android {
     }
 
     flavorDimensions "default"
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    kotlinOptions {
+        jvmTarget = JavaVersion.VERSION_1_8.toString()
+    }
 
     packagingOptions {
         exclude 'META-INF/rxjava.properties'

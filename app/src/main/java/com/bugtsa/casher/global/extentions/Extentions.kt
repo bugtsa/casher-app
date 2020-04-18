@@ -6,10 +6,6 @@ import android.view.ViewGroup
 import androidx.annotation.LayoutRes
 import java.util.*
 
-fun View.visibility(predicate: () -> Boolean?) {
-    this.visibility = if (predicate() == true) View.VISIBLE else View.GONE
-}
-
 fun Int.getMonthName(locale: Locale, shortName: Boolean): String {
     var format = "%tB"
     if (shortName) format = "%tb"

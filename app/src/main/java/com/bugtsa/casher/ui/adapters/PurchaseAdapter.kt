@@ -1,13 +1,15 @@
 package com.bugtsa.casher.ui.adapters
 
-import android.view.*
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import android.widget.TextView
+import androidx.core.view.isVisible
 import com.bugtsa.casher.R
 import com.bugtsa.casher.data.dto.PaymentDto
 import com.bugtsa.casher.data.network.PaymentsByDayRes
 import com.bugtsa.casher.ui.OnChangePosition
 import com.bugtsa.casher.utils.autoNotify
-import com.bugtsa.casher.global.extentions.visibility
 import kotlinx.android.synthetic.main.item_payment_caption.view.*
 import kotlinx.android.synthetic.main.item_purchase.view.*
 import kotlin.properties.Delegates
@@ -61,7 +63,7 @@ class PurchaseAdapter(private val onChangePosition: OnChangePosition)
     //region ================= private Functions =================
 
     private fun showPayment(holder: ViewHolder?, payment: PaymentDto) {
-        holder?.date?.visibility { false }
+        holder?.date?.isVisible = false
 
         setupPaymentVisibility(holder, true)
         holder?.timePurchase?.text = payment.time
@@ -71,17 +73,17 @@ class PurchaseAdapter(private val onChangePosition: OnChangePosition)
     }
 
     private fun showDateTitle(holder: ViewHolder?, date: String) {
-        holder?.date?.visibility { true }
+        holder?.date?.isVisible = true
         holder?.date?.text = date
 
         setupPaymentVisibility(holder, false)
     }
 
     private fun setupPaymentVisibility(holder: ViewHolder?, visibility: Boolean) {
-        holder?.category?.visibility { visibility }
-        holder?.cost?.visibility { visibility }
-        holder?.modernBalance?.visibility { visibility }
-        holder?.timePurchase?.visibility { visibility }
+        holder?.category?.isVisible = visibility
+        holder?.cost?.isVisible = visibility
+        holder?.modernBalance?.isVisible = visibility
+        holder?.timePurchase?.isVisible = visibility
     }
     //endregion
 

@@ -3,10 +3,9 @@ package com.bugtsa.casher.global.recycler.delegates.holders
 import android.view.View
 import android.widget.Switch
 import androidx.annotation.CallSuper
+import androidx.core.view.isVisible
 import androidx.lifecycle.*
 import com.bugtsa.casher.R
-import com.bugtsa.casher.global.extentions.enabled
-import com.bugtsa.casher.global.extentions.visibility
 import com.bugtsa.casher.global.recycler.entities.BaseSwitchItem
 import com.bugtsa.casher.global.recycler.entities.ListItem
 
@@ -40,17 +39,17 @@ abstract class BaseSwitchViewHolder(view: View) : BaseViewHolder(view), Lifecycl
         switch.setOnCheckedChangeListener(item.onCheckedChangeListener)
         updateSwitchText(item.state?.value ?: false)
 
-        itemView.visibility { item.initiallyVisible }
+        itemView.isVisible = item.initiallyVisible
         visibleLiveData = item.visible
         visibleObserver = Observer {
-            itemView.visibility { it }
+            itemView.isVisible = it
         }
 
         visibleLiveData?.observe(this, visibleObserver)
 
         enableLiveData = item.enable
         enableObserver = Observer {
-            switch.enabled { it }
+            switch.isEnabled = it
         }
 
         enableLiveData?.observe(this, enableObserver)
