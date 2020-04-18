@@ -4,6 +4,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.LayoutRes
+import androidx.appcompat.app.AlertDialog
 import java.util.*
 
 fun Int.getMonthName(locale: Locale, shortName: Boolean): String {
@@ -15,5 +16,9 @@ fun Int.getMonthName(locale: Locale, shortName: Boolean): String {
     return java.lang.String.format(locale, format, calendar)
 }
 
-fun ViewGroup.inflate(@LayoutRes layoutRes: Int, attachToRoot: Boolean = false) =
+fun ViewGroup.inflate(@LayoutRes layoutRes: Int, attachToRoot: Boolean = false): View =
         LayoutInflater.from(context).inflate(layoutRes, this, attachToRoot)
+
+fun AlertDialog.Builder.positiveButton(text: String = "OK", handleClick: (which: Int) -> Unit = {}) {
+    this.setPositiveButton(text) { _, which -> handleClick(which) }
+}

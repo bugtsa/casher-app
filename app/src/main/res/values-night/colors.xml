@@ -12,4 +12,5 @@
     <color name="primaryTextColor">@color/white_bt_ee</color>
     <color name="secondaryTextColor">@color/white_bt_cc</color>
     <color name="textLightColor">@color/white_1000</color>
+    <color name="imageTint">@color/grey_bt_45</color>
 </resources>

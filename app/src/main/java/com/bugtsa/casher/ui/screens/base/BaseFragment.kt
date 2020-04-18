@@ -1,12 +1,22 @@
 package com.bugtsa.casher.ui.screens.base
 
 import android.content.Context
+import android.content.DialogInterface
 import android.os.Bundle
+import android.text.SpannableStringBuilder
+import android.util.TypedValue
 import android.view.*
+import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
+import androidx.core.text.bold
+import androidx.core.view.setPadding
 import androidx.fragment.app.Fragment
 import com.bugtsa.casher.R
+import com.bugtsa.casher.global.extentions.dp
+import com.bugtsa.casher.global.extentions.positiveButton
+import com.bugtsa.casher.utils.ConstantManager.Constants.EMPTY
 import io.reactivex.Completable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
@@ -115,6 +125,35 @@ abstract class BaseFragment : Fragment() {
                     .create()
             if (showCancelDialogProgress) cancelDialogProgress?.show()
         }
+    }
+
+    fun showAlertDialog(title: String,
+                        customTitle: String = EMPTY,
+                        message: String? = null,
+                        dismissListener: DialogInterface.OnDismissListener? = null) {
+        AlertDialog
+                .Builder(homeActivity, R.style.ErrorDialog)
+                .apply {
+                    setOnDismissListener(dismissListener)
+                    positiveButton()
+                    if (customTitle.isNotEmpty()) {
+                        TextView(homeActivity)
+                                .apply {
+                                    setPadding(24.dp().toInt())
+                                    setTextColor(ContextCompat.getColor(requireContext(), R.color.primaryTextColor))
+                                    setTextSize(TypedValue.COMPLEX_UNIT_SP, 17f)
+                                    text = SpannableStringBuilder()
+                                            .bold {
+                                                append(customTitle)
+                                            }
+                                }
+                                .also { setCustomTitle(it) }
+                    } else {
+                        setTitle(title)
+                    }
+                    setMessage(message)
+                    show()
+                }
     }
 
     open fun backPressAction() {

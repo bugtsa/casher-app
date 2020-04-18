@@ -24,8 +24,8 @@ import com.bugtsa.casher.presentation.SingUpViewModelFactory
 import com.bugtsa.casher.presentation.optional.ProgressState.Hide
 import com.bugtsa.casher.presentation.optional.ProgressState.Progress
 import com.bugtsa.casher.ui.activities.MainActivity
-import com.bugtsa.casher.ui.screens.base.BaseFragment
 import com.bugtsa.casher.ui.screens.auth.SplashFragment.Companion.switchToMainScreen
+import com.bugtsa.casher.ui.screens.base.BaseFragment
 import com.bugtsa.casher.ui.screens.settings.NavigationStackPresentable
 import com.bugtsa.casher.utils.ConstantManager.Constants.EMPTY
 import com.google.android.gms.auth.GoogleAuthUtil
@@ -201,10 +201,6 @@ class SingUpFragment(override val layout: Int = R.layout.fragment_auth) : BaseFr
             showAuthApp()
         })
 
-        viewModel.observeWrongUserCredential().observe(viewLifecycleOwner, Observer { wrongInput ->
-            setupAuthError(loginErrorText = getString(R.string.auth_wrong_login_or_password, wrongInput))
-        })
-
         viewModel.observerProgressStateLiveData().observe(viewLifecycleOwner, Observer { progressState ->
             when (progressState) {
                 is Progress ->
@@ -214,10 +210,19 @@ class SingUpFragment(override val layout: Int = R.layout.fragment_auth) : BaseFr
         })
 
         viewModel.observeRemoveHintErrorLiveData().observe(viewLifecycleOwner, Observer { isRemove ->
-            if(isRemove){
+            if (isRemove) {
                 setupCorrectHints()
             }
         })
+
+        viewModel.observeAuthError().observe(viewLifecycleOwner, Observer { state ->
+            when (state) {
+                SingUpViewModel.AuthErrorState.ConnectionToServer -> showAlertDialog(getString(R.string.auth_server_error))
+                is SingUpViewModel.AuthErrorState.WrongUserCredential -> setupAuthError(loginErrorText = getString(R.string.auth_wrong_login_or_password, state.email))
+                SingUpViewModel.AuthErrorState.Unknown -> showAlertDialog(getString(R.string.auth_error_undefined))
+            }
+        })
+
     }
 
     private fun bindViews() {

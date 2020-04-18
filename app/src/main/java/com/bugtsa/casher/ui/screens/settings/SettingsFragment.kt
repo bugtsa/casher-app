@@ -9,12 +9,14 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.CompoundButton
+import androidx.core.view.isVisible
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.bugtsa.casher.R
 import com.bugtsa.casher.global.recycler.entities.*
 import com.bugtsa.casher.presentation.SettingsViewModel
 import com.bugtsa.casher.presentation.SettingsViewModelFactory
+import com.bugtsa.casher.ui.screens.auth.SingUpScreen
 import com.bugtsa.casher.ui.screens.base.BaseListFragment
 import com.bugtsa.casher.utils.ThemeHelper
 import kotlinx.android.synthetic.main.fragment_settings.*
@@ -70,6 +72,10 @@ class SettingsScreenFragment : BaseListFragment(),
     }
 
     override fun onListItemClick(v: View, position: Int) {
+        val item = adapter.getItems()[position]
+        when (item.id) {
+            R.id.profile_logout -> viewModel.logout()
+        }
     }
 
     override fun onItemsAddedToList() = Unit
@@ -81,9 +87,9 @@ class SettingsScreenFragment : BaseListFragment(),
 
         val title = getString(R.string.settings_title)
         when (title) {
-            null -> vToolbar.visibility = View.GONE
+            null -> vToolbar.isVisible = false
             else -> {
-                vToolbar.visibility = View.VISIBLE
+                vToolbar.isVisible = true
                 vToolbar.title = title
 
                 if (bone.phalanxes.size > 1) addNavigationToToolbar(vToolbar, R.drawable.ic_arrow_back_white)
@@ -105,23 +111,39 @@ class SettingsScreenFragment : BaseListFragment(),
     private fun loadProfileStyle(): TypedArray = requireContext().obtainStyledAttributes(R.style.ProfileView, R.styleable.ProfileViewAttrs)
 
     private fun bindViewModel() {
+        viewModel.observeLogout().observe(viewLifecycleOwner, Observer {
+            bone.goBack()
+            bone.show(SingUpScreen())
+        })
+
         viewModel.observeUserLogin().observe(viewLifecycleOwner, Observer { userLogin ->
             val items = mutableListOf<ListItem>().apply {
 
                 val attributes = loadProfileStyle()
                 val emptySpaceColor = attributes.getResourceId(R.styleable.ProfileViewAttrs_emptySpaceColor, 0)
                 attributes.recycle()
+                val settingsLeftMargin = 55
+                val settingsRightMargin = 0
 
                 add(SpaceItem(DEFAULT_SPACE, emptySpaceColor))
-                add(DataItem(getString(R.string.profile_username), userLogin))
-                add(DividerItem(leftMargin = DEFAULT_SPACE, rightMargin = DEFAULT_SPACE))
+                add(DataItem(getString(R.string.profile_username), userLogin)).apply {
+                    add(DividerItem(leftMargin = settingsLeftMargin, rightMargin = settingsRightMargin))
+                }
                 add(SwitchItem(
                         getString(R.string.switch_theme_mode),
                         CompoundButton.OnCheckedChangeListener { _, isChecked ->
                             bindCheckedListener(isChecked)
                         },
                         state = viewModel.observeModelTheme()
-                ))
+                )).apply {
+                    add(DividerItem(leftMargin = settingsLeftMargin, rightMargin = settingsRightMargin))
+                }
+                add(MenuItem(
+                        isArrowEnabled = false,
+                        title = getString(R.string.profile_logout),
+                        icon = R.drawable.ic_exit
+                ).apply { id = R.id.profile_logout })
+                add(DividerItem(leftMargin = settingsLeftMargin, rightMargin = settingsRightMargin))
             }
             adapter.setItems(items)
         })

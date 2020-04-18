@@ -20,6 +20,7 @@ import com.google.android.gms.common.GoogleApiAvailability
 import com.google.gson.Gson
 import retrofit2.HttpException
 import toothpick.Toothpick
+import java.net.UnknownHostException
 import java.util.regex.Matcher
 import java.util.regex.Pattern
 import javax.inject.Inject
@@ -64,11 +65,11 @@ class SingUpViewModel @Inject constructor(
     private val routeToPaymentsViewLiveData = MutableLiveData<Boolean>()
     fun observeRouteToPaymentsView(): LiveData<Boolean> = routeToPaymentsViewLiveData
 
-    private val wrongUserCredentialLiveData = MutableLiveData<String>()
-    fun observeWrongUserCredential(): LiveData<String> = wrongUserCredentialLiveData
-
     private val removeHintErrorLiveData = MutableLiveData<Boolean>()
     fun observeRemoveHintErrorLiveData(): LiveData<Boolean> = removeHintErrorLiveData
+
+    private val authErrorLiveData = MutableLiveData<AuthErrorState>()
+    fun observeAuthError(): LiveData<AuthErrorState> = authErrorLiveData
 
     init {
 //        keyboardInteractor.observeKeyboardIsShown()
@@ -95,13 +96,16 @@ class SingUpViewModel @Inject constructor(
                 .observeOn(SchedulersProvider.ui())
                 .subscribe({ authDto ->
                     progressStateLiveData.value = ProgressState.Hide
-                    preferenceRepository.saveUserEmail(authDto.email)
-                    preferenceRepository.saveAccessToken(authDto.accessToken)
-                    preferenceRepository.saveRefreshToken(authDto.refreshToken)
+                    preferenceRepository.saveAuthData(authDto)
                     routeToPaymentsViewLiveData.value = true
                 }, { throwable ->
                     progressStateLiveData.value = ProgressState.Hide
-                    processAuthError(throwable)
+                    when (throwable) {
+                        is UnknownHostException -> {
+                            authErrorLiveData.value = AuthErrorState.ConnectionToServer
+                        }
+                        else -> processAuthError(throwable)
+                    }
                 })
                 .also(::addDispose)
     }
@@ -142,8 +146,12 @@ class SingUpViewModel @Inject constructor(
                 val userNameOrEmail = message.errorDescription.replace(USER_ERROR_DESCRIPTION, EMPTY_REPLACE)
                         .replace(IS_NOT_KNOWN_ERROR_DESCRIPTION, EMPTY_REPLACE)
                         .trim()
-                wrongUserCredentialLiveData.value = userNameOrEmail
+                authErrorLiveData.value = AuthErrorState.WrongUserCredential(userNameOrEmail)
+            } else {
+                authErrorLiveData.value = AuthErrorState.Unknown
             }
+        } else {
+            authErrorLiveData.value = AuthErrorState.Unknown
         }
         ErrorHandler.handle(throwable)
     }
@@ -151,6 +159,12 @@ class SingUpViewModel @Inject constructor(
     sealed class FocusFieldAuth {
         object Email : FocusFieldAuth()
         object Password : FocusFieldAuth()
+    }
+
+    sealed class AuthErrorState {
+        object ConnectionToServer : AuthErrorState()
+        object Unknown : AuthErrorState()
+        data class WrongUserCredential(val email: String) : AuthErrorState()
     }
 
     companion object {

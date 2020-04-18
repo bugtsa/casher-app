@@ -125,11 +125,6 @@ class MainActivity : AppCompatActivity(),
         emergencyPin(outState)
     }
 
-//    override fun onDestroy() {
-//        super.onDestroy()
-//        saveBones()
-//    }
-
     //region ================= Request Permissions =================
 
     override fun onActivityResult(

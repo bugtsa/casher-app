@@ -26,6 +26,9 @@ class SettingsViewModel @Inject constructor(private val preferenceRepo: Preferen
     private val userLoginLiveData = MutableLiveData<String>()
     fun observeUserLogin(): LiveData<String> = userLoginLiveData
 
+    private val logoutLiveData = MutableLiveData<Boolean>()
+    fun observeLogout(): LiveData<Boolean> = logoutLiveData
+
     init {
         processModeTheme(preferenceRepo.getModeTheme())
         requestUserLogin()
@@ -45,5 +48,10 @@ class SettingsViewModel @Inject constructor(private val preferenceRepo: Preferen
 
     private fun processModeTheme(currentThemeName: String) {
         modeThemeLiveData.value = currentThemeName != lightMode
+    }
+
+    fun logout() {
+        preferenceRepo.clearAuthData()
+        logoutLiveData.value = true
     }
 }

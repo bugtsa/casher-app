@@ -12,10 +12,16 @@
     <color name="primaryTextColor">@color/grey_800</color>
     <color name="secondaryTextColor">@color/grey_dark_700</color>
     <color name="textLightColor">@color/white_bt_ee</color>
+    <color name="imageTint">@color/grey_400</color>
 
     <color name="yellow_400">#ffee58</color>
     <color name="grey_800">#424242</color>
     <color name="grey_dark_700">#373737</color>
+    <color name="grey_400">#8c8c8c</color>
+    <color name="grey_bt_37">#37474f</color>
+    <color name="grey_bt_62">#62727b</color>
+    <color name="grey_bt_45">#455a64</color>
+
 
     <color name="blue_300">#1565c0</color>
     <color name="blue_200">#5e92f3</color>
@@ -26,10 +32,8 @@
     <color name="pink_600">#ba2d65</color>
 
     <color name="blue_400">#23C2E4</color>
-    <color name="grey_bt_37">#37474f</color>
-    <color name="grey_bt_62">#62727b</color>
-    <color name="grey_bt_45">#455a64</color>
     <color name="black_bt_10">#102027</color>
+    <color name="black_alpha_100">#FF000000</color>
     <color name="white_bt_ee">#eeeeee</color>
     <color name="white_bt_cc">#cccccc</color>
     <color name="white_1000">#FFFFFF</color>

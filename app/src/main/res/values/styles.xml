@@ -108,6 +108,14 @@
         <item name="android:hint">@string/price_purchase</item>
     </style>
 
+    <style name="ErrorDialog" parent="Theme.AppCompat.Light.Dialog.Alert">
+        <item name="colorAccent">@color/colorAccent</item>
+        <item name="android:textColor">@color/secondaryTextColor</item>
+        <item name="android:textColorPrimary">@color/primaryTextColor</item>
+        <item name="buttonBarPositiveButtonStyle">@style/PositiveButtonStyle</item>
+        <item name="dialogCornerRadius">@dimen/spacing_small_x_8</item>
+    </style>
+
     <style name="FullScreenProgressDialog" parent="Theme.AppCompat.Light.Dialog.Alert">
         <item name="android:background">@null</item>
         <item name="android:windowIsFloating">false</item>
@@ -147,6 +155,10 @@
     <style name="MatchWrap">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
+    </style>
+
+    <style name="PositiveButtonStyle" parent="Widget.AppCompat.Button.ButtonBar.AlertDialog">
+        <item name="android:textColor">@color/colorAccent</item>
     </style>
 
     <style name="ProfileView">

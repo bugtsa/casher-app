@@ -22,9 +22,11 @@
 
     <string name="app_name">Casher</string>
 
+    <string name="auth_error_undefined">Unknown Auth Error</string>
     <string name="auth_login">Login or e-mail</string>
     <string name="auth_need_input_valid_email">Need input correct e-mail</string>
     <string name="auth_password">Password…</string>
+    <string name="auth_server_error">Server error. Please try later</string>
     <string name="auth_sign_in">Sign In</string>
     <string name="auth_wrong_login_or_password">Wrong login %1$s or password</string>
 
@@ -63,6 +65,7 @@
 
     <string name="profile_expandable_view_hide_button">Collapse</string>
     <string name="profile_expandable_view_text">More information</string>
+    <string name="profile_logout">Logout</string>
     <string name="profile_username">Username</string>
 
     <string name="screen_add_purchase">Add purchase</string>

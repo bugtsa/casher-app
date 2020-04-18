@@ -14,6 +14,6 @@ class MainPresenter @Inject constructor(
 	}
 
 	fun saveAccountName(accountName: String) {
-		preferenceProvider.saveAccountName(accountName)
+		preferenceProvider.saveUserEmail(accountName)
 	}
 }

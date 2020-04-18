@@ -3,10 +3,7 @@ package com.bugtsa.casher.global.recycler.base
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
-import com.bugtsa.casher.global.recycler.delegates.DataDelegateAdapter
-import com.bugtsa.casher.global.recycler.delegates.DividerDelegateAdapter
-import com.bugtsa.casher.global.recycler.delegates.LabelDelegateAdapter
-import com.bugtsa.casher.global.recycler.delegates.SwitchDelegateAdapter
+import com.bugtsa.casher.global.recycler.delegates.*
 import com.bugtsa.casher.global.recycler.delegates.holders.BaseViewHolder
 import com.bugtsa.casher.global.recycler.delegates.holders.SpaceDelegateAdapter
 import com.bugtsa.casher.global.recycler.entities.ExpandableItem
@@ -28,6 +25,7 @@ open class BaseListAdapter(
                 .addDelegate(SpaceDelegateAdapter())
                 .addDelegate(DataDelegateAdapter())
                 .addDelegate(SwitchDelegateAdapter())
+                .addDelegate(MenuDelegateAdapter())
         callback?.invoke(delegatesManager)
     }
 
