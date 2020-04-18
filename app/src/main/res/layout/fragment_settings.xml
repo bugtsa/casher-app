@@ -26,6 +26,7 @@
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:id="@+id/vProfileHeaderContainer"
                     android:layout_width="match_parent"
+                    android:background="@color/primaryDarkColor"
                     android:layout_height="@dimen/profile_group_header_height"
                     android:clipToPadding="false">
 

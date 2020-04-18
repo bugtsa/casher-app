@@ -151,7 +151,7 @@
 
     <style name="ProfileView">
         <item name="secondaryDividerColor">@color/secondaryLightColor</item>
-        <item name="emptySpaceColor">@color/textLightColor</item>
+        <item name="emptySpaceColor">@color/primaryLightColor</item>
         <item name="backgroundColor">@color/primaryColor</item>
         <item name="leaveTextColor">@color/colorAccentDanger</item>
     </style>

@@ -9,5 +9,5 @@
         android:layout_height="1dp"
         android:orientation="vertical"
         android:id="@+id/vDivider"
-        android:background="@color/textLightColor" />
+        android:background="@color/primaryDarkColor" />
 </LinearLayout>

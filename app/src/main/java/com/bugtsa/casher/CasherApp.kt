@@ -1,8 +1,10 @@
 package com.bugtsa.casher
 
+import android.content.Context
 import android.preference.PreferenceManager
 import androidx.multidex.MultiDexApplication
 import com.bugtsa.casher.di.module.CasherApplicationModule
+import com.bugtsa.casher.domain.prefs.PreferenceRepository
 import com.bugtsa.casher.domain.prefs.PreferenceRepository.Companion.THEME_MODE_KEY
 import com.bugtsa.casher.utils.ThemeHelper
 import com.bugtsa.casher.utils.ThemeHelper.applyTheme
@@ -20,7 +22,7 @@ class CasherApp : MultiDexApplication() {
     override fun onCreate() {
         super.onCreate()
 
-        val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this)
+        val sharedPreferences = this.getSharedPreferences(PreferenceRepository.SETTINGS_PREF_NAME, Context.MODE_PRIVATE)
         val themePref = sharedPreferences.getString(THEME_MODE_KEY, ThemeHelper.default) ?: ThemeHelper.default
         applyTheme(themePref)
 
