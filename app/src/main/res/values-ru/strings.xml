@@ -8,6 +8,9 @@
     <string name="auth_password">Пароль…</string>
     <string name="auth_server_error">Серверная ошибка. Пожалуйста попробуйте позже</string>
     <string name="auth_sign_in">Войти</string>
+    <string name="auth_sing_up_in_app">Войдите в приложение</string>
+    <string name="auth_want_to_logout_title">Вы точно хотите выйти из приложения?</string>
+    <string name="auth_want_to_logout_description">После этого будут удалены все настройки</string>
     <string name="auth_wrong_login_or_password">Неправильный логин %1$s или пароль</string>
 
     <string name="cancel_caption">Отмена</string>
@@ -53,8 +56,6 @@
     <string name="sheet_balance_caption">Баланс</string>
     <string name="sheet_category_caption">На что</string>
     <string name="sheet_cost_caption">Сумма</string>
-
-    <string name="sing_up_in_app">Войдите в приложение</string>
 
     <string name="sort_type_asc">по убыванию</string>
     <string name="sort_type_desc">по возрастанию</string>

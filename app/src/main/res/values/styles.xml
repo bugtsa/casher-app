@@ -92,6 +92,23 @@
         <item name="android:layout_marginBottom">@dimen/spacing_small_x_8</item>
     </style>
 
+    <style name="DialogError" parent="Theme.AppCompat.Light.Dialog.Alert">
+        <item name="colorAccent">@color/colorAccent</item>
+        <item name="android:textColor">@color/secondaryTextColor</item>
+        <item name="android:textColorPrimary">@color/primaryTextColor</item>
+        <item name="buttonBarPositiveButtonStyle">@style/PositiveButtonStyle</item>
+        <item name="dialogCornerRadius">@dimen/spacing_small_x_8</item>
+    </style>
+
+    <style name="DialogInfo" parent="Theme.AppCompat.Light.Dialog.Alert">
+        <item name="colorAccent">@color/colorAccent</item>
+        <item name="android:textColor">@color/primaryTextColor</item>
+        <item name="android:textColorPrimary">@color/primaryTextColor</item>
+        <item name="android:colorBackground">@color/primaryDarkColor</item>
+        <item name="buttonBarPositiveButtonStyle">@style/PositiveButtonStyle</item>
+        <item name="dialogCornerRadius">8dp</item>
+    </style>
+
     <style name="EditText" parent="MatchWrap">
         <item name="android:textColor">@color/primaryDarkColor</item>
         <item name="android:textColorHint">@color/secondaryTextColor</item>
@@ -106,14 +123,6 @@
 
     <style name="EditText.ManualCode">
         <item name="android:hint">@string/price_purchase</item>
-    </style>
-
-    <style name="ErrorDialog" parent="Theme.AppCompat.Light.Dialog.Alert">
-        <item name="colorAccent">@color/colorAccent</item>
-        <item name="android:textColor">@color/secondaryTextColor</item>
-        <item name="android:textColorPrimary">@color/primaryTextColor</item>
-        <item name="buttonBarPositiveButtonStyle">@style/PositiveButtonStyle</item>
-        <item name="dialogCornerRadius">@dimen/spacing_small_x_8</item>
     </style>
 
     <style name="FullScreenProgressDialog" parent="Theme.AppCompat.Light.Dialog.Alert">

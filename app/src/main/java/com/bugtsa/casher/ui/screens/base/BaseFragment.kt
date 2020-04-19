@@ -132,7 +132,7 @@ abstract class BaseFragment : Fragment() {
                         message: String? = null,
                         dismissListener: DialogInterface.OnDismissListener? = null) {
         AlertDialog
-                .Builder(homeActivity, R.style.ErrorDialog)
+                .Builder(homeActivity, R.style.DialogError)
                 .apply {
                     setOnDismissListener(dismissListener)
                     positiveButton()
