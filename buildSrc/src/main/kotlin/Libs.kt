@@ -1,10 +1,5 @@
 object Libs {
 
-    object Project {
-        const val kotlinVersion = "1.3.72"
-        const val kotlin = "org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion"
-    }
-
     object Android {
         const val androidArchVersion = "1.1.1"
         private const val androidxCore = "1.3.0-rc01"

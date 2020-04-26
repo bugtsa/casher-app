@@ -6,7 +6,7 @@ buildscript {
         maven { url = uri("https://maven.fabric.io/public") }
     }
     dependencies {
-        val kotlinVersion = "1.3.72"
+        val kotlinVersion = System.getProperty("kotlinVersion")
 
         classpath("com.android.tools.build:gradle:3.6.3")
         classpath("io.fabric.tools:gradle:1.31.2")

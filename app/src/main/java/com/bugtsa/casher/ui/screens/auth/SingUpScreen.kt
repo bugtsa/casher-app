@@ -42,6 +42,7 @@ import pro.horovodovodo4ka.bones.extensions.closest
 import pro.horovodovodo4ka.bones.persistance.BonePersisterInterface
 import pro.horovodovodo4ka.bones.ui.FragmentSibling
 import pro.horovodovodo4ka.bones.ui.delegates.Page
+import timber.log.Timber
 import toothpick.Toothpick
 import java.util.concurrent.TimeUnit
 
@@ -137,7 +138,7 @@ class SingUpFragment(override val layout: Int = R.layout.fragment_auth) : BaseFr
             )
             startActivityForResult(intent, MainActivity.REQUEST_CODE_EMAIL)
         } catch (e: ActivityNotFoundException) {
-            Log.e("SingUpActivity", e.toString())
+            Timber.e("SingUpActivity: $e")
         }
     }
 

@@ -45,6 +45,13 @@ android {
         jvmTarget = JavaVersion.VERSION_1_8.toString()
     }
 
+    configurations {
+        all {
+            exclude(mapOf("module" to "httpclient"))
+            exclude(mapOf("module" to "commons-logging"))
+        }
+    }
+
     packagingOptions {
         exclude("META-INF/rxjava.properties")
         exclude("META-INF/DEPENDENCIES")
@@ -71,7 +78,11 @@ android {
 
 dependencies {
     implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("*.jar"))))
-    implementation(Libs.Project.kotlin)
+
+    val kotlinVersion = System.getProperty("kotlinVersion")
+    val kotlin = "org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion"
+    implementation(kotlin)
+
     implementation("androidx.appcompat:appcompat:1.1.0")
     implementation("com.google.android.material:material:1.1.0")
     implementation("androidx.legacy:legacy-support-v13:1.0.0")
@@ -144,6 +155,11 @@ dependencies {
     implementation("com.borax12.materialdaterangepicker:library:1.9")
 
     implementation("androidx.multidex:multidex:2.0.1")
+
+    testImplementation ("junit:junit:4.12")
+    testImplementation ("com.google.truth:truth:0.42")
+
+    lintChecks(project(":lint-rules"))
 }
 
 kapt {
