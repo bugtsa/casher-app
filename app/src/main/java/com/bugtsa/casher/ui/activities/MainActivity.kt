@@ -12,10 +12,8 @@ import androidx.appcompat.app.AppCompatActivity
 import com.bugtsa.casher.ui.screens.auth.SplashNavigationScreen
 import com.bugtsa.casher.ui.screens.auth.SplashScreen
 import com.bugtsa.casher.ui.screens.purchases.show.PurchasesScreen
-import com.crashlytics.android.Crashlytics
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.GoogleApiAvailability
-import io.fabric.sdk.android.Fabric
 import kotlinx.android.synthetic.main.activity_root.*
 import pro.horovodovodo4ka.bones.Bone
 import pro.horovodovodo4ka.bones.Finger
@@ -109,7 +107,6 @@ class MainActivity : AppCompatActivity(),
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        Fabric.with(this, Crashlytics())
         activityScope = Toothpick.openScopes(application, this)
         Toothpick.inject(this, activityScope)
 

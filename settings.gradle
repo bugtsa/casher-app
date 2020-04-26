@@ -1,1 +1,35 @@
+pluginManagement {
+    repositories {
+        jcenter()
+    }
+    resolutionStrategy {
+        eachPlugin {
+            String pluginId = requested.id.id
+            if (pluginId.startsWith("com.avito.android")) {
+                def artifact = pluginId.replace("com.avito.android.", "")
+                useModule("com.avito.android:$artifact:$avitoToolsVersion")
+            }
+            if (pluginId.startsWith("com.github.ben-manes.versions")) {
+                useModule("com.github.ben-manes:gradle-versions-plugin:$manesVersion")
+            }
+            if (pluginId.startsWith("io.gitlab.arturbosch.detekt" )) {
+                useModule("io.gitlab.arturbosch.detekt:detekt-gradle-plugin:$detektVersion")
+            }
+            if (pluginId.startsWith("org.sonarqube")) {
+                useModule("org.sonarsource.scanner.gradle:sonarqube-gradle-plugin:$sonarqubeVersion")
+            }
+        }
+    }
+}
+
+ext {
+    avitoToolsVersion = "2020.3.5"
+    manesVersion = "0.24.0"
+    detektVersion = "1.7.4"
+    sonarqubeVersion = "2.8"
+    buildToolsVersion = "29.0.3"
+}
+
+//System.setProperty("buildToolsVersion", "29.0.3")
+
 include ':app'
