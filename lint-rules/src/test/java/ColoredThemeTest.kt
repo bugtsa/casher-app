@@ -24,11 +24,11 @@ class ColoredThemeTest {
                 .run()
                 .expect("""
                     |res/layout/toolbar.xml:5: Error: Avoid direct use of colors in XML files. This will cause issues with different theme (eg. night) support [DirectColorUse]
-                    |                    android:background="#453344"
-                    |                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+                    |                        android:background="#453344"
+                    |                        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
                     |res/layout/toolbar.xml:6: Error: Avoid direct use of colors in XML files. This will cause issues with different theme (eg. night) support [DirectColorUse]
-                    |                    android:foreground="#667788"
-                    |                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+                    |                        android:foreground="#667788"
+                    |                        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
                     |2 errors, 0 warnings""".trimMargin())
     }
 }

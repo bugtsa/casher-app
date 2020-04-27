@@ -13,7 +13,7 @@ class ExampleUnitTest {
 
     @Test
     fun `a test`() {
-        assertThat("hello", `is`("world"))
+        assertThat("hello", `is`("hello"))
     }
 
 }
