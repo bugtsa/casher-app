@@ -12,3 +12,4 @@
 
 app/src/main/java/com/bugtsa/casher/utls/GoogleSheetManager\.kt
 /buildSrc/build/
+/lint-rules/build/
