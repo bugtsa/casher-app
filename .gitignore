@@ -11,5 +11,6 @@
 \.idea/
 
 app/src/main/java/com/bugtsa/casher/utls/GoogleSheetManager\.kt
+app/google-services.json
 /buildSrc/build/
 /lint-rules/build/
