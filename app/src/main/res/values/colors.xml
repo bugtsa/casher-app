@@ -22,7 +22,6 @@
     <color name="grey_bt_62">#62727b</color>
     <color name="grey_bt_45">#455a64</color>
 
-
     <color name="blue_300">#1565c0</color>
     <color name="blue_200">#5e92f3</color>
     <color name="blue_600">#003c8f</color>
@@ -41,4 +40,6 @@
     <color name="red_200">#ff867c</color>
     <color name="red_300">#ef5350</color>
     <color name="red_600">#b61827</color>
+
+    <color name="transparentColor">@android:color/transparent</color>
 </resources>

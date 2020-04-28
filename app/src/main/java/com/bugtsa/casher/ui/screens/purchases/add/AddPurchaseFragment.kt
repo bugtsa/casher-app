@@ -27,7 +27,6 @@ import pro.horovodovodo4ka.bones.ui.extensions.addNavigationToToolbar
 import toothpick.Toothpick
 import java.util.*
 
-
 interface AddPaymentStackPresentable {
     val fragmentTitle: String
 }
@@ -39,7 +38,7 @@ open class AddPurchaseScreen(rootPhalanx: Bone? = null) : Finger(rootPhalanx) {
 @Suppress("DEPRECATED_IDENTITY_EQUALS")
 @SuppressLint("MissingSuperCall")
 class AddPurchaseFragment : BaseFragment(), AddPurchaseView, TimePickerDialog.OnTimeSetListener,
-        FingerNavigatorInterface<AddPurchaseScreen> by FingerNavigator(com.bugtsa.casher.R.id.add_payment_container),
+        FingerNavigatorInterface<AddPurchaseScreen> by FingerNavigator(R.id.add_payment_container),
         BonePersisterInterface<AddPurchaseScreen>, AddPaymentStackPresentable {
 
     private lateinit var viewModel: AddPurchaseViewModel
@@ -101,7 +100,7 @@ class AddPurchaseFragment : BaseFragment(), AddPurchaseView, TimePickerDialog.On
         val title = fragmentTitle
         toolbar.visibility = View.VISIBLE
         toolbar.title = title
-        addNavigationToToolbar(toolbar, com.bugtsa.casher.R.drawable.ic_arrow_back_white)
+        addNavigationToToolbar(toolbar, R.drawable.ic_arrow_back_white)
     }
 
     //region ================= Add Purchase View =================
@@ -128,12 +127,12 @@ class AddPurchaseFragment : BaseFragment(), AddPurchaseView, TimePickerDialog.On
 
     @SuppressLint("SetTextI18n")
     override fun setupCurrentDateAndTime(dateAndTime: String) {
-        date_purchase.text = requireContext().getString(com.bugtsa.casher.R.string.current_date_and_time) + dateAndTime
+        date_purchase.text = requireContext().getString(R.string.current_date_and_time) + dateAndTime
     }
 
     @SuppressLint("SetTextI18n")
     override fun setupCustomDateAndTime(date: String, time: String) {
-        date_purchase.text = requireContext().getString(com.bugtsa.casher.R.string.changed_date_and_time) + "$date $time"
+        date_purchase.text = requireContext().getString(R.string.changed_date_and_time) + "$date $time"
     }
 
     //endregion

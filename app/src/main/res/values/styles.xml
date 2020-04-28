@@ -14,18 +14,18 @@
         <item name="colorPrimary">@color/primaryColor</item>
         <item name="colorPrimaryDark">@color/primaryDarkColor</item>
         <item name="colorAccent">@color/colorAccent</item>
-        <item name="android:colorBackground">@color/primaryColor</item>
+        <item name="android:background">@color/primaryColor</item>
     </style>
 
     <style name="AppTheme.BaseProfileGroupSubtitle">
-        <item name="android:textSize">14sp</item>
+        <item name="android:textSize">@dimen/font_medium_14</item>
         <item name="android:maxLines">1</item>
         <item name="android:ellipsize">end</item>
         <item name="android:textColor">@color/primaryTextColor</item>
     </style>
 
     <style name="AppTheme.BaseProfileTitle">
-        <item name="android:textSize">16sp</item>
+        <item name="android:textSize">@dimen/font_x_medium_16</item>
         <item name="android:maxLines">4</item>
         <item name="android:ellipsize">end</item>
         <item name="android:textColor">@color/secondaryTextColor</item>
@@ -55,7 +55,7 @@
     </style>
 
     <style name="AppTheme.SignInEditText" parent="AppTheme.SignInCursor">
-        <item name="android:textSize">24sp</item>
+        <item name="android:textSize">@dimen/font_xxx_medium_24</item>
     </style>
 
     <style name="AppToolbar" parent="BaseToolbar"/>
@@ -79,8 +79,8 @@
         <item name="hintTextAppearance">@style/AuthHintTextAppearance</item>
     </style>
 
-    <style name="BaseToolbar">
-        <item name="android:background">@color/primaryColor</item>
+    <style name="BaseToolbar" parent="AppTheme.NoActionBar.PopupOverlay">
+        <item name="android:background">@color/primaryDarkColor</item>
         <item name="android:layout_height">?attr/actionBarSize</item>
         <item name="titleTextColor">@color/primaryTextColor</item>
     </style>
@@ -106,7 +106,7 @@
         <item name="android:textColorPrimary">@color/primaryTextColor</item>
         <item name="android:colorBackground">@color/primaryDarkColor</item>
         <item name="buttonBarPositiveButtonStyle">@style/PositiveButtonStyle</item>
-        <item name="dialogCornerRadius">8dp</item>
+        <item name="dialogCornerRadius">@dimen/spacing_small_x_8</item>
     </style>
 
     <style name="EditText" parent="MatchWrap">
@@ -123,12 +123,6 @@
 
     <style name="EditText.ManualCode">
         <item name="android:hint">@string/price_purchase</item>
-    </style>
-
-    <style name="FullScreenProgressDialog" parent="Theme.AppCompat.Light.Dialog.Alert">
-        <item name="android:background">@null</item>
-        <item name="android:windowIsFloating">false</item>
-        <item name="android:windowBackground">@android:color/transparent</item>
     </style>
 
     <style name="HolderData">
@@ -177,10 +171,16 @@
         <item name="leaveTextColor">@color/colorAccentDanger</item>
     </style>
 
-    <style name="ProgressDialog" parent="Theme.AppCompat.Light.Dialog.Alert">
+    <style name="ProgressDialog.FullScreen" parent="Theme.AppCompat.Light.Dialog.Alert">
+        <item name="android:background">@null</item>
+        <item name="android:windowIsFloating">false</item>
+        <item name="android:windowBackground">@color/transparentColor</item>
+    </style>
+
+    <style name="ProgressDialog.Small" parent="Theme.AppCompat.Light.Dialog.Alert">
         <item name="android:background">@drawable/background_progress_dialog</item>
         <item name="android:windowIsTranslucent">true</item>
-        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:windowBackground">@color/transparentColor</item>
     </style>
 
     <style name="TilPurchase" parent="MatchWrap">

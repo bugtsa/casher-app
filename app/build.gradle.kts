@@ -28,7 +28,7 @@ android {
     }
     buildTypes {
         getByName("debug") {
-            isMinifyEnabled = true
+            isMinifyEnabled = false
             firebaseCrashlytics {
                 mappingFileUploadEnabled = false
             }
@@ -43,7 +43,7 @@ android {
             firebaseAppDistribution {
                 appId = "1:495380633023:android:a1b3fc39656f235e1abd0a"
                 serviceCredentialsFile = "$rootDir/app/casher-bugtsa-app.json"
-                testers = "preispodhyaya@gmail.com"
+                testers = "bugtsa@gmail.com, preispodhyaya@gmail.com"
             }
         }
     }
@@ -171,7 +171,7 @@ dependencies {
 
     implementation("androidx.multidex:multidex:2.0.1")
 
-    testImplementation ("junit:junit:4.12")
+    testImplementation ("junit:junit:4.13")
     testImplementation ("com.google.truth:truth:0.42")
 
     lintChecks(project(":lint-rules"))

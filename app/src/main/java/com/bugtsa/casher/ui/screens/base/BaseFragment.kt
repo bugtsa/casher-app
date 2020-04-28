@@ -63,9 +63,9 @@ abstract class BaseFragment : Fragment() {
                 .subscribe {
                     context?.also { context ->
                         val dialogStyle = if (isFullScreen) {
-                            R.style.FullScreenProgressDialog
+                            R.style.ProgressDialog_FullScreen
                         } else {
-                            R.style.ProgressDialog
+                            R.style.ProgressDialog_Small
                         }
 
                         dialogProgress = AlertDialog.Builder(context, dialogStyle)

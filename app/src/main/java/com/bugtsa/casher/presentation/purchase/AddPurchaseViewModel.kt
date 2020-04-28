@@ -40,7 +40,6 @@ class AddPurchaseViewModelFactory @Inject constructor(
 }
 
 class AddPurchaseViewModel @Inject constructor(
-        compositeDisposable: CompositeDisposable,
         injectPurchaseRepository: PurchaseRepository,
         injectCategoryDataStore: CategoryDataStore
 ) : RxViewModel() {
@@ -142,7 +141,7 @@ class AddPurchaseViewModel @Inject constructor(
     }
 
     private fun isContainsCurrentCategoryInDatabase(currentCategory: String, storageCategoriesList: List<String>): Boolean {
-        if (!storageCategoriesList.isEmpty()) {
+        if (storageCategoriesList.isNotEmpty()) {
             for (category in storageCategoriesList) {
                 if (storageCategoriesList.contains(currentCategory)) {
                     return true
@@ -197,7 +196,6 @@ class AddPurchaseViewModel @Inject constructor(
         refreshCurrentDate()
     }
 
-
     private fun refreshCurrentDate() {
         Flowable
                 .interval(10, TimeUnit.SECONDS)
@@ -207,7 +205,7 @@ class AddPurchaseViewModel @Inject constructor(
                 }
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe({ result -> setupCurrentDate(result) }, { _ -> })
+                .subscribe({ result -> setupCurrentDate(result) }, { Timber.e("could not refresh current date")})
                 .also(::addDispose)
     }
 

@@ -3,9 +3,9 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/settings_container"
+    style="@style/AppTheme"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@color/primaryLightColor">
+    android:layout_height="match_parent">
 
     <androidx.coordinatorlayout.widget.CoordinatorLayout
         android:layout_width="match_parent"
@@ -26,8 +26,8 @@
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:id="@+id/vProfileHeaderContainer"
                     android:layout_width="match_parent"
-                    android:background="@color/primaryDarkColor"
                     android:layout_height="@dimen/profile_group_header_height"
+                    android:background="@color/primaryDarkColor"
                     android:clipToPadding="false">
 
                     <TextView
@@ -89,6 +89,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="?attr/actionBarSize"
                     android:fitsSystemWindows="true"
+                    android:theme="@style/AppToolbar"
                     app:layout_collapseMode="pin" />
 
             </com.google.android.material.appbar.CollapsingToolbarLayout>
@@ -102,7 +103,7 @@
             app:layout_behavior="@string/appbar_scrolling_view_behavior" />
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
-    <TextView
+    <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/vVersionCode"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

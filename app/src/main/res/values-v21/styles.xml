@@ -5,7 +5,9 @@
         <item name="android:elevation">@dimen/toolbar_base_elevation</item>
     </style>
 
-    <style name="AppToolbar" parent="BaseToolbar.V21" />
+    <style name="AppToolbar" parent="BaseToolbar.V21" >
+        <item name="android:background">@color/primaryDarkColor</item>
+    </style>
 
     <style name="PopupMenuOverlapAnchor" parent="@style/Theme.AppCompat.Light">
         <item name="android:overlapAnchor">true</item>

@@ -46,10 +46,7 @@ class PurchasesFragment : Fragment(R.layout.fragment_purchases), PurchasesView,
         setupListeners()
         initPaymentsAdapter()
         initView()
-        val viewModelFactory = Toothpick
-                .openScope(requireActivity().application)
-                .getInstance(PurchasesViewModelFactory::class.java)
-        viewModel = ViewModelProvider(this, viewModelFactory)[PurchasesViewModel::class.java]
+        initViewModel()
 
         bindViewModel()
         viewModel.processData()
@@ -164,6 +161,13 @@ class PurchasesFragment : Fragment(R.layout.fragment_purchases), PurchasesView,
     }
 
     //endregion
+
+    private fun initViewModel() {
+        val viewModelFactory = Toothpick
+                .openScope(requireActivity().application)
+                .getInstance(PurchasesViewModelFactory::class.java)
+        viewModel = ViewModelProvider(this, viewModelFactory)[PurchasesViewModel::class.java]
+    }
 
     private fun bindViewModel() {
         viewModel.observeProgress().observe(viewLifecycleOwner, Observer {

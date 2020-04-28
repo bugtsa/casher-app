@@ -82,11 +82,11 @@ class PurchasesViewModel @Inject constructor(injectPurchaseRepository: PurchaseR
                         })
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe({ t -> Timber.d("PurchasesPresenter", "verify at check exist categories $t") },
+                .subscribe({ t -> Timber.d("verify at check exist categories $t") },
                         { t ->
                             progressLiveData.value = false
                             statusTextLiveData.value = "Server not allow, trying later"
-                            Timber.e("PurchasesPresenter", "error at check exist categories $t")
+                            Timber.e("error at check exist categories $t")
                         })
                 .also(::addDispose)
     }
@@ -105,7 +105,8 @@ class PurchasesViewModel @Inject constructor(injectPurchaseRepository: PurchaseR
         }
     }
 
-    private infix fun <T> Collection<T>.sameContentWith(collection: Collection<T>?) = collection?.let { this.size == it.size && this.containsAll(it) }
+    private infix fun <T> Collection<T>.sameContentWith(collection: Collection<T>?) =
+            collection?.let { this.size == it.size && this.containsAll(it) }
 
     private fun Collection<CategoryDto>.equalRemoteCategory(remoteCategory: CategoryDto): Boolean {
         this.forEach {
@@ -149,7 +150,9 @@ class PurchasesViewModel @Inject constructor(injectPurchaseRepository: PurchaseR
                     } else {
                         setupPurchaseListLiveData.value = paymentsList
                     }
-                }, { t -> Timber.e(t, "getPurchasesList") })
+                }, { t ->
+                    Timber.e(t, "getPurchasesList")
+                })
                 .also(::addDispose)
     }
 
