@@ -19,7 +19,7 @@ open class RxAndroidViewModel(application: Application) : AndroidViewModel(appli
     protected val keyboardVisibilityEvent = LiveEvent<Boolean>()
 
     protected val progressStateLiveData = MutableLiveData<ProgressState>()
-    fun getProgressStateLiveData(): LiveData<ProgressState> = progressStateLiveData
+    fun observerProgressStateLiveData(): LiveData<ProgressState> = progressStateLiveData
 
     fun addDispose(disposable: Disposable) {
         compositeDisposable.add(disposable)

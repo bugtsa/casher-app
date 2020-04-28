@@ -7,7 +7,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.bugtsa.casher.data.dto.CategoryDto
 import com.bugtsa.casher.data.local.database.entity.category.CategoryDataStore
-import com.bugtsa.casher.data.models.PurchaseModel
+import com.bugtsa.casher.data.models.PurchaseRepository
 import com.bugtsa.casher.data.network.PaymentsByDayRes
 import com.bugtsa.casher.presentation.optional.RxViewModel
 import io.reactivex.Flowable
@@ -25,10 +25,10 @@ class PurchasesViewModelFactory @Inject constructor(private val app: Application
             Toothpick.openScope(app).getInstance(modelClass) as T
 }
 
-class PurchasesViewModel @Inject constructor(injectPurchaseModel: PurchaseModel,
+class PurchasesViewModel @Inject constructor(injectPurchaseRepository: PurchaseRepository,
                                              injectCategoryDataStore: CategoryDataStore) : RxViewModel() {
 
-    private var purchasesModel: PurchaseModel = injectPurchaseModel
+    private var purchasesRepository: PurchaseRepository = injectPurchaseRepository
     private var categoryDataStore: CategoryDataStore = injectCategoryDataStore
 
     private var isScrollPurchasesList: Boolean = false
@@ -76,17 +76,17 @@ class PurchasesViewModel @Inject constructor(injectPurchaseModel: PurchaseModel,
 
     private fun performCheckStorageCategoriesList() {
         Flowable
-                .combineLatest(categoryDataStore.getCategoriesList(), purchasesModel.getCategoriesList(),
+                .combineLatest(categoryDataStore.getCategoriesList(), purchasesRepository.getCategoriesList(),
                         BiFunction<List<CategoryDto>, List<CategoryDto>, Unit> { local, remote ->
                             checkNetworkCategoriesListInDatabase(local, remote)
                         })
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe({ t -> Timber.d("PurchasesPresenter", "verify at check exist categories $t") },
+                .subscribe({ t -> Timber.d("verify at check exist categories $t") },
                         { t ->
                             progressLiveData.value = false
                             statusTextLiveData.value = "Server not allow, trying later"
-                            Timber.e("PurchasesPresenter", "error at check exist categories $t")
+                            Timber.e("error at check exist categories $t")
                         })
                 .also(::addDispose)
     }
@@ -105,7 +105,8 @@ class PurchasesViewModel @Inject constructor(injectPurchaseModel: PurchaseModel,
         }
     }
 
-    private infix fun <T> Collection<T>.sameContentWith(collection: Collection<T>?) = collection?.let { this.size == it.size && this.containsAll(it) }
+    private infix fun <T> Collection<T>.sameContentWith(collection: Collection<T>?) =
+            collection?.let { this.size == it.size && this.containsAll(it) }
 
     private fun Collection<CategoryDto>.equalRemoteCategory(remoteCategory: CategoryDto): Boolean {
         this.forEach {
@@ -138,7 +139,7 @@ class PurchasesViewModel @Inject constructor(injectPurchaseModel: PurchaseModel,
     //region ================= Replace Task to Rx functions =================
 
     private fun getPaymentsByDay() {
-        purchasesModel.getPaymentsByDay()
+        purchasesRepository.getPaymentsByDay()
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({ paymentsList ->
@@ -149,7 +150,9 @@ class PurchasesViewModel @Inject constructor(injectPurchaseModel: PurchaseModel,
                     } else {
                         setupPurchaseListLiveData.value = paymentsList
                     }
-                }, { t -> Timber.e(t, "getPurchasesList") })
+                }, { t ->
+                    Timber.e(t, "getPurchasesList")
+                })
                 .also(::addDispose)
     }
 

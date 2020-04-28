@@ -22,14 +22,25 @@
 
     <string name="app_name">Casher</string>
 
+    <string name="auth_error_undefined">Unknown Auth Error</string>
+    <string name="auth_login">Login or e-mail</string>
+    <string name="auth_need_input_valid_email">Need input correct e-mail</string>
+    <string name="auth_password">Password…</string>
+    <string name="auth_server_error">Server error. Please try later</string>
+    <string name="auth_sign_in">Sign In</string>
+    <string name="auth_sing_up_in_app">Sing Up in App</string>
+    <string name="auth_want_to_logout_description">After that will clear all settings</string>
+    <string name="auth_want_to_logout_title">Are you sure you want to perform logout?</string>
+    <string name="auth_wrong_login_or_password">Wrong login %1$s or password</string>
+
     <string name="cancel_caption">Cancel</string>
 
     <string name="category_purchase">Category payment</string>
 
     <string name="changed_date_and_time">"Setup time and date: "</string>
 
-    <string name="charts_caption_pie">Pie Chart at %1$s %2$s year</string>
     <string name="charts_caption_legend_pie">Category payments</string>
+    <string name="charts_caption_pie">Pie Chart at %1$s %2$s year</string>
     <string name="charts_caption_x_axis">%1$s page at %2$s %3$s year</string>
     <string name="charts_caption_y_axis">%1$d-%2$d pages</string>
     <string name="charts_choose_date">Choose date</string>
@@ -55,6 +66,11 @@
     <string name="price_purchase">Price payment</string>
     <string name="price_purchase_hint">Write number</string>
 
+    <string name="profile_expandable_view_hide_button">Collapse</string>
+    <string name="profile_expandable_view_text">More information</string>
+    <string name="profile_logout">Logout</string>
+    <string name="profile_username">Username</string>
+
     <string name="screen_add_purchase">Add purchase</string>
 
     <string name="settings_title">Settings</string>
@@ -64,11 +80,13 @@
     <string name="sheet_category_caption">Category</string>
     <string name="sheet_cost_caption">Cost</string>
 
-    <string name="sing_up_in_app">Sing Up in App</string>
-
     <string name="sort_type_asc">ascending</string>
     <string name="sort_type_desc">descending</string>
     <string name="sort_type_un_sort">unsorted</string>
+
+    <string name="splash_beta_title">Beta</string>
+    <string name="splash_hint_caption">Hints</string>
+    <string name="splash_status_title">Downloading</string>
 
     <string name="switch_theme_mode">Switch theme mode</string>
 

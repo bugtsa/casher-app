@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="colorAccent">@color/blue_400</color>
+    <color name="colorAccentDanger">@color/blue_200</color>
 
     <color name="primaryColor">@color/grey_bt_37</color>
     <color name="primaryLightColor">@color/grey_bt_62</color>
@@ -10,5 +11,6 @@
     <color name="secondaryDarkColor">@color/red_600</color>
     <color name="primaryTextColor">@color/white_bt_ee</color>
     <color name="secondaryTextColor">@color/white_bt_cc</color>
-    <color name="textLightColor">@color/mdtp_white</color>
+    <color name="textLightColor">@color/white_1000</color>
+    <color name="imageTint">@color/grey_bt_45</color>
 </resources>

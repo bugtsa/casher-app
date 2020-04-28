@@ -9,16 +9,12 @@ import android.os.Bundle
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import com.bugtsa.casher.ui.navigation.PurchasesStack
-import com.bugtsa.casher.ui.navigation.TabBar
-import com.bugtsa.casher.ui.screens.charts.ChooseChartsScreen
+import com.bugtsa.casher.R
+import com.bugtsa.casher.ui.screens.auth.SplashNavigationScreen
+import com.bugtsa.casher.ui.screens.auth.SplashScreen
 import com.bugtsa.casher.ui.screens.purchases.show.PurchasesScreen
-import com.bugtsa.casher.ui.screens.settings.SettingsScreen
-import com.bugtsa.casher.ui.screens.singIn.SingUpScreen
-import com.crashlytics.android.Crashlytics
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.GoogleApiAvailability
-import io.fabric.sdk.android.Fabric
 import kotlinx.android.synthetic.main.activity_root.*
 import pro.horovodovodo4ka.bones.Bone
 import pro.horovodovodo4ka.bones.Finger
@@ -35,6 +31,7 @@ import pro.horovodovodo4ka.bones.ui.helpers.ActivityAppRestartCleaner
 import toothpick.Scope
 import toothpick.Toothpick
 import javax.inject.Inject
+
 
 /**
  * Demo bone. Realize support of exiting from app and back presses.
@@ -112,20 +109,13 @@ class MainActivity : AppCompatActivity(),
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        Fabric.with(this, Crashlytics())
         activityScope = Toothpick.openScopes(application, this)
         Toothpick.inject(this, activityScope)
 
         presenter.onAttachView(this)
 
         loadBones(savedInstanceState) {
-            RootBone(
-                    TabBar(
-                            PurchasesStack(SingUpScreen()),
-                            ChooseChartsScreen(),
-                            SettingsScreen()
-                    )
-            )
+            RootBone(SplashNavigationScreen(SplashScreen()))
         }
     }
 
@@ -134,10 +124,14 @@ class MainActivity : AppCompatActivity(),
         emergencyPin(outState)
     }
 
-//    override fun onDestroy() {
-//        super.onDestroy()
-//        saveBones()
-//    }
+    override fun recreate() {
+        finish()
+        overridePendingTransition(R.anim.fade_in,
+                R.anim.fade_out)
+        startActivity(intent)
+        overridePendingTransition(R.anim.fade_in,
+                R.anim.fade_out)
+    }
 
     //region ================= Request Permissions =================
 
@@ -152,9 +146,10 @@ class MainActivity : AppCompatActivity(),
                 } else {
                     bone.present(PurchasesScreen())
                 }
-                65536 + REQUEST_CODE_EMAIL -> if (data != null && data.extras != null) {
-                    presenter.saveAccountName(data.getStringExtra(AccountManager.KEY_ACCOUNT_NAME))
-                }
+                65536 + REQUEST_CODE_EMAIL ->
+                    data?.getStringExtra(AccountManager.KEY_ACCOUNT_NAME)?.also { accountName ->
+                        presenter.saveAccountName(accountName)
+                    }
             }
         }
     }
@@ -172,6 +167,7 @@ class MainActivity : AppCompatActivity(),
 
     //region ================= Utils Methods =================
 
+    @Suppress("deprecation")
     private val isDeviceOnline: Boolean
         get() {
             val connMgr = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager

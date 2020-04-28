@@ -2,14 +2,25 @@
 <resources>
     <string name="app_name">Русходничек</string>
 
+    <string name="auth_error_undefined">Неизвестная ошибка при авторизации</string>
+    <string name="auth_login">Имя пользователя или e-mail</string>
+    <string name="auth_need_input_valid_email">Необходимо ввести корректный e-mail</string>
+    <string name="auth_password">Пароль…</string>
+    <string name="auth_server_error">Серверная ошибка. Пожалуйста попробуйте позже</string>
+    <string name="auth_sign_in">Войти</string>
+    <string name="auth_sing_up_in_app">Войдите в приложение</string>
+    <string name="auth_want_to_logout_title">Вы точно хотите выйти из приложения?</string>
+    <string name="auth_want_to_logout_description">После этого будут удалены все настройки</string>
+    <string name="auth_wrong_login_or_password">Неправильный логин %1$s или пароль</string>
+
     <string name="cancel_caption">Отмена</string>
 
     <string name="category_purchase">На что потрачено</string>
 
     <string name="changed_date_and_time">"Установленные дата и время: "</string>
 
-    <string name="charts_caption_pie">Пирог-диаграмма за %1$s %2$s года</string>
     <string name="charts_caption_legend_pie">Категории расходов</string>
+    <string name="charts_caption_pie">Пирог-диаграмма за %1$s %2$s года</string>
     <string name="charts_caption_x_axis">%1$s страница за %2$s %3$s года</string>
     <string name="charts_caption_y_axis">%1$d-%2$d страницы</string>
     <string name="charts_choose_date">Выберите дату</string>
@@ -32,6 +43,11 @@
     <string name="price_purchase">Цена траты</string>
     <string name="price_purchase_hint">Напишите число</string>
 
+    <string name="profile_expandable_view_hide_button">Свернуть</string>
+    <string name="profile_expandable_view_text">Дополнительная информация</string>
+    <string name="profile_logout">Выйти</string>
+    <string name="profile_username">Ник пользователя</string>
+
     <string name="screen_add_purchase">Добавить трату</string>
 
     <string name="settings_title">Настройки</string>
@@ -41,11 +57,13 @@
     <string name="sheet_category_caption">На что</string>
     <string name="sheet_cost_caption">Сумма</string>
 
-    <string name="sing_up_in_app">Войдите в приложение</string>
-
     <string name="sort_type_asc">по убыванию</string>
     <string name="sort_type_desc">по возрастанию</string>
     <string name="sort_type_un_sort">неотсортированные</string>
+
+    <string name="splash_beta_title">Beta</string>
+    <string name="splash_hint_caption">Подсказка</string>
+    <string name="splash_status_title">Идет загрузка</string>
 
     <string name="switch_theme_mode">Переключить тему</string>
 

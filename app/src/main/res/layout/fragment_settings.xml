@@ -1,45 +1,117 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/settings_container"
+    style="@style/AppTheme"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@color/primaryColor"
-    tools:context=".ui.screens.settings.SettingsScreenFragment">
+    android:layout_height="match_parent">
 
-    <androidx.appcompat.widget.Toolbar
-        android:id="@+id/toolbar"
+    <androidx.coordinatorlayout.widget.CoordinatorLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@color/primaryDarkColor"
-        android:elevation="4dp"
-        android:minHeight="?attr/actionBarSize"
-        android:theme="@style/AppTheme.NoActionBar.PopupOverlay"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <FrameLayout
-        android:id="@+id/settings_container"
-        android:layout_width="0dp"
         android:layout_height="0dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/toolbar">
+        app:layout_constraintBottom_toTopOf="@id/vVersionCode"
+        app:layout_constraintTop_toTopOf="parent">
 
-    </FrameLayout>
+        <com.google.android.material.appbar.AppBarLayout
+            android:id="@+id/vAppBar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
 
-    <Switch
-        android:id="@+id/change_theme"
+            <com.google.android.material.appbar.CollapsingToolbarLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:layout_scrollFlags="scroll|exitUntilCollapsed">
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/vProfileHeaderContainer"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/profile_group_header_height"
+                    android:background="@color/primaryDarkColor"
+                    android:clipToPadding="false">
+
+                    <TextView
+                        android:id="@+id/vToolbarEllipsizedTitle"
+                        style="@style/AppTheme.ProfileEllipsizedTitle"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="16dp"
+                        android:visibility="gone"
+                        app:layout_constraintBottom_toTopOf="@id/vToolbarEllipsizedSubtitle"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintVertical_chainStyle="packed"
+                        tools:text="TITLE" />
+
+                    <TextView
+                        android:id="@+id/vToolbarEllipsizedSubtitle"
+                        style="@style/AppTheme.ProfileGroupSubtitle"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:visibility="gone"
+                        app:layout_constraintBottom_toTopOf="@id/vToolbarEllipsizedSubtitle"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="@id/vToolbarEllipsizedTitle"
+                        app:layout_constraintTop_toBottomOf="@id/vToolbarEllipsizedTitle"
+                        tools:text="Subtitle" />
+
+                    <TextView
+                        android:id="@+id/vToolbarTitle"
+                        style="@style/AppTheme.ProfileTitle"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="16dp"
+                        android:layout_marginEnd="64dp"
+                        app:layout_constraintBottom_toTopOf="@id/vToolbarSubtitle"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintVertical_chainStyle="packed"
+                        tools:ignore="RtlSymmetry"
+                        tools:text="TITLE" />
+
+                    <TextView
+                        android:id="@+id/vToolbarSubtitle"
+                        style="@style/AppTheme.ProfileGroupSubtitle"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:visibility="gone"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="@id/vToolbarTitle"
+                        app:layout_constraintTop_toBottomOf="@id/vToolbarTitle"
+                        tools:text="Subtitle" />
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+                <androidx.appcompat.widget.Toolbar
+                    android:id="@+id/vToolbar"
+                    android:layout_width="match_parent"
+                    android:layout_height="?attr/actionBarSize"
+                    android:fitsSystemWindows="true"
+                    android:theme="@style/AppToolbar"
+                    app:layout_collapseMode="pin" />
+
+            </com.google.android.material.appbar.CollapsingToolbarLayout>
+
+        </com.google.android.material.appbar.AppBarLayout>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/vDelegatedListView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:layout_behavior="@string/appbar_scrolling_view_behavior" />
+    </androidx.coordinatorlayout.widget.CoordinatorLayout>
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/vVersionCode"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/spacing_normal_16"
-        android:layout_marginEnd="@dimen/spacing_normal_16"
-        android:layout_marginBottom="@dimen/spacing_xxx_medium_32"
-        app:layout_constraintTop_toTopOf="parent"
+        android:layout_gravity="bottom"
+        android:gravity="center"
+        android:padding="8dp"
         app:layout_constraintBottom_toBottomOf="parent"
-        android:text="@string/switch_theme_mode"/>
+        app:layout_constraintStart_toStartOf="parent"
+        tools:text="Casher for Android 1.0.0" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

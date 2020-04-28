@@ -7,7 +7,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.bugtsa.casher.data.dto.CategoryDto
 import com.bugtsa.casher.data.local.database.entity.category.CategoryDataStore
-import com.bugtsa.casher.data.models.PurchaseModel
+import com.bugtsa.casher.data.models.PurchaseRepository
 import com.bugtsa.casher.presentation.optional.RxViewModel
 import com.bugtsa.casher.utils.ConstantManager.CategoryNetwork.NAME_CATEGORY_PARAMETER
 import com.bugtsa.casher.utils.ConstantManager.Network.CATEGORY_PARAMETER
@@ -40,12 +40,11 @@ class AddPurchaseViewModelFactory @Inject constructor(
 }
 
 class AddPurchaseViewModel @Inject constructor(
-        compositeDisposable: CompositeDisposable,
-        injectPurchaseModel: PurchaseModel,
+        injectPurchaseRepository: PurchaseRepository,
         injectCategoryDataStore: CategoryDataStore
 ) : RxViewModel() {
 
-    private var purchaseModel: PurchaseModel = injectPurchaseModel
+    private var purchaseRepository: PurchaseRepository = injectPurchaseRepository
     private var categoryDataStore: CategoryDataStore = injectCategoryDataStore
 
     private var customDate: String = ""
@@ -104,7 +103,7 @@ class AddPurchaseViewModel @Inject constructor(
                 .add(CATEGORY_PARAMETER, nameCategory)
                 .add(DATE_PARAMETER, getActualDateAndTime())
                 .build()
-        purchaseModel.addPayment(partFormBody)
+        purchaseRepository.addPayment(partFormBody)
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({ payment ->
@@ -142,7 +141,7 @@ class AddPurchaseViewModel @Inject constructor(
     }
 
     private fun isContainsCurrentCategoryInDatabase(currentCategory: String, storageCategoriesList: List<String>): Boolean {
-        if (!storageCategoriesList.isEmpty()) {
+        if (storageCategoriesList.isNotEmpty()) {
             for (category in storageCategoriesList) {
                 if (storageCategoriesList.contains(currentCategory)) {
                     return true
@@ -169,7 +168,7 @@ class AddPurchaseViewModel @Inject constructor(
                 .add(NAME_CATEGORY_PARAMETER, nameCategory)
                 .build()
 
-        purchaseModel.addCategory(categoryFormBody)
+        purchaseRepository.addCategory(categoryFormBody)
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({ category ->
@@ -197,7 +196,6 @@ class AddPurchaseViewModel @Inject constructor(
         refreshCurrentDate()
     }
 
-
     private fun refreshCurrentDate() {
         Flowable
                 .interval(10, TimeUnit.SECONDS)
@@ -207,7 +205,7 @@ class AddPurchaseViewModel @Inject constructor(
                 }
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe({ result -> setupCurrentDate(result) }, { _ -> })
+                .subscribe({ result -> setupCurrentDate(result) }, { Timber.e("could not refresh current date")})
                 .also(::addDispose)
     }
 

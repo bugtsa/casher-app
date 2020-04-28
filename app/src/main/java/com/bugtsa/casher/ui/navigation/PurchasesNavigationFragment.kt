@@ -8,7 +8,8 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import com.bugtsa.casher.R
-import com.bugtsa.casher.ui.screens.singIn.SingUpScreen
+import com.bugtsa.casher.ui.screens.auth.SingUpScreen
+import kotlinx.android.synthetic.main.fragment_purchases_navigation.*
 import kotlinx.android.synthetic.main.fragment_settings.*
 import pro.horovodovodo4ka.bones.Bone
 import pro.horovodovodo4ka.bones.Finger
