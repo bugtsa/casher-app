@@ -83,6 +83,7 @@
         <item name="android:background">@color/primaryDarkColor</item>
         <item name="android:layout_height">?attr/actionBarSize</item>
         <item name="titleTextColor">@color/primaryTextColor</item>
+        <item name="android:textColor">@color/primaryTextColor</item>
     </style>
 
     <style name="DatePurchase" parent="MatchWrap">

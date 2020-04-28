@@ -9,6 +9,7 @@ import android.os.Bundle
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import com.bugtsa.casher.R
 import com.bugtsa.casher.ui.screens.auth.SplashNavigationScreen
 import com.bugtsa.casher.ui.screens.auth.SplashScreen
 import com.bugtsa.casher.ui.screens.purchases.show.PurchasesScreen
@@ -30,6 +31,7 @@ import pro.horovodovodo4ka.bones.ui.helpers.ActivityAppRestartCleaner
 import toothpick.Scope
 import toothpick.Toothpick
 import javax.inject.Inject
+
 
 /**
  * Demo bone. Realize support of exiting from app and back presses.
@@ -122,6 +124,15 @@ class MainActivity : AppCompatActivity(),
         emergencyPin(outState)
     }
 
+    override fun recreate() {
+        finish()
+        overridePendingTransition(R.anim.fade_in,
+                R.anim.fade_out)
+        startActivity(intent)
+        overridePendingTransition(R.anim.fade_in,
+                R.anim.fade_out)
+    }
+
     //region ================= Request Permissions =================
 
     override fun onActivityResult(
@@ -135,9 +146,10 @@ class MainActivity : AppCompatActivity(),
                 } else {
                     bone.present(PurchasesScreen())
                 }
-                65536 + REQUEST_CODE_EMAIL -> if (data != null && data.extras != null) {
-                    presenter.saveAccountName(data.getStringExtra(AccountManager.KEY_ACCOUNT_NAME))
-                }
+                65536 + REQUEST_CODE_EMAIL ->
+                    data?.getStringExtra(AccountManager.KEY_ACCOUNT_NAME)?.also { accountName ->
+                        presenter.saveAccountName(accountName)
+                    }
             }
         }
     }
@@ -155,6 +167,7 @@ class MainActivity : AppCompatActivity(),
 
     //region ================= Utils Methods =================
 
+    @Suppress("deprecation")
     private val isDeviceOnline: Boolean
         get() {
             val connMgr = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager

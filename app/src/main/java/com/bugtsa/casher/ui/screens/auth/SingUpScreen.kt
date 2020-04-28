@@ -80,9 +80,6 @@ class SingUpFragment(override val layout: Int = R.layout.fragment_auth) : BaseFr
         }
 
         refreshUI()
-
-        vLogin.setText("bugtsa")
-        vPassword.setText("password")
     }
 
     override fun onSaveInstanceState(outState: Bundle) {

@@ -150,6 +150,7 @@ class AddPurchaseFragment : BaseFragment(), AddPurchaseView, TimePickerDialog.On
         builder.show()
     }
 
+    @Suppress("deprecation")
     override fun showTimePicker() {
         val now = Calendar.getInstance()
         val tpd = TimePickerDialog.newInstance(
@@ -170,7 +171,6 @@ class AddPurchaseFragment : BaseFragment(), AddPurchaseView, TimePickerDialog.On
     //endregion
 
     private fun bindViewModel() {
-
         viewModel.requestSetupCurrentDate()
         viewModel.checkExistCategoriesInDatabase()
 

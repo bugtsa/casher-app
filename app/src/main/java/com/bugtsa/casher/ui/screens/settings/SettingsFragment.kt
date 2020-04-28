@@ -3,7 +3,6 @@ package com.bugtsa.casher.ui.screens.settings
 import android.annotation.SuppressLint
 import android.content.DialogInterface
 import android.content.res.TypedArray
-import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -40,6 +39,7 @@ open class SettingsScreen() : Phalanx() {
     override val seed = { SettingsScreenFragment() }
 }
 
+@Suppress("SENSELESS_NULL_IN_WHEN")
 @SuppressLint("MissingSuperCall")
 class SettingsScreenFragment(override val layout: Int = R.id.settings_container) : BaseListFragment(),
         BonePersisterInterface<SettingsScreen>,
@@ -84,8 +84,7 @@ class SettingsScreenFragment(override val layout: Int = R.id.settings_container)
     override fun onRefresh() {
         if (view == null) return
 
-        val title = getString(R.string.settings_title)
-        when (title) {
+        when (val title = getString(R.string.settings_title)) {
             null -> vToolbar.isVisible = false
             else -> {
                 vToolbar.isVisible = true
@@ -153,9 +152,8 @@ class SettingsScreenFragment(override val layout: Int = R.id.settings_container)
 
     private fun bindCheckedListener(isChecked: Boolean) {
         val currentTheme = when {
-            Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q && isChecked -> ThemeHelper.darkMode
-            Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q && !isChecked -> ThemeHelper.lightMode
-            Build.VERSION.SDK_INT < Build.VERSION_CODES.Q && isChecked -> ThemeHelper.batterySaverMode
+            isChecked -> ThemeHelper.darkMode
+            !isChecked -> ThemeHelper.lightMode
             else -> ThemeHelper.default
         }
         viewModel.saveModeTheme(currentTheme)
