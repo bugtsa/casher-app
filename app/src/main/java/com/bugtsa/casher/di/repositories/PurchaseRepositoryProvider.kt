@@ -1,4 +1,4 @@
-package com.bugtsa.casher.di.retositories
+package com.bugtsa.casher.di.repositories
 
 import com.bugtsa.casher.data.models.PurchaseRepository
 import com.bugtsa.casher.networking.CasherApi

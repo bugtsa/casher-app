@@ -3,15 +3,15 @@ buildscript {
     repositories {
         google()
         jcenter()
-        maven { url = uri("https://maven.fabric.io/public") }
     }
     dependencies {
         val kotlinVersion = System.getProperty("kotlinVersion")
 
         classpath("com.android.tools.build:gradle:3.6.3")
-        classpath("io.fabric.tools:gradle:1.31.2")
         classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion")
         classpath("com.google.gms:google-services:4.3.3")
+        classpath("com.google.firebase:firebase-crashlytics-gradle:2.0.0")
+        classpath("com.google.firebase:firebase-appdistribution-gradle:1.4.0")
     }
 }
 
@@ -43,9 +43,3 @@ allprojects {
         maven { url = uri("https://oss.jfrog.org/artifactory/oss-snapshot-local") }
     }
 }
-
-//tasks.clear() {
-//    clean (type: Delete) {
-//        delete rootProject.buildDir
-//    }
-//}

@@ -1,9 +1,11 @@
 plugins {
     id("com.android.application")
-    id("com.google.gms.google-services")
     kotlin("android")
     kotlin("android.extensions")
     kotlin("kapt")
+    id("com.google.gms.google-services")
+    id("com.google.firebase.crashlytics")
+    id("com.google.firebase.appdistribution")
     id("io.gitlab.arturbosch.detekt")
 }
 
@@ -19,18 +21,30 @@ android {
         minSdkVersion(21)
         targetSdkVersion(29)
         versionCode = 1
-        versionName = "1.0$version"
+        versionName = Libs.Project.fullVersion
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
         multiDexEnabled = true
     }
     buildTypes {
+        getByName("debug") {
+            isMinifyEnabled = true
+            firebaseCrashlytics {
+                mappingFileUploadEnabled = false
+            }
+        }
+
         getByName("release") {
-            isMinifyEnabled = false
+            isMinifyEnabled = true
             proguardFiles(
                     getDefaultProguardFile("proguard-android.txt"),
                     "proguard-rules.pro"
             )
+            firebaseAppDistribution {
+                appId = "1:495380633023:android:a1b3fc39656f235e1abd0a"
+                serviceCredentialsFile = "$rootDir/app/casher-bugtsa-app.json"
+                testers = "preispodhyaya@gmail.com"
+            }
         }
     }
 
@@ -92,6 +106,7 @@ dependencies {
     implementation(Libs.Android.coreKtx)
 
     implementation("com.google.firebase:firebase-analytics:17.4.0")
+    implementation("com.google.firebase:firebase-crashlytics:17.0.0")
     implementation("com.google.android.gms:play-services-auth:18.0.0")
     implementation("pub.devrel:easypermissions:2.0.0")
     implementation("com.google.api-client:google-api-client-android:1.25.0") {
@@ -107,9 +122,9 @@ dependencies {
 
     implementation("com.google.apis:google-api-services-people:v1-rev4-1.22.0")
 
-    implementation("com.github.stephanenicolas.toothpick:toothpick-runtime:1.1.1")
-    kapt("com.github.stephanenicolas.toothpick:toothpick-compiler:1.1.1")
-    testImplementation("com.github.stephanenicolas.toothpick:toothpick-testing:1.1.1")
+    implementation("com.github.stephanenicolas.toothpick:toothpick-runtime:3.1.0")
+    implementation("com.github.stephanenicolas.toothpick:smoothie-androidx:3.1.0")
+    kapt("com.github.stephanenicolas.toothpick:toothpick-compiler:3.1.0")
 
     implementation("io.reactivex.rxjava2:rxjava:2.2.19")
     implementation("io.reactivex.rxjava2:rxandroid:2.1.1")

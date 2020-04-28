@@ -1,4 +1,4 @@
-package com.bugtsa.casher.di.retositories
+package com.bugtsa.casher.di.repositories
 
 import com.bugtsa.casher.data.AuthRepository
 import com.bugtsa.casher.networking.AuthApi

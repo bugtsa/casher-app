@@ -12,5 +12,6 @@
 
 app/src/main/java/com/bugtsa/casher/utls/GoogleSheetManager\.kt
 app/google-services.json
+app/casher-bugtsa-app.json
 /buildSrc/build/
 /lint-rules/build/

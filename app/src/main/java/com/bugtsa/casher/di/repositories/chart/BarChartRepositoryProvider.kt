@@ -1,4 +1,4 @@
-package com.bugtsa.casher.di.retositories.chart
+package com.bugtsa.casher.di.repositories.chart
 
 import com.bugtsa.casher.data.models.charts.BarChartModel
 import com.bugtsa.casher.networking.CasherApi

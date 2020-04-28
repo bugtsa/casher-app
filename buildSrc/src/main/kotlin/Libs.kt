@@ -1,7 +1,11 @@
 object Libs {
 
+    object Project {
+        private const val minorVersion = "2"
+        const val fullVersion = "1.0.$minorVersion"
+    }
+
     object Android {
-        const val androidArchVersion = "1.1.1"
         private const val androidxCore = "1.3.0-rc01"
         const val coreX = "androidx.core:core:$androidxCore"
         const val coreKtx = "androidx.core:core-ktx:$androidxCore"
@@ -27,14 +31,4 @@ object Libs {
         const val moshi = "com.squareup.retrofit2:converter-moshi:$retrofitVersion"
         const val adapterRxJava2 = "com.squareup.retrofit2:adapter-rxjava2:$retrofitVersion"
     }
-//    rxJavaVersion = "2.1.0"
-//    rxAndroidVersion = "2.0.1"
-//    priorityJobQueueVersion = "2.0.1"
-//    playServicesVersion = "11.4.2"
-//    retrofitVersion = "2.1.0"
-//    okHttpVersion = "3.4.1"
-//    rxRelayVersion = "2.0.0"
-//    rxLintVersion = "1.6"
-//    rxkotlin = "2.4.0"
-//    version = "2"
 }
