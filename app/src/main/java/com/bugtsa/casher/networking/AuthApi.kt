@@ -8,6 +8,10 @@ import retrofit2.http.POST
 
 interface AuthApi {
 
-    @POST("oauth/token")
-    fun observeAuthToken(@Body credential: FormBody): Single<CredentialAuthRes>
+    @POST(OAUTH_TOKEN)
+    fun getAuthToken(@Body credential: FormBody): Single<CredentialAuthRes>
+
+    companion object {
+        private const val OAUTH_TOKEN = "oauth/token"
+    }
 }

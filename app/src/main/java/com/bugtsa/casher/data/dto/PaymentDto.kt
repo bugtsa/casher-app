@@ -16,7 +16,7 @@ class PaymentDto {
         this.cost = cost
         this.balance = balance
         this.date = date
-        this.time = ""
+        this.time = EMPTY_PAYMENT_FIELD
         this.category = category
     }
 
@@ -45,6 +45,20 @@ class PaymentDto {
                 "time: $time \n" +
                 "category: $category \n" +
                 "balance: $balance"
+    }
+
+    companion object {
+        fun paymentEmptyDto(): PaymentDto {
+            return PaymentDto(
+                id = 0L,
+                cost = EMPTY_PAYMENT_FIELD,
+                balance = EMPTY_PAYMENT_FIELD,
+                date = EMPTY_PAYMENT_FIELD,
+                category = EMPTY_PAYMENT_FIELD
+            )
+        }
+
+        private const val EMPTY_PAYMENT_FIELD = ""
     }
 
 }

@@ -91,7 +91,7 @@ class SingUpViewModel @Inject constructor(
 
     fun checkLoginPassword(login: String, password: String) {
         progressStateLiveData.value = ProgressState.Progress(isCancelable = true)
-        authRepository.observeCredential(login, password)
+        authRepository.getCredential(login, password)
                 .subscribeOn(SchedulersProvider.io())
                 .observeOn(SchedulersProvider.ui())
                 .subscribe({ authDto ->
