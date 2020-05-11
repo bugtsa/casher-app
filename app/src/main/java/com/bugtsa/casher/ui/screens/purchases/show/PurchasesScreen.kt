@@ -10,7 +10,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.bugtsa.casher.R
-import com.bugtsa.casher.data.network.PaymentsByDayRes
+import com.bugtsa.casher.data.network.payment.PaymentsByDayRes
 import com.bugtsa.casher.presentation.purchase.PurchasesViewModel
 import com.bugtsa.casher.presentation.purchase.PurchasesViewModelFactory
 import com.bugtsa.casher.ui.OnChangePosition

@@ -30,20 +30,16 @@ import com.bugtsa.casher.networking.CasherApi
 import io.reactivex.disposables.CompositeDisposable
 import toothpick.config.Module
 
-class CasherApplicationModule : Module {
+class CasherApplicationModule(application: Application) : Module() {
 
-    constructor(application: Application) {
+    init {
         bind(CompositeDisposable::class.java).toProviderInstance(CompositeDisposableProvider())
-
         val casherApi = CasherRestApiProvider()
         bind(CasherApi::class.java).toProviderInstance(casherApi)
-
         val authApi = AuthApiProvider()
         bind(AuthApi::class.java).toProviderInstance(authApi)
-
         bind(Application::class.java).toProviderInstance(ApplicationProvider(application))
         bind(LocalSettingsRepository::class.java).toProviderInstance(PreferenceRepository(application))
-
         bind(AuthRepository::class.java).toProviderInstance(
                 AuthRepositoryProvider(authApi.get())
         )
@@ -56,10 +52,8 @@ class CasherApplicationModule : Module {
         bind(BarChartModel::class.java).toProviderInstance(
                 BarChartRepositoryProvider(casherApi.get())
         )
-
         val casherDataBaseProvider = DataBaseProvider(application)
         bind(CasherDatabase::class.java).toProviderInstance(casherDataBaseProvider)
-
         val categoryDao = CategoryDaoProvider(casherDataBaseProvider.get())
         bind(CategoryDao::class.java).toProviderInstance(categoryDao)
         bind(CategoryDataStore::class.java).toProviderInstance(
@@ -67,7 +61,6 @@ class CasherApplicationModule : Module {
                         categoryDao.get()
                 )
         )
-
         val paymentDao = PaymentDaoProvider(casherDataBaseProvider.get())
         bind(PaymentDao::class.java).toProviderInstance(paymentDao)
         bind(PaymentDataStore::class.java).toProviderInstance(

@@ -1,4 +1,4 @@
-package com.bugtsa.casher.data.network
+package com.bugtsa.casher.data.network.payment
 
 import com.bugtsa.casher.data.dto.PaymentDto
 import com.bugtsa.casher.utils.DiffItem

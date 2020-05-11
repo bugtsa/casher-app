@@ -38,4 +38,13 @@ class PaymentDto {
         this.category = paymentEntity.category
     }
 
+    override fun toString(): String {
+        return "id: $id \n" +
+                "cost: $cost \n" +
+                "date: $date \n" +
+                "time: $time \n" +
+                "category: $category \n" +
+                "balance: $balance"
+    }
+
 }

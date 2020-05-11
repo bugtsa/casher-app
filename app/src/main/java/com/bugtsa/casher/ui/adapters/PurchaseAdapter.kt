@@ -7,7 +7,7 @@ import android.widget.TextView
 import androidx.core.view.isVisible
 import com.bugtsa.casher.R
 import com.bugtsa.casher.data.dto.PaymentDto
-import com.bugtsa.casher.data.network.PaymentsByDayRes
+import com.bugtsa.casher.data.network.payment.PaymentsByDayRes
 import com.bugtsa.casher.ui.OnChangePosition
 import com.bugtsa.casher.utils.autoNotify
 import kotlinx.android.synthetic.main.item_payment_caption.view.*

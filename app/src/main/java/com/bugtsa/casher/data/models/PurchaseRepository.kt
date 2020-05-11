@@ -2,7 +2,8 @@ package com.bugtsa.casher.data.models
 
 import com.bugtsa.casher.data.dto.CategoryDto
 import com.bugtsa.casher.data.dto.PaymentDto
-import com.bugtsa.casher.data.network.PaymentsByDayRes
+import com.bugtsa.casher.data.network.payment.PaymentPageRes
+import com.bugtsa.casher.data.network.payment.PaymentsByDayRes
 import com.bugtsa.casher.global.extentions.Backoff
 import com.bugtsa.casher.global.extentions.exponentialRetry
 import com.bugtsa.casher.networking.CasherApi
@@ -30,8 +31,8 @@ class PurchaseRepository @Inject constructor(private val casherRestApi: CasherAp
                 }
     }
 
-    fun getPaymentsByDay(): Flowable<List<PaymentsByDayRes>> =
-            casherRestApi.getPagedPayments()
+    fun getPaymentsByDay(authHeader: String): Flowable<PaymentPageRes> =
+            casherRestApi.getPagedPayments(authHeader)
                     .exponentialRetry(PAYMENT_TIMEOUT, Backoff(maxDelay = PAYMENT_TIMEOUT))
                     .timeout(PAYMENT_TIMEOUT, TimeUnit.MILLISECONDS, Flowable.error(Throwable()))
 
