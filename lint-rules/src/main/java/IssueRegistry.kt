@@ -10,7 +10,7 @@ import java.util.*
 
 class IssueRegistry : com.android.tools.lint.client.api.IssueRegistry() {
     override val issues: List<Issue>
-        get() = listOf(IssueHamcrestImport, DIRECT_COLOR_ISSUE)
+        get() = listOf(IssueHamcrestImport, DIRECT_COLOR_ISSUE, LogWtfDetector.ISSUE)
 
     override val api: Int = com.android.tools.lint.detector.api.CURRENT_API
 }

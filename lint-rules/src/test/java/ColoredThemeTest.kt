@@ -1,4 +1,4 @@
-package com.bugtsa.casher
+package com.bugtsa.casher.theme
 
 import com.android.tools.lint.checks.infrastructure.TestFiles
 import com.android.tools.lint.checks.infrastructure.TestLintTask
