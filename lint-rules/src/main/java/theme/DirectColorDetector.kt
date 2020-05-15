@@ -4,7 +4,6 @@ import com.android.tools.lint.detector.api.*
 import org.w3c.dom.Attr
 
 class DirectColorDetector : ResourceXmlDetector() {
-
     override fun getApplicableAttributes(): Collection<String>? = listOf(
             "background", "foreground", "src", "textColor", "tint", "color",
             "textColorHighlight", "textColorHint", "textColorLink",
