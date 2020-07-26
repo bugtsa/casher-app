@@ -46,8 +46,8 @@ class AuthApiProvider : Provider<AuthApi> {
     companion object {
         private const val READ_TIMEOUT = 15L
         private const val CONNECTION_TIMEOUT = 40L
-        private const val AUTH_URL = "https://casher-auth.herokuapp.com/"
-        private const val AUTH_LOCAL_URL = "http://localhost:9090/"
+        private const val AUTH_URL = "https://casher-resource.herokuapp.com/"
+        private const val AUTH_LOCAL_URL = "http://localhost:9091/"
 
         const val AUTHORIZATION_CLIENT_APP = "USER_CLIENT_APP"
         private const val AUTHORIZATION_PASSWORD = "password"
