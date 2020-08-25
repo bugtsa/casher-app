@@ -50,7 +50,7 @@ jobs:
         run: echo $FIREBASE_CONFIG > app/google-services.json
 
       - name: Install NDK
-        run: echo "y" | sudo /usr/local/lib/android/sdk/tools/bin/sdkmanager --install "ndk;20.0.5594570" --sdk_root=${ANDROID_SDK_ROOT}
+        run: echo "y" | sudo /usr/local/lib/android/sdk/tools/bin/sdkmanager --install "ndk;21.3.6528147" --sdk_root=${ANDROID_SDK_ROOT}
 
       - name: Build Project
         run: ./gradlew assembleDebug --stacktrace
