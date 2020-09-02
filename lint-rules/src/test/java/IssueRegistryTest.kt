@@ -13,6 +13,8 @@ class IssueRegistryTest {
 
         assertThat("""
         - **HamcrestImport** - Use Google Truth instead
+        - **DirectColorUse** - Avoid direct use of colors in XML files. This will cause issues with different theme (eg. night) support
+        - **LogWtfUsageError** - This lint check prevents usage of `Log.wtf()`.
         """.trimIndent()).isEqualTo(output)
     }
 }

@@ -33,10 +33,7 @@ src/com/bugtsa/casher/app/WhatATerribleFailure.kt:7: Error: Usage of Log.wtf() i
     fun testTimberWtfDetector() {
         /* ktlint-disable max-line-length */
         val expected = """
-src/com/bugtsa/casher/app/WhatATerribleFailure.kt:7: Error: Usage of Timber.wtf() is prohibited [LogWtfUsageError]
-        Timber.wtf(clazz.name, message)
-            ~~~
-1 errors, 0 warnings
+No warnings.
             """.trimIndent()
         /* ktlint-enable max-line-length */
 

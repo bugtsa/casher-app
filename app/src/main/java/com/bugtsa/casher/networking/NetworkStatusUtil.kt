@@ -20,6 +20,6 @@ class NetworkStatusUtil {
     fun internetConnectivityAvailable() : Boolean {
         val connectivityManager = application.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
         val networkInfo = connectivityManager.activeNetworkInfo
-        return networkInfo.isConnectedOrConnecting
+        return networkInfo?.isConnectedOrConnecting ?: false
     }
 }

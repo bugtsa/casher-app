@@ -14,12 +14,12 @@ detekt {
 }
 
 android {
-    compileSdkVersion(29)
+    compileSdkVersion(30)
 
     defaultConfig {
         applicationId = "com.bugtsa.casher"
         minSdkVersion(21)
-        targetSdkVersion(29)
+        targetSdkVersion(30)
         versionCode = 1
         versionName = Libs.Project.fullVersion
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
@@ -92,24 +92,24 @@ android {
 
 dependencies {
     implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("*.jar"))))
+    val kotlinVersion = "1.4.0"
 
-    val kotlinVersion = System.getProperty("kotlinVersion")
     val kotlin = "org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion"
     implementation(kotlin)
 
-    implementation("androidx.appcompat:appcompat:1.1.0")
-    implementation("com.google.android.material:material:1.1.0")
+    implementation("androidx.appcompat:appcompat:1.2.0")
+    implementation("com.google.android.material:material:1.2.1")
     implementation("androidx.legacy:legacy-support-v13:1.0.0")
     implementation("androidx.recyclerview:recyclerview:1.1.0")
-    implementation("androidx.constraintlayout:constraintlayout:1.1.3")
+    implementation("androidx.constraintlayout:constraintlayout:2.0.1")
     implementation(Libs.Android.coreX)
     implementation(Libs.Android.coreKtx)
 
-    implementation("com.google.firebase:firebase-analytics:17.4.0")
-    implementation("com.google.firebase:firebase-crashlytics:17.0.0")
-    implementation("com.google.android.gms:play-services-auth:18.0.0")
+    implementation("com.google.firebase:firebase-analytics:17.5.0")
+    implementation("com.google.firebase:firebase-crashlytics:17.2.1")
+    implementation("com.google.android.gms:play-services-auth:18.1.0")
     implementation("pub.devrel:easypermissions:2.0.0")
-    implementation("com.google.api-client:google-api-client-android:1.25.0") {
+    implementation("com.google.api-client:google-api-client-android:1.30.10") {
         exclude(mapOf("group" to "org.apache.httpcomponents"))
     }
 
@@ -120,7 +120,7 @@ dependencies {
     implementation(Libs.Auth.apiClient)
     implementation(Libs.Auth.androidApiClient)
 
-    implementation("com.google.apis:google-api-services-people:v1-rev4-1.22.0")
+    implementation("com.google.apis:google-api-services-people:v1-rev99-1.22.0")
 
     implementation("com.github.stephanenicolas.toothpick:toothpick-runtime:3.1.0")
     implementation("com.github.stephanenicolas.toothpick:smoothie-androidx:3.1.0")
@@ -167,12 +167,12 @@ dependencies {
 
     // Calendar & Date Picker
     implementation("com.github.maxyou:CalendarPicker:v1.1.2")
-    implementation("com.borax12.materialdaterangepicker:library:1.9")
+    implementation("com.borax12.materialdaterangepicker:library:2.0")
 
     implementation("androidx.multidex:multidex:2.0.1")
 
     testImplementation ("junit:junit:4.13")
-    testImplementation ("com.google.truth:truth:0.42")
+    testImplementation ("com.google.truth:truth:1.0.1")
 
     lintChecks(project(":lint-rules"))
 }
