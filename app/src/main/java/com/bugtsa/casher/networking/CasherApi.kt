@@ -34,7 +34,7 @@ interface CasherApi {
     fun getPagedPayments(@Header("Authorization") authHeader: String): Flowable<PaymentPageRes>
 
     @POST("$PAYMENT_NAME_METHOD/full")
-    fun addPayment(@Body payment: FormBody): Single<PaymentDto>
+    fun addPayment(@Body payment: FormBody): Single<PaymentRes>
 
     @GET("$CHARTS_NAME_METHOD/rangeMonth")
     fun getRangeMonths(): Single<List<PaymentRes>>

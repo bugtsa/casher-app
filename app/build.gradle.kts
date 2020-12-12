@@ -42,7 +42,7 @@ android {
             )
             firebaseAppDistribution {
                 appId = "1:495380633023:android:a1b3fc39656f235e1abd0a"
-                serviceCredentialsFile = "$rootDir/app/casher-bugtsa-app.json"
+                serviceCredentialsFile = "$rootDir/app/google-services.json"
                 testers = "bugtsa@gmail.com, preispodhyaya@gmail.com"
             }
         }
@@ -101,13 +101,13 @@ dependencies {
     implementation("com.google.android.material:material:1.2.1")
     implementation("androidx.legacy:legacy-support-v13:1.0.0")
     implementation("androidx.recyclerview:recyclerview:1.1.0")
-    implementation("androidx.constraintlayout:constraintlayout:2.0.1")
+    implementation("androidx.constraintlayout:constraintlayout:2.0.4")
     implementation(Libs.Android.coreX)
     implementation(Libs.Android.coreKtx)
 
-    implementation("com.google.firebase:firebase-analytics:17.5.0")
-    implementation("com.google.firebase:firebase-crashlytics:17.2.1")
-    implementation("com.google.android.gms:play-services-auth:18.1.0")
+    implementation("com.google.firebase:firebase-analytics:18.0.0")
+    implementation("com.google.firebase:firebase-crashlytics:17.3.0")
+    implementation("com.google.android.gms:play-services-auth:19.0.0")
     implementation("pub.devrel:easypermissions:2.0.0")
     implementation("com.google.api-client:google-api-client-android:1.30.10") {
         exclude(mapOf("group" to "org.apache.httpcomponents"))
@@ -171,7 +171,7 @@ dependencies {
 
     implementation("androidx.multidex:multidex:2.0.1")
 
-    testImplementation ("junit:junit:4.13")
+    testImplementation ("junit:junit:4.13.1")
     testImplementation ("com.google.truth:truth:1.0.1")
 
     lintChecks(project(":lint-rules"))

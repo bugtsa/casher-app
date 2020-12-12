@@ -1,7 +1,6 @@
 package com.bugtsa.casher.presentation.purchase
 
 import android.app.Application
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -9,7 +8,8 @@ import androidx.lifecycle.ViewModelProvider
 import com.bugtsa.casher.data.AuthRepository
 import com.bugtsa.casher.data.dto.CategoryDto
 import com.bugtsa.casher.data.local.database.entity.category.CategoryDataStore
-import com.bugtsa.casher.data.models.PurchaseRepository
+import com.bugtsa.casher.data.models.PurchaseRemoteRepository
+import com.bugtsa.casher.data.network.payment.PaymentPageRes
 import com.bugtsa.casher.data.network.payment.PaymentPageRes.Companion.NEED_REFRESH_TOKEN
 import com.bugtsa.casher.data.network.payment.PaymentPageWarningsRes
 import com.bugtsa.casher.data.network.payment.PaymentsByDayRes
@@ -19,7 +19,6 @@ import io.reactivex.Flowable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.functions.BiFunction
 import io.reactivex.schedulers.Schedulers
-import retrofit2.HttpException
 import timber.log.Timber
 import toothpick.Toothpick
 import javax.inject.Inject
@@ -34,7 +33,7 @@ class PurchasesViewModelFactory @Inject constructor(private val app: Application
 }
 
 class PurchasesViewModel @Inject constructor(
-    private val purchasesRepository: PurchaseRepository,
+    private val purchasesRepository: PurchaseRemoteRepository,
     private val categoryDataStore: CategoryDataStore,
     private val preferenceRepo: PreferenceRepository,
     private val authRepository: AuthRepository
@@ -149,7 +148,7 @@ class PurchasesViewModel @Inject constructor(
 
     //region ================= Replace Task to Rx functions =================
 
-    private fun getPaymentsByDay() {
+    private fun getRemotePaymentsByDay(): Flowable<PaymentPageRes> =
         purchasesRepository.getPaymentsByDay(BEARER_PREFIX + preferenceRepo.getAccessToken())
             .switchMap { page ->
                 if (page.hasWarning && page.warningsList.size == 1 && page.warningsList[0].title == NEED_REFRESH_TOKEN) {
@@ -163,6 +162,9 @@ class PurchasesViewModel @Inject constructor(
                     purchasesRepository.getPaymentsByDay(BEARER_PREFIX + preferenceRepo.getAccessToken())
                 }
             }
+
+    private fun getPaymentsByDay() {
+        getRemotePaymentsByDay()
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({ paymentPage ->
@@ -175,8 +177,8 @@ class PurchasesViewModel @Inject constructor(
                     else -> setupPurchaseListLiveData.value = paymentsList
                 }
             }, { t ->
-                    Timber.tag("getPurchasesList").e(t)
-                    progressLiveData.value = false
+                Timber.tag("getPurchasesList").e(t)
+                progressLiveData.value = false
             })
             .also(::addDispose)
     }

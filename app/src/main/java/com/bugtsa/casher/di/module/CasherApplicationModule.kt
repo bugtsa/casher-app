@@ -7,7 +7,7 @@ import com.bugtsa.casher.data.local.database.entity.category.CategoryDao
 import com.bugtsa.casher.data.local.database.entity.category.CategoryDataStore
 import com.bugtsa.casher.data.local.database.entity.payment.PaymentDao
 import com.bugtsa.casher.data.local.database.entity.payment.PaymentDataStore
-import com.bugtsa.casher.data.models.PurchaseRepository
+import com.bugtsa.casher.data.models.PurchaseRemoteRepository
 import com.bugtsa.casher.data.models.charts.BarChartModel
 import com.bugtsa.casher.data.models.charts.ChartModel
 import com.bugtsa.casher.data.models.charts.ChooseChartsRepository
@@ -43,7 +43,7 @@ class CasherApplicationModule(application: Application) : Module() {
         bind(AuthRepository::class.java).toProviderInstance(
                 AuthRepositoryProvider(authApi.get())
         )
-        bind(PurchaseRepository::class.java).toProviderInstance(
+        bind(PurchaseRemoteRepository::class.java).toProviderInstance(
                 PurchaseRepositoryProvider(casherApi.get()))
         bind(ChooseChartsRepository::class.java).toProviderInstance(
                 ChooseChartsRepositoryProvider(casherApi.get()))

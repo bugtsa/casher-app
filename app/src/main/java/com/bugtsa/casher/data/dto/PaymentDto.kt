@@ -11,15 +11,6 @@ class PaymentDto {
     val time: String
     val category: String
 
-    constructor(id: Long, cost: String, balance: String, date: String, category: String) {
-        this.id = id
-        this.cost = cost
-        this.balance = balance
-        this.date = date
-        this.time = EMPTY_PAYMENT_FIELD
-        this.category = category
-    }
-
     constructor(id: Long, cost: String, balance: String, date: String, time: String, category: String) {
         this.id = id
         this.cost = cost
@@ -50,15 +41,26 @@ class PaymentDto {
     companion object {
         fun paymentEmptyDto(): PaymentDto {
             return PaymentDto(
-                id = 0L,
-                cost = EMPTY_PAYMENT_FIELD,
-                balance = EMPTY_PAYMENT_FIELD,
-                date = EMPTY_PAYMENT_FIELD,
-                category = EMPTY_PAYMENT_FIELD
+                id = LONG_EMPTY_PAYMENT_FIELD,
+                cost = STRING_EMPTY_PAYMENT_FIELD,
+                balance = STRING_EMPTY_PAYMENT_FIELD,
+                date = STRING_EMPTY_PAYMENT_FIELD,
+                time = STRING_EMPTY_PAYMENT_FIELD,
+                category = STRING_EMPTY_PAYMENT_FIELD
             )
         }
 
-        private const val EMPTY_PAYMENT_FIELD = ""
-    }
+        fun getDateTimePair(rawDate: String): Pair<String, String> {
+            val index = rawDate.indexOf(DATE_AND_TIME_DELIMITER)
+            val date = rawDate.substring(0, index)
+            val time = rawDate.substring(index + DATE_AND_TIME_DELIMITER.length, rawDate.length)
+            return date to time
+        }
 
+        private const val DATE_AND_TIME_DELIMITER = ","
+
+        private const val LONG_EMPTY_PAYMENT_FIELD = 0L
+        const val INT_EMPTY_PAYMENT_FIELD = 0L
+        const val STRING_EMPTY_PAYMENT_FIELD = ""
+    }
 }

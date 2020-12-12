@@ -16,7 +16,7 @@ class PaymentDataStore @Inject constructor(private val paymentDao: PaymentDao) :
                     balance = payment.balance,
                     time = payment.time
             ))
-            PaymentDto(rowId, payment.cost, payment.date, payment.time, payment.category)
+            PaymentDto(rowId, payment.cost, payment.balance, payment.date, payment.time, payment.category)
         }
     }
 
