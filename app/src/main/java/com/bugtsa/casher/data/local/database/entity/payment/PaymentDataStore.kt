@@ -6,28 +6,33 @@ import io.reactivex.Single
 import javax.inject.Inject
 
 class PaymentDataStore @Inject constructor(private val paymentDao: PaymentDao) :
-        PaymentRepository {
+    PaymentRepository {
+
     override fun add(payment: PaymentDto): Single<PaymentDto> {
         return Single.fromCallable {
-            val rowId = paymentDao.add(PaymentEntity(
+            paymentDao.add(
+                PaymentEntity(
+                    id = payment.id,
                     cost = payment.cost,
                     category = payment.category,
+                    categoryId = payment.categoryId,
                     date = payment.date,
-                    balance = payment.balance,
-                    time = payment.time
-            ))
-            PaymentDto(rowId, payment.cost, payment.balance, payment.date, payment.time, payment.category)
+                    time = payment.time,
+                    balance = payment.balance
+                )
+            )
+            payment
         }
     }
 
     override fun getPaymentsList(): Flowable<List<PaymentDto>> {
         return paymentDao.getPayments()
-                .flatMap { list ->
-                    when (list.isEmpty()) {
-                        true -> Flowable.just(listOf())
-                        false -> Flowable.just(list.map { PaymentDto(it) })
-                    }
+            .flatMap { list ->
+                when (list.isEmpty()) {
+                    true -> Flowable.just(listOf())
+                    false -> Flowable.just(list.map { PaymentDto(it) })
                 }
-                .firstElement().toFlowable()
+            }
+            .firstElement().toFlowable()
     }
 }

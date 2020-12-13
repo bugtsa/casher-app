@@ -125,7 +125,8 @@ class AddPurchaseViewModel @Inject constructor(
                         balance = payment.balance ?: STRING_EMPTY_PAYMENT_FIELD,
                         date = date,
                         time = time,
-                        category = payment.category ?: STRING_EMPTY_PAYMENT_FIELD
+                        category = payment.category ?: STRING_EMPTY_PAYMENT_FIELD,
+                        categoryId = payment.categoryId ?: INT_EMPTY_PAYMENT_FIELD
                     )
                 )
             }

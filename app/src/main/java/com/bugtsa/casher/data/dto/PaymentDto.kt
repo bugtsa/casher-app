@@ -4,20 +4,22 @@ import com.bugtsa.casher.data.local.database.entity.payment.PaymentEntity
 
 class PaymentDto {
 
-    val id: Long
+    val id: Int
     val cost: String
     val balance: String
     val date: String
     val time: String
     val category: String
+    val categoryId: Int
 
-    constructor(id: Long, cost: String, balance: String, date: String, time: String, category: String) {
+    constructor(id: Int, cost: String, balance: String, date: String, time: String, category: String, categoryId: Int) {
         this.id = id
         this.cost = cost
         this.balance = balance
         this.date = date
         this.time = time
         this.category = category
+        this.categoryId = categoryId
     }
 
     constructor(paymentEntity: PaymentEntity) {
@@ -27,6 +29,7 @@ class PaymentDto {
         this.date = paymentEntity.date
         this.time = paymentEntity.time
         this.category = paymentEntity.category
+        this.categoryId = paymentEntity.categoryId
     }
 
     override fun toString(): String {
@@ -35,18 +38,20 @@ class PaymentDto {
                 "date: $date \n" +
                 "time: $time \n" +
                 "category: $category \n" +
+                "categoryId: $categoryId \n" +
                 "balance: $balance"
     }
 
     companion object {
         fun paymentEmptyDto(): PaymentDto {
             return PaymentDto(
-                id = LONG_EMPTY_PAYMENT_FIELD,
+                id = INT_EMPTY_PAYMENT_FIELD,
                 cost = STRING_EMPTY_PAYMENT_FIELD,
                 balance = STRING_EMPTY_PAYMENT_FIELD,
                 date = STRING_EMPTY_PAYMENT_FIELD,
                 time = STRING_EMPTY_PAYMENT_FIELD,
-                category = STRING_EMPTY_PAYMENT_FIELD
+                category = STRING_EMPTY_PAYMENT_FIELD,
+                categoryId = INT_EMPTY_PAYMENT_FIELD
             )
         }
 
@@ -59,8 +64,7 @@ class PaymentDto {
 
         private const val DATE_AND_TIME_DELIMITER = ","
 
-        private const val LONG_EMPTY_PAYMENT_FIELD = 0L
-        const val INT_EMPTY_PAYMENT_FIELD = 0L
+        const val INT_EMPTY_PAYMENT_FIELD = 0
         const val STRING_EMPTY_PAYMENT_FIELD = ""
     }
 }
