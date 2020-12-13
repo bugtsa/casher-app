@@ -1,13 +1,20 @@
 package com.bugtsa.casher.presentation.purchase
 
 import android.app.Application
+import android.os.Build.VERSION
+import android.os.Build.VERSION_CODES
+import android.provider.Settings.System.DATE_FORMAT
+import androidx.annotation.RequiresApi
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.bugtsa.casher.data.AuthRepository
 import com.bugtsa.casher.data.dto.CategoryDto
+import com.bugtsa.casher.data.dto.PaymentDto
+import com.bugtsa.casher.data.dto.PaymentDto.Companion.paymentEmptyDto
 import com.bugtsa.casher.data.local.database.entity.category.CategoryDataStore
+import com.bugtsa.casher.data.local.database.entity.payment.PaymentDataStore
 import com.bugtsa.casher.data.models.PurchaseRemoteRepository
 import com.bugtsa.casher.data.network.payment.PaymentPageRes
 import com.bugtsa.casher.data.network.payment.PaymentPageRes.Companion.NEED_REFRESH_TOKEN
@@ -16,11 +23,17 @@ import com.bugtsa.casher.data.network.payment.PaymentsByDayRes
 import com.bugtsa.casher.domain.prefs.PreferenceRepository
 import com.bugtsa.casher.presentation.optional.RxViewModel
 import io.reactivex.Flowable
+import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.functions.BiFunction
 import io.reactivex.schedulers.Schedulers
 import timber.log.Timber
 import toothpick.Toothpick
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
+import java.time.format.DateTimeParseException
+import java.util.SortedMap
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -35,12 +48,15 @@ class PurchasesViewModelFactory @Inject constructor(private val app: Application
 class PurchasesViewModel @Inject constructor(
     private val purchasesRepository: PurchaseRemoteRepository,
     private val categoryDataStore: CategoryDataStore,
+    private val paymentLocalRepo: PaymentDataStore,
     private val preferenceRepo: PreferenceRepository,
     private val authRepository: AuthRepository
 ) : RxViewModel() {
 
     private var isScrollPurchasesList: Boolean = false
     private var paymentsListSize: Int? = null
+
+    private val paymentsBag = CompositeDisposable()
 
     private val progressLiveData = MutableLiveData<Boolean>()
     fun observeProgress(): LiveData<Boolean> = progressLiveData
@@ -60,7 +76,22 @@ class PurchasesViewModel @Inject constructor(
     fun processData() {
         progressLiveData.value = true
         performCheckStorageCategoriesList()
-        performCheckStoragePaymentsList()
+        subscribeOnPayments()
+    }
+
+    fun subscribeOnPayments() {
+        if (VERSION.SDK_INT >= VERSION_CODES.O) {
+            performCheckStoragePaymentsList()
+        }
+    }
+
+    fun clearSubscribeOnPayments() {
+        paymentsBag.clear()
+    }
+
+    fun onAllCleared() {
+        onCleared()
+        clearSubscribeOnPayments()
     }
 
     //region ================= Scroll Function =================
@@ -129,9 +160,98 @@ class PurchasesViewModel @Inject constructor(
 
     //endregion
 
+    @RequiresApi(VERSION_CODES.O)
     private fun performCheckStoragePaymentsList() {
-        getPaymentsByDay()
+        paymentLocalRepo.getPaymentsList()
+            .flatMapSingle { paymentList ->
+                if (paymentList.isEmpty()) {
+                    getRemotePaymentsByDay()
+                        .firstOrError()
+                        .flatMap {
+                            paymentLocalRepo.saveList(it)
+                        }
+                } else {
+                    Single.fromCallable { processByPageRes(paymentList) }
+                }
+            }
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe({ paymentPage ->
+                val paymentsList = paymentPage.page
+                paymentsListSize = paymentsList.size
+                progressLiveData.value = false
+                when {
+                    paymentPage.hasWarning -> statusTextLiveData.value = processWarningsList(paymentPage.warningsList)
+                    paymentsList.isEmpty() -> statusTextLiveData.value = "No results returned."
+                    else -> setupPurchaseListLiveData.value = paymentsList
+                }
+            }, { t ->
+                handleError(t)
+                progressLiveData.value = false
+            })
+            .also {
+                paymentsBag.add(it)
+            }
     }
+
+    @RequiresApi(VERSION_CODES.O)
+    private fun processByPageRes(paymentsList: List<PaymentDto>): PaymentPageRes {
+        val paymentsPage = (mutableListOf<PaymentPageWarningsRes>() to hashMapOf<String, MutableList<PaymentDto>>())
+            .also { (warningsList, paymentsMapByDay) ->
+                paymentsList.forEach { payment ->
+                    when {
+                        payment.date.isEmpty() -> {
+                            warningsList.add(PaymentPageWarningsRes("Need setup date for payment", payment))
+                        }
+                        !paymentsMapByDay.contains(payment.date) -> {
+                            val tempPaymentsList = mutableListOf<PaymentDto>()
+                            tempPaymentsList.add(payment)
+                            paymentsMapByDay[payment.date] = tempPaymentsList
+                        }
+                        else -> {
+                            paymentsMapByDay[payment.date]?.also {
+                                it.add(0, payment)
+                                paymentsMapByDay[payment.date] = it
+                            }
+                        }
+                    }
+                }
+            }
+        return paymentsPage.let { (warningsList, paymentsMapByDay) ->
+            PaymentPageRes(
+                hasWarning = warningsList.isNotEmpty(),
+                warningsList = warningsList,
+                page = mutableListOf<PaymentsByDayRes>()
+                    .let { listPaymentsByDay ->
+                        getSortedMapPaymentsByDay(paymentsMapByDay).keys.forEach { key ->
+                            listPaymentsByDay.add(PaymentsByDayRes(listPaymentsByDay.size.toString(), key, null))
+                            paymentsMapByDay[key]?.forEach { payment ->
+                                listPaymentsByDay.add(
+                                    PaymentsByDayRes(
+                                        listPaymentsByDay.size.toString(),
+                                        null,
+                                        payment
+                                    )
+                                )
+                            }
+                        }
+                        listPaymentsByDay
+                    }
+            )
+        }
+    }
+
+    @RequiresApi(VERSION_CODES.O)
+    private fun getSortedMapPaymentsByDay(paymentsByDayMap: HashMap<String, MutableList<PaymentDto>>)
+            : SortedMap<String, MutableList<PaymentDto>> = paymentsByDayMap
+        .toSortedMap(Comparator { o1, o2 ->
+            val formatter = DateTimeFormatter.ofPattern(DATE_FORMAT)
+            try {
+                LocalDate.parse(o1, formatter).compareTo(LocalDate.parse(o2, formatter))
+            } catch (e: DateTimeParseException) {
+                throw IllegalArgumentException(e)
+            }
+        })
 
     //region ================= DataBase =================
 
@@ -163,26 +283,6 @@ class PurchasesViewModel @Inject constructor(
                 }
             }
 
-    private fun getPaymentsByDay() {
-        getRemotePaymentsByDay()
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe({ paymentPage ->
-                val paymentsList = paymentPage.page
-                paymentsListSize = paymentsList.size
-                progressLiveData.value = false
-                when {
-                    paymentPage.hasWarning -> statusTextLiveData.value = processWarningsList(paymentPage.warningsList)
-                    paymentsList.isEmpty() -> statusTextLiveData.value = "No results returned."
-                    else -> setupPurchaseListLiveData.value = paymentsList
-                }
-            }, { t ->
-                Timber.tag("getPurchasesList").e(t)
-                progressLiveData.value = false
-            })
-            .also(::addDispose)
-    }
-
     private fun processWarningsList(warningsList: List<PaymentPageWarningsRes>): String {
         return when {
             warningsList.size > 1 -> {
@@ -211,6 +311,7 @@ class PurchasesViewModel @Inject constructor(
 
     companion object {
         private const val BEARER_PREFIX = "Bearer "
+        private const val DATE_FORMAT = "dd.MM.yy"
     }
 }
 

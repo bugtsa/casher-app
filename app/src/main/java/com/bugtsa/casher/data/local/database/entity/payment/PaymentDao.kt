@@ -11,6 +11,20 @@ interface PaymentDao {
     @Update(onConflict = OnConflictStrategy.REPLACE)
     fun update(payment: PaymentEntity)
 
+    @Query("SELECT * FROM payment WHERE id =:id LIMIT 1")
+    fun loadById(id: Int): List<PaymentEntity>
+
+    @Transaction
+    fun save(paymentList: List<PaymentEntity>) {
+        paymentList.forEach { payment ->
+            if (loadById(payment.id).isEmpty()) {
+                add(payment)
+            } else {
+                update(payment)
+            }
+        }
+    }
+
     @Query("SELECT * FROM payment")
     fun getPayments(): Flowable<List<PaymentEntity>>
 }

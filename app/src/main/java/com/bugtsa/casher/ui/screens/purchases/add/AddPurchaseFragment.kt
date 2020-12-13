@@ -14,15 +14,23 @@ import com.borax12.materialdaterangepicker.time.TimePickerDialog
 import com.bugtsa.casher.R
 import com.bugtsa.casher.presentation.purchase.AddPurchaseViewModel
 import com.bugtsa.casher.presentation.purchase.AddPurchaseViewModelFactory
+import com.bugtsa.casher.ui.screens.TestForm
 import com.bugtsa.casher.ui.screens.base.BaseFragment
+import com.bugtsa.casher.ui.screens.purchases.show.PurchasesScreen
 import com.maxproj.calendarpicker.Builder
 import kotlinx.android.synthetic.main.fragment_add_purchase.*
 import pro.horovodovodo4ka.bones.Bone
 import pro.horovodovodo4ka.bones.Finger
+import pro.horovodovodo4ka.bones.Phalanx
+import pro.horovodovodo4ka.bones.extensions.closest
 import pro.horovodovodo4ka.bones.extensions.dismiss
+import pro.horovodovodo4ka.bones.extensions.goBack
+import pro.horovodovodo4ka.bones.extensions.processBackPress
 import pro.horovodovodo4ka.bones.persistance.BonePersisterInterface
 import pro.horovodovodo4ka.bones.ui.FingerNavigatorInterface
+import pro.horovodovodo4ka.bones.ui.FragmentSibling
 import pro.horovodovodo4ka.bones.ui.delegates.FingerNavigator
+import pro.horovodovodo4ka.bones.ui.delegates.Page
 import pro.horovodovodo4ka.bones.ui.extensions.addNavigationToToolbar
 import toothpick.Toothpick
 import java.util.*
@@ -31,15 +39,21 @@ interface AddPaymentStackPresentable {
     val fragmentTitle: String
 }
 
-open class AddPurchaseScreen(rootPhalanx: Bone? = null) : Finger(rootPhalanx) {
+open class AddPurchaseScreen(private val updateSubscriptions: () -> Unit) : Phalanx() {
     override val seed = { AddPurchaseFragment() }
+
+    override fun onOrphaned() {
+        super.onOrphaned()
+        updateSubscriptions.invoke()
+    }
 }
 
 @Suppress("DEPRECATED_IDENTITY_EQUALS")
 @SuppressLint("MissingSuperCall")
 class AddPurchaseFragment : BaseFragment(), AddPurchaseView, TimePickerDialog.OnTimeSetListener,
-        FingerNavigatorInterface<AddPurchaseScreen> by FingerNavigator(R.id.add_payment_container),
-        BonePersisterInterface<AddPurchaseScreen>, AddPaymentStackPresentable {
+    FragmentSibling<AddPurchaseScreen> by Page(),
+    BonePersisterInterface<AddPurchaseScreen>,
+    AddPaymentStackPresentable {
 
     private lateinit var viewModel: AddPurchaseViewModel
 
@@ -52,8 +66,8 @@ class AddPurchaseFragment : BaseFragment(), AddPurchaseView, TimePickerDialog.On
         super.onViewCreated(view, savedInstanceState)
 
         val viewModelFactory = Toothpick
-                .openScopes(activity, this)
-                .getInstance(AddPurchaseViewModelFactory::class.java)
+            .openScopes(activity, this)
+            .getInstance(AddPurchaseViewModelFactory::class.java)
         viewModel = ViewModelProvider(this, viewModelFactory)[AddPurchaseViewModel::class.java]
 
         bindListeners()
@@ -80,34 +94,22 @@ class AddPurchaseFragment : BaseFragment(), AddPurchaseView, TimePickerDialog.On
         super<BaseFragment>.onCreate(savedInstanceState)
     }
 
-    override fun onAttach(context: Context) {
-        super.onAttach(context)
-        managerProvider = ::getChildFragmentManager
-    }
-
-    override fun onDetach() {
-        super.onDetach()
-        managerProvider = null
-    }
-
     override val fragmentTitle: String
         get() = getString(R.string.screen_add_purchase)
 
     override fun onRefresh() {
-        super<FingerNavigatorInterface>.onRefresh()
         if (view == null) return
 
         val title = fragmentTitle
         toolbar.visibility = View.VISIBLE
         toolbar.title = title
         addNavigationToToolbar(toolbar, R.drawable.ic_arrow_back_white)
+        toolbar.setNavigationOnClickListener { completedAddPurchase() }
     }
 
     //region ================= Add Purchase View =================
 
-    override fun completedAddPurchase() {
-        bone.dismiss()
-    }
+    override fun completedAddPurchase() = bone.dismiss()
 
     override fun showProgressBar() {
         showProgress(cancelAction = { processBackPress() })
@@ -119,9 +121,10 @@ class AddPurchaseFragment : BaseFragment(), AddPurchaseView, TimePickerDialog.On
 
     override fun setupCategoriesList(categoriesList: List<String>) {
         val adapter: ArrayAdapter<String> = ArrayAdapter(
-                requireContext(),
-                android.R.layout.simple_dropdown_item_1line,
-                categoriesList)
+            requireContext(),
+            android.R.layout.simple_dropdown_item_1line,
+            categoriesList
+        )
         category_purchase_et.setAdapter(adapter)
     }
 
@@ -144,9 +147,9 @@ class AddPurchaseFragment : BaseFragment(), AddPurchaseView, TimePickerDialog.On
             viewModel.changeCalendar(yearMonthDay)
         })
         builder
-                .setPromptText("Select Date")
-                .setPromptSize(18)
-                .setPromptColor(Color.RED)
+            .setPromptText("Select Date")
+            .setPromptSize(18)
+            .setPromptColor(Color.RED)
         builder.show()
     }
 
@@ -154,15 +157,21 @@ class AddPurchaseFragment : BaseFragment(), AddPurchaseView, TimePickerDialog.On
     override fun showTimePicker() {
         val now = Calendar.getInstance()
         val tpd = TimePickerDialog.newInstance(
-                this,
-                now.get(Calendar.HOUR_OF_DAY),
-                now.get(Calendar.MINUTE),
-                true
+            this,
+            now.get(Calendar.HOUR_OF_DAY),
+            now.get(Calendar.MINUTE),
+            true
         )
         tpd.show(requireActivity().fragmentManager, "TagTimePickerDialog")
     }
 
-    override fun onTimeSet(view: RadialPickerLayout?, hourOfDay: Int, minute: Int, hourOfDayEnd: Int, minuteEnd: Int) {
+    override fun onTimeSet(
+        view: RadialPickerLayout?,
+        hourOfDay: Int,
+        minute: Int,
+        hourOfDayEnd: Int,
+        minuteEnd: Int
+    ) {
         val hourString = if (hourOfDay < 10) "0$hourOfDay" else "" + hourOfDay
         val minuteString = if (minute < 10) "0$minute" else "" + minute
         viewModel.changeTime(hourString, minuteString)
@@ -175,29 +184,29 @@ class AddPurchaseFragment : BaseFragment(), AddPurchaseView, TimePickerDialog.On
         viewModel.checkExistCategoriesInDatabase()
 
         viewModel.observeCategoriesList().observe(viewLifecycleOwner,
-                Observer { categoriesList ->
-                    setupCategoriesList(categoriesList)
-                })
+            Observer { categoriesList ->
+                setupCategoriesList(categoriesList)
+            })
         viewModel.observeCompleteAddPayment().observe(viewLifecycleOwner,
-                Observer {
-                    completedAddPurchase()
-                })
+            Observer {
+                completedAddPurchase()
+            })
         viewModel.observeSetupCurrentDate().observe(viewLifecycleOwner,
-                Observer { currentDateAndTime ->
-                    setupCurrentDateAndTime(currentDateAndTime)
-                })
+            Observer { currentDateAndTime ->
+                setupCurrentDateAndTime(currentDateAndTime)
+            })
         viewModel.observeShowDatePicker().observe(viewLifecycleOwner,
-                Observer {
-                    showDatePicker()
-                })
+            Observer {
+                showDatePicker()
+            })
         viewModel.observeShowTimePicker().observe(viewLifecycleOwner,
-                Observer {
-                    showTimePicker()
-                })
+            Observer {
+                showTimePicker()
+            })
         viewModel.observeShowProgress().observe(viewLifecycleOwner,
-                Observer { isShow ->
-                    if (isShow) showProgressBar() else hideProgressBar()
-                })
+            Observer { isShow ->
+                if (isShow) showProgressBar() else hideProgressBar()
+            })
     }
 
     private fun bindListeners() {
@@ -207,8 +216,10 @@ class AddPurchaseFragment : BaseFragment(), AddPurchaseView, TimePickerDialog.On
         }
 
         save_purchase.setOnClickListener {
-            viewModel.checkCategorySaveOnDatabase(price_purchase_et.text.toString(),
-                    category_purchase_et.text.toString())
+            viewModel.checkCategorySaveOnDatabase(
+                price_purchase_et.text.toString(),
+                category_purchase_et.text.toString()
+            )
         }
         cancel_purchase.setOnClickListener { completedAddPurchase() }
     }
