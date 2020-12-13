@@ -27,13 +27,15 @@ import toothpick.Toothpick
 
 class PurchasesScreen(rootPhalanx: Bone? = null) : Finger(rootPhalanx) {
 
-    override val seed = { PurchasesFragment() }
+    private val fragment = PurchasesFragment()
+
+    override val seed = { fragment }
 }
 
 @SuppressLint("MissingSuperCall")
 class PurchasesFragment : Fragment(R.layout.fragment_purchases), PurchasesView,
-        FingerNavigatorInterface<PurchasesScreen> by FingerNavigator(R.id.payments_container),
-        BonePersisterInterface<PurchasesScreen> {
+    FingerNavigatorInterface<PurchasesScreen> by FingerNavigator(R.id.payments_container),
+    BonePersisterInterface<PurchasesScreen> {
 
     private lateinit var viewModel: PurchasesViewModel
 
@@ -49,9 +51,6 @@ class PurchasesFragment : Fragment(R.layout.fragment_purchases), PurchasesView,
         initViewModel()
 
         bindViewModel()
-        viewModel.processData()
-
-        refreshUI()
     }
 
     override fun onDestroyView() {
@@ -77,6 +76,21 @@ class PurchasesFragment : Fragment(R.layout.fragment_purchases), PurchasesView,
     override fun onCreate(savedInstanceState: Bundle?) {
         super<BonePersisterInterface>.onCreate(savedInstanceState)
         super<Fragment>.onCreate(savedInstanceState)
+    }
+
+    override fun onPause() {
+        super.onPause()
+        viewModel.onAllCleared()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        viewModel.processData()
+    }
+
+    private fun resumes() {
+        viewModel.clearSubscribeOnPayments()
+        viewModel.subscribeOnPayments()
     }
 
     //endregion
@@ -108,7 +122,7 @@ class PurchasesFragment : Fragment(R.layout.fragment_purchases), PurchasesView,
 
     override fun showProgressBar(isVisible: Boolean) {
         setupStatusText("")
-        progress_purchase.isVisible =  isVisible
+        progress_purchase.isVisible = isVisible
     }
 
     override fun showPaymentList(isVisible: Boolean) {
@@ -125,7 +139,7 @@ class PurchasesFragment : Fragment(R.layout.fragment_purchases), PurchasesView,
 
     private fun showAddPurchaseController(): View.OnClickListener? {
         return View.OnClickListener {
-            bone.present( AddPurchaseScreen())
+            bone.present(AddPurchaseScreen { resumes() })
         }
     }
 
@@ -164,8 +178,8 @@ class PurchasesFragment : Fragment(R.layout.fragment_purchases), PurchasesView,
 
     private fun initViewModel() {
         val viewModelFactory = Toothpick
-                .openScope(requireActivity().application)
-                .getInstance(PurchasesViewModelFactory::class.java)
+            .openScope(requireActivity().application)
+            .getInstance(PurchasesViewModelFactory::class.java)
         viewModel = ViewModelProvider(this, viewModelFactory)[PurchasesViewModel::class.java]
     }
 
