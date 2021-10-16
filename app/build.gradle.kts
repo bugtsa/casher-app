@@ -92,23 +92,23 @@ android {
 
 dependencies {
     implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("*.jar"))))
-    val kotlinVersion = "1.4.0"
+    val kotlinVersion = "1.4.31"
 
     val kotlin = "org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion"
     implementation(kotlin)
 
-    implementation("androidx.appcompat:appcompat:1.2.0")
-    implementation("com.google.android.material:material:1.2.1")
+    implementation("androidx.appcompat:appcompat:1.3.0")
+    implementation("com.google.android.material:material:1.3.0")
     implementation("androidx.legacy:legacy-support-v13:1.0.0")
-    implementation("androidx.recyclerview:recyclerview:1.1.0")
+    implementation("androidx.recyclerview:recyclerview:1.2.0")
     implementation("androidx.constraintlayout:constraintlayout:2.0.4")
     implementation(Libs.Android.coreX)
     implementation(Libs.Android.coreKtx)
 
-    implementation("com.google.firebase:firebase-analytics:18.0.0")
-    implementation("com.google.firebase:firebase-crashlytics:17.3.0")
+    implementation("com.google.firebase:firebase-analytics:19.0.0")
+    implementation("com.google.firebase:firebase-crashlytics:18.0.0")
     implementation("com.google.android.gms:play-services-auth:19.0.0")
-    implementation("pub.devrel:easypermissions:2.0.0")
+    implementation("pub.devrel:easypermissions:3.0.0")
     implementation("com.google.api-client:google-api-client-android:1.30.10") {
         exclude(mapOf("group" to "org.apache.httpcomponents"))
     }
@@ -126,7 +126,7 @@ dependencies {
     implementation("com.github.stephanenicolas.toothpick:smoothie-androidx:3.1.0")
     kapt("com.github.stephanenicolas.toothpick:toothpick-compiler:3.1.0")
 
-    implementation("io.reactivex.rxjava2:rxjava:2.2.19")
+    implementation("io.reactivex.rxjava2:rxjava:2.2.21")
     implementation("io.reactivex.rxjava2:rxandroid:2.1.1")
     implementation("io.reactivex.rxjava2:rxkotlin:2.4.0")
 
@@ -146,18 +146,18 @@ dependencies {
 
     // Room Database
 
-    implementation("androidx.room:room-runtime:2.2.5")
-    implementation("androidx.room:room-rxjava2:2.2.5")
-    kapt("androidx.room:room-compiler:2.2.5")
+    implementation("androidx.room:room-runtime:2.3.0")
+    implementation("androidx.room:room-rxjava2:2.3.0")
+    kapt("androidx.room:room-compiler:2.3.0")
 
     // Timber
     implementation("com.jakewharton.timber:timber:4.7.1")
 
     // Glide
-    implementation("com.github.bumptech.glide:glide:4.11.0")
-    kapt("com.github.bumptech.glide:compiler:4.11.0")
-    implementation("jp.wasabeef:glide-transformations:4.1.0")
-    implementation("com.github.bumptech.glide:okhttp3-integration:4.11.0") {
+    implementation("com.github.bumptech.glide:glide:4.12.0")
+    kapt("com.github.bumptech.glide:compiler:4.12.0")
+    implementation("jp.wasabeef:glide-transformations:4.3.0")
+    implementation("com.github.bumptech.glide:okhttp3-integration:4.12.0") {
         mapOf("transitive" to false)
     }
 
@@ -171,7 +171,7 @@ dependencies {
 
     implementation("androidx.multidex:multidex:2.0.1")
 
-    testImplementation ("junit:junit:4.13.1")
+    testImplementation ("junit:junit:4.13.2")
     testImplementation ("com.google.truth:truth:1.0.1")
 
     lintChecks(project(":lint-rules"))
