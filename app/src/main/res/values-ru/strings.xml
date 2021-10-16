@@ -39,6 +39,8 @@
 
     <string name="month_range_end">Конечная дата: %1$s год, %2$s</string>
     <string name="month_range_start">Начальная дата: %1$s год, %2$s</string>
+    <string name="order_info_time_start">Время С</string>
+    <string name="order_info_time_end">Время По</string>
 
     <string name="price_purchase">Цена траты</string>
     <string name="price_purchase_hint">Напишите число</string>

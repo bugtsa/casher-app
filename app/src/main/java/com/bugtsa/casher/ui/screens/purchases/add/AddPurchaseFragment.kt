@@ -1,35 +1,25 @@
 package com.bugtsa.casher.ui.screens.purchases.add
 
 import android.annotation.SuppressLint
-import android.content.Context
-import android.graphics.Color
 import android.os.Bundle
 import android.view.MotionEvent
 import android.view.View
 import android.widget.ArrayAdapter
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
-import com.borax12.materialdaterangepicker.time.RadialPickerLayout
-import com.borax12.materialdaterangepicker.time.TimePickerDialog
 import com.bugtsa.casher.R
 import com.bugtsa.casher.presentation.purchase.AddPurchaseViewModel
 import com.bugtsa.casher.presentation.purchase.AddPurchaseViewModelFactory
-import com.bugtsa.casher.ui.screens.TestForm
 import com.bugtsa.casher.ui.screens.base.BaseFragment
-import com.bugtsa.casher.ui.screens.purchases.show.PurchasesScreen
-import com.maxproj.calendarpicker.Builder
+import com.bugtsa.casher.utils.DateConverter.toShortDateString
+import com.bugtsa.casher.utils.getDefaultCalendar
+import com.bugtsa.casher.utils.showDateDialog
+import com.bugtsa.casher.utils.showTimeDialog
 import kotlinx.android.synthetic.main.fragment_add_purchase.*
-import pro.horovodovodo4ka.bones.Bone
-import pro.horovodovodo4ka.bones.Finger
 import pro.horovodovodo4ka.bones.Phalanx
-import pro.horovodovodo4ka.bones.extensions.closest
 import pro.horovodovodo4ka.bones.extensions.dismiss
-import pro.horovodovodo4ka.bones.extensions.goBack
-import pro.horovodovodo4ka.bones.extensions.processBackPress
 import pro.horovodovodo4ka.bones.persistance.BonePersisterInterface
-import pro.horovodovodo4ka.bones.ui.FingerNavigatorInterface
 import pro.horovodovodo4ka.bones.ui.FragmentSibling
-import pro.horovodovodo4ka.bones.ui.delegates.FingerNavigator
 import pro.horovodovodo4ka.bones.ui.delegates.Page
 import pro.horovodovodo4ka.bones.ui.extensions.addNavigationToToolbar
 import toothpick.Toothpick
@@ -50,7 +40,7 @@ open class AddPurchaseScreen(private val updateSubscriptions: () -> Unit) : Phal
 
 @Suppress("DEPRECATED_IDENTITY_EQUALS")
 @SuppressLint("MissingSuperCall")
-class AddPurchaseFragment : BaseFragment(), AddPurchaseView, TimePickerDialog.OnTimeSetListener,
+class AddPurchaseFragment : BaseFragment(), AddPurchaseView,
     FragmentSibling<AddPurchaseScreen> by Page(),
     BonePersisterInterface<AddPurchaseScreen>,
     AddPaymentStackPresentable {
@@ -130,51 +120,40 @@ class AddPurchaseFragment : BaseFragment(), AddPurchaseView, TimePickerDialog.On
 
     @SuppressLint("SetTextI18n")
     override fun setupCurrentDateAndTime(dateAndTime: String) {
-        date_purchase.text = requireContext().getString(R.string.current_date_and_time) + dateAndTime
+        date_purchase.text =
+            requireContext().getString(R.string.current_date_and_time) + dateAndTime
     }
 
-    @SuppressLint("SetTextI18n")
-    override fun setupCustomDateAndTime(date: String, time: String) {
-        date_purchase.text = requireContext().getString(R.string.changed_date_and_time) + "$date $time"
-    }
+//    @SuppressLint("SetTextI18n")
+//    override fun setupCustomDateAndTime(date: String, time: String) {
+//        date_purchase.text =
+//            requireContext().getString(R.string.changed_date_and_time) + "$date $time"
+//    }
 
     //endregion
 
     //region ================= Calendar And Time Picker =================
 
     override fun showDatePicker() {
-        val builder = Builder(activity, Builder.CalendarPickerOnConfirm { yearMonthDay ->
-            viewModel.changeCalendar(yearMonthDay)
-        })
-        builder
-            .setPromptText("Select Date")
-            .setPromptSize(18)
-            .setPromptColor(Color.RED)
-        builder.show()
-    }
-
-    @Suppress("deprecation")
-    override fun showTimePicker() {
-        val now = Calendar.getInstance()
-        val tpd = TimePickerDialog.newInstance(
-            this,
-            now.get(Calendar.HOUR_OF_DAY),
-            now.get(Calendar.MINUTE),
-            true
-        )
-        tpd.show(requireActivity().fragmentManager, "TagTimePickerDialog")
-    }
-
-    override fun onTimeSet(
-        view: RadialPickerLayout?,
-        hourOfDay: Int,
-        minute: Int,
-        hourOfDayEnd: Int,
-        minuteEnd: Int
-    ) {
-        val hourString = if (hourOfDay < 10) "0$hourOfDay" else "" + hourOfDay
-        val minuteString = if (minute < 10) "0$minute" else "" + minute
-        viewModel.changeTime(hourString, minuteString)
+        val calendar = getDefaultCalendar()
+        calendar.time = Date()
+        val positiveColorId = R.color.colorAccent
+        val negativeColorId = R.color.secondaryColor
+        requireContext().showDateDialog(
+            calendar,
+            positiveColorId,
+            negativeColorId
+        ) { yearMonthDay ->
+            requireContext().showTimeDialog(
+                yearMonthDay,
+                R.string.order_info_time_start,
+                positiveColorId,
+                negativeColorId
+            ) { date ->
+                val stringDate = date.time.toShortDateString()
+                viewModel.changeDate(stringDate)
+            }
+        }
     }
 
     //endregion
@@ -198,10 +177,6 @@ class AddPurchaseFragment : BaseFragment(), AddPurchaseView, TimePickerDialog.On
         viewModel.observeShowDatePicker().observe(viewLifecycleOwner,
             Observer {
                 showDatePicker()
-            })
-        viewModel.observeShowTimePicker().observe(viewLifecycleOwner,
-            Observer {
-                showTimePicker()
             })
         viewModel.observeShowProgress().observe(viewLifecycleOwner,
             Observer { isShow ->

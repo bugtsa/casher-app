@@ -22,7 +22,6 @@ import com.bugtsa.casher.utils.ConstantManager.Network.USER_ID_PARAMETER
 import com.bugtsa.casher.utils.ConstantManager.User.DEFAULT_USER_ID
 import com.bugtsa.casher.utils.SoftwareUtils
 import com.bugtsa.casher.utils.SoftwareUtils.Companion.getCurrentTimeStamp
-import com.maxproj.calendarpicker.Models.YearMonthDay
 import io.reactivex.Flowable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
@@ -54,8 +53,6 @@ class AddPurchaseViewModel @Inject constructor(
     private val categoryDataStore: CategoryDataStore = injectCategoryDataStore
     private val localPaymentRepo: PaymentDataStore = injectPaymentDataStore
 
-    private var customDate: String = ""
-    private var customTime: String = ""
     private var checkedCustomDateTime: Boolean = false
 
     private val categoriesListLiveData = MutableLiveData<List<String>>()
@@ -66,9 +63,6 @@ class AddPurchaseViewModel @Inject constructor(
 
     private val showDatePickerLiveData = MutableLiveData<Boolean>()
     fun observeShowDatePicker(): LiveData<Boolean> = showDatePickerLiveData
-
-    private val showTimePickerLiveData = MutableLiveData<Boolean>()
-    fun observeShowTimePicker(): LiveData<Boolean> = showTimePickerLiveData
 
     private val setupCurrentDateLiveData = MutableLiveData<String>()
     fun observeSetupCurrentDate(): LiveData<String> = setupCurrentDateLiveData
@@ -250,25 +244,15 @@ class AddPurchaseViewModel @Inject constructor(
     }
 
     private fun getActualDateAndTime(): String {
-        return if (checkedCustomDateTime) {
-            "$customDate, $customTime"
+        return if (checkedCustomDateTime && setupCurrentDateLiveData.value != null) {
+            setupCurrentDateLiveData.value.toString()
         } else {
             SoftwareUtils.timeStampToString(getCurrentTimeStamp(), Locale.getDefault())
         }
     }
 
-    fun changeCalendar(selectedDate: YearMonthDay) {
-        customDate = "" + String.format("%02d", selectedDate.day) + "." +
-                String.format("%02d", selectedDate.month) + "." +
-                selectedDate.year
-                    .toString()
-                    .substring(selectedDate.year.toString().length - 2)
-        showTimePickerLiveData.value = true
-    }
-
-    fun changeTime(hourString: String, minuteString: String) {
-        customTime = "$hourString:$minuteString"
-        setupCurrentDateLiveData.value = "$customDate $customTime"
+    fun changeDate(dateSetup: String) {
+        setupCurrentDateLiveData.value = dateSetup
     }
 
     //endregion

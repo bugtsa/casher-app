@@ -62,6 +62,8 @@
 
     <string name="month_range_end">End Date: %1$s year, %2$s</string>
     <string name="month_range_start">Start Date: %1$s year, %2$s</string>
+    <string name="order_info_time_start">Time from</string>
+    <string name="order_info_time_end">Time to</string>
 
     <string name="price_purchase">Price payment</string>
     <string name="price_purchase_hint">Write number</string>

@@ -165,10 +165,6 @@ dependencies {
     implementation("com.github.PhilJay:MPAndroidChart:v3.1.0")
     implementation("com.github.AnyChart:AnyChart-Android:1.1.2")
 
-    // Calendar & Date Picker
-    implementation("com.github.maxyou:CalendarPicker:v1.1.2")
-    implementation("com.borax12.materialdaterangepicker:library:2.0")
-
     implementation("androidx.multidex:multidex:2.0.1")
 
     testImplementation ("junit:junit:4.13.2")
