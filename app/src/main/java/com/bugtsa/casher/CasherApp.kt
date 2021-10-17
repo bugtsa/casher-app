@@ -3,8 +3,8 @@ package com.bugtsa.casher
 import android.content.Context
 import androidx.multidex.MultiDexApplication
 import com.bugtsa.casher.di.module.CasherApplicationModule
-import com.bugtsa.casher.domain.prefs.PreferenceRepository
-import com.bugtsa.casher.domain.prefs.PreferenceRepository.Companion.THEME_MODE_KEY
+import com.bugtsa.casher.data.prefs.PreferenceRepository
+import com.bugtsa.casher.data.prefs.PreferenceRepository.Companion.THEME_MODE_KEY
 import com.bugtsa.casher.utils.ThemeHelper
 import com.bugtsa.casher.utils.ThemeHelper.applyTheme
 import timber.log.Timber

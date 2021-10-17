@@ -168,6 +168,10 @@ class AddPurchaseFragment : BaseFragment(), AddPurchaseView,
             Observer { currentDateAndTime ->
                 setupCurrentDateAndTime(currentDateAndTime)
             })
+        viewModel.isAddDateCheckboxActivated.observe(viewLifecycleOwner,
+            Observer { isChecked ->
+                add_date_purchase.isChecked = isChecked
+            })
         viewModel.observeShowDatePicker().observe(viewLifecycleOwner,
             Observer {
                 showDatePicker()

@@ -6,7 +6,6 @@ import com.bugtsa.casher.data.dto.CategoryDto
 import com.bugtsa.casher.domain.models.PaymentModel
 import com.bugtsa.casher.data.network.payment.PaymentPageRes
 import com.bugtsa.casher.data.network.payment.PaymentPageRes.Companion.NEED_REFRESH_TOKEN
-import com.bugtsa.casher.data.network.payment.PaymentRes
 import com.bugtsa.casher.data.network.payment.PaymentRes.Companion.toModel
 import com.bugtsa.casher.global.extentions.Backoff
 import com.bugtsa.casher.global.extentions.exponentialRetry
@@ -54,16 +53,16 @@ class PurchaseRemoteRepository @Inject constructor(private val casherRestApi: Ca
             .exponentialRetry(ADD_DATA_TIMEOUT, Backoff(maxDelay = ADD_DATA_TIMEOUT))
             .timeout(ADD_DATA_TIMEOUT, TimeUnit.MILLISECONDS, Single.error(Throwable()))
 
-    fun addPayment(payment: AddPurchaseDto): Single<PaymentModel> =
-        casherRestApi.addPayment(payment.toFormBody())
+    fun addPayment(addPayment: AddPurchaseDto): Single<PaymentModel> =
+        casherRestApi.addPayment(addPayment.toFormBody())
             .map { payment ->
-                val (newDate, time) = payment.date?.let {
+                val (date, time) = payment.date?.let {
                     payment.time?.let {
                         payment.date to it
                     } ?: PaymentModel.getDateTimePair(payment.date)
 
                 } ?: PaymentModel.STRING_EMPTY_PAYMENT_FIELD to PaymentModel.STRING_EMPTY_PAYMENT_FIELD
-                payment.toModel(newDate, time)
+                payment.toModel(date, time)
             }
             .exponentialRetry(ADD_DATA_TIMEOUT, Backoff(maxDelay = ADD_DATA_TIMEOUT))
             .timeout(ADD_DATA_TIMEOUT, TimeUnit.MILLISECONDS, Single.error(Throwable()))

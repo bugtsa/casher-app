@@ -18,7 +18,7 @@ import com.bugtsa.casher.data.network.payment.PaymentPageRes
 import com.bugtsa.casher.data.network.payment.PaymentPageRes.Companion.NEED_REFRESH_TOKEN
 import com.bugtsa.casher.data.network.payment.PaymentPageWarningsRes
 import com.bugtsa.casher.data.network.payment.PaymentsByDayRes
-import com.bugtsa.casher.domain.prefs.PreferenceRepository
+import com.bugtsa.casher.data.prefs.PreferenceRepository
 import com.bugtsa.casher.presentation.optional.RxViewModel
 import io.reactivex.Flowable
 import io.reactivex.Single

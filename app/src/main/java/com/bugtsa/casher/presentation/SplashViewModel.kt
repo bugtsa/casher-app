@@ -5,7 +5,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import com.bugtsa.casher.domain.prefs.PreferenceRepository
+import com.bugtsa.casher.data.prefs.PreferenceRepository
 import com.bugtsa.casher.presentation.optional.RxViewModel
 import toothpick.Toothpick
 import javax.inject.Inject

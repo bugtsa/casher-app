@@ -1,6 +1,6 @@
 package com.bugtsa.casher.ui.activities
 
-import com.bugtsa.casher.domain.prefs.PreferenceRepository
+import com.bugtsa.casher.data.prefs.PreferenceRepository
 import javax.inject.Inject
 
 class MainPresenter @Inject constructor(

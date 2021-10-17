@@ -7,7 +7,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.bugtsa.casher.data.AuthRepository
 import com.bugtsa.casher.data.error.AuthApiError
-import com.bugtsa.casher.domain.prefs.PreferenceRepository
+import com.bugtsa.casher.data.prefs.PreferenceRepository
 import com.bugtsa.casher.global.ErrorHandler
 import com.bugtsa.casher.global.extentions.AllHidden
 import com.bugtsa.casher.global.extentions.KeyboardState

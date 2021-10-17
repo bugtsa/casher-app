@@ -25,8 +25,8 @@ import com.bugtsa.casher.di.inject.payment.PaymentDaoProvider
 import com.bugtsa.casher.di.repositories.AuthRepositoryProvider
 import com.bugtsa.casher.di.repositories.PurchaseRepositoryProvider
 import com.bugtsa.casher.domain.interactors.AddPurchaseInteractor
-import com.bugtsa.casher.domain.prefs.LocalSettingsRepository
-import com.bugtsa.casher.domain.prefs.PreferenceRepository
+import com.bugtsa.casher.data.prefs.LocalSettingsRepository
+import com.bugtsa.casher.di.repositories.PreferenciesRepositoryProvider
 import com.bugtsa.casher.networking.AuthApi
 import com.bugtsa.casher.networking.CasherApi
 import io.reactivex.disposables.CompositeDisposable
@@ -41,11 +41,8 @@ class CasherApplicationModule(application: Application) : Module() {
         val authApi = AuthApiProvider()
         bind(AuthApi::class.java).toProviderInstance(authApi)
         bind(Application::class.java).toProviderInstance(ApplicationProvider(application))
-        bind(LocalSettingsRepository::class.java).toProviderInstance(
-            PreferenceRepository(
-                application
-            )
-        )
+        val prefsProvider = PreferenciesRepositoryProvider(application)
+        bind(LocalSettingsRepository::class.java).toProviderInstance(prefsProvider)
         bind(AuthRepository::class.java).toProviderInstance(
             AuthRepositoryProvider(authApi.get())
         )
@@ -85,7 +82,8 @@ class CasherApplicationModule(application: Application) : Module() {
         bind(AddPurchaseInteractor::class.java).toProviderInstance(
             AddPurchaseInteractorProvider(
                 paymentRepoProvider.get(),
-                paymentDateStoreProvider.get()
+                paymentDateStoreProvider.get(),
+                prefsProvider.get()
             )
         )
     }

@@ -1,4 +1,4 @@
-package com.bugtsa.casher.domain.prefs
+package com.bugtsa.casher.data.prefs
 
 import com.bugtsa.casher.data.dto.AuthDto
 
@@ -16,4 +16,7 @@ interface LocalSettingsRepository {
 
 	fun saveModeTheme(themeMode: String)
 	fun getModeTheme(): String
+
+	fun saveCustomDate(customDate: String)
+	fun getCustomDate(): String
 }

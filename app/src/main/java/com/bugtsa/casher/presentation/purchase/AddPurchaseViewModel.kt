@@ -56,6 +56,9 @@ class AddPurchaseViewModel @Inject constructor(
     private val setupCurrentDateLiveData = MutableLiveData<String>()
     fun observeSetupCurrentDate(): LiveData<String> = setupCurrentDateLiveData
 
+    val isAddDateCheckboxActivated: LiveData<Boolean> get() = _isAddDateCheckboxActivated
+    private val _isAddDateCheckboxActivated = MutableLiveData<Boolean>()
+
     private val completeAddPaymentLiveData = MutableLiveData<Boolean>()
     fun observeCompleteAddPayment(): LiveData<Boolean> = completeAddPaymentLiveData
 
@@ -85,13 +88,9 @@ class AddPurchaseViewModel @Inject constructor(
 
     //region ================= Request to add purchase =================
 
-    private fun addDomainPurchase(pricePurchase: String, nameCategory: String): Single<PaymentModel> {
-        return interactor.addPurchase(pricePurchase, nameCategory, getActualDateAndTime())
-    }
-
     private fun addPurchase(pricePurchase: String, nameCategory: String) {
         showProgressLiveData.value = true
-        addDomainPurchase(pricePurchase, nameCategory)
+        interactor.addPurchase(pricePurchase, nameCategory, getActualDateAndTime())
             .subscribe({ payment ->
                 showProgressLiveData.value = false
                 payment?.also {
@@ -180,25 +179,6 @@ class AddPurchaseViewModel @Inject constructor(
         setupCurrentDate(date)
     }
 
-    private fun setupCurrentDate(date: String) {
-        setupCurrentDateLiveData.value = date
-        refreshCurrentDate()
-    }
-
-    private fun refreshCurrentDate() {
-        Flowable
-            .interval(10, TimeUnit.SECONDS)
-            .flatMap {
-                Flowable.just(
-                    SoftwareUtils.modernTimeStampToString(getCurrentTimeStamp(), Locale.getDefault())
-                )
-            }
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe({ result -> setupCurrentDate(result) }, { Timber.e("could not refresh current date") })
-            .also(::addDispose)
-    }
-
     fun checkSetupCustomDateAndTime(checkedCustomDateTime: Boolean) {
         this.checkedCustomDateTime = checkedCustomDateTime
         if (checkedCustomDateTime) {
@@ -209,16 +189,46 @@ class AddPurchaseViewModel @Inject constructor(
         }
     }
 
+    fun changeDate(dateSetup: String) {
+        setupCurrentDateLiveData.value = dateSetup
+    }
+
+    private fun setupCurrentDate(date: String) {
+        setupCurrentDateLiveData.value = if (interactor.getCustomDate().isNotEmpty()) {
+            checkedCustomDateTime = true
+            _isAddDateCheckboxActivated.value = true
+            interactor.getCustomDate()
+        } else {
+            date
+        }
+        refreshCurrentDate()
+    }
+
+    private fun refreshCurrentDate() {
+        Flowable
+            .interval(10, TimeUnit.SECONDS)
+            .flatMap {
+                Flowable.just(
+                    SoftwareUtils.modernTimeStampToString(
+                        getCurrentTimeStamp(),
+                        Locale.getDefault()
+                    )
+                )
+            }
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(
+                { result -> setupCurrentDate(result) },
+                { Timber.e("could not refresh current date") })
+            .also(::addDispose)
+    }
+
     private fun getActualDateAndTime(): String {
         return if (checkedCustomDateTime && setupCurrentDateLiveData.value != null) {
             setupCurrentDateLiveData.value.toString()
         } else {
             SoftwareUtils.timeStampToString(getCurrentTimeStamp(), Locale.getDefault())
         }
-    }
-
-    fun changeDate(dateSetup: String) {
-        setupCurrentDateLiveData.value = dateSetup
     }
 
     //endregion
