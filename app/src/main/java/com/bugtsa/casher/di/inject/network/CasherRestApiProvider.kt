@@ -35,6 +35,7 @@ class CasherRestApiProvider: Provider<CasherApi> {
     companion object {
         private const val READ_TIMEOUT = 20L
         private const val CONNECTION_TIMEOUT = 60L
-        private const val RESOURCE_URL = "https://casher-resource.herokuapp.com/"
+//        private const val RESOURCE_URL = "https://casher-resource.herokuapp.com/"
+        private const val RESOURCE_URL = "http://10.0.2.2:9091/"
     }
 }
