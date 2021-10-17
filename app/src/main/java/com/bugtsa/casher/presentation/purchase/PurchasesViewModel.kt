@@ -3,7 +3,6 @@ package com.bugtsa.casher.presentation.purchase
 import android.app.Application
 import android.os.Build.VERSION
 import android.os.Build.VERSION_CODES
-import android.provider.Settings.System.DATE_FORMAT
 import androidx.annotation.RequiresApi
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -11,11 +10,10 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.bugtsa.casher.data.AuthRepository
 import com.bugtsa.casher.data.dto.CategoryDto
-import com.bugtsa.casher.data.dto.PaymentDto
-import com.bugtsa.casher.data.dto.PaymentDto.Companion.paymentEmptyDto
+import com.bugtsa.casher.domain.models.PaymentModel
 import com.bugtsa.casher.data.local.database.entity.category.CategoryDataStore
 import com.bugtsa.casher.data.local.database.entity.payment.PaymentDataStore
-import com.bugtsa.casher.data.models.PurchaseRemoteRepository
+import com.bugtsa.casher.data.repositories.PurchaseRemoteRepository
 import com.bugtsa.casher.data.network.payment.PaymentPageRes
 import com.bugtsa.casher.data.network.payment.PaymentPageRes.Companion.NEED_REFRESH_TOKEN
 import com.bugtsa.casher.data.network.payment.PaymentPageWarningsRes
@@ -195,8 +193,8 @@ class PurchasesViewModel @Inject constructor(
     }
 
     @RequiresApi(VERSION_CODES.O)
-    private fun processByPageRes(paymentsList: List<PaymentDto>): PaymentPageRes {
-        val paymentsPage = (mutableListOf<PaymentPageWarningsRes>() to hashMapOf<String, MutableList<PaymentDto>>())
+    private fun processByPageRes(paymentsList: List<PaymentModel>): PaymentPageRes {
+        val paymentsPage = (mutableListOf<PaymentPageWarningsRes>() to hashMapOf<String, MutableList<PaymentModel>>())
             .also { (warningsList, paymentsMapByDay) ->
                 paymentsList.forEach { payment ->
                     when {
@@ -204,7 +202,7 @@ class PurchasesViewModel @Inject constructor(
                             warningsList.add(PaymentPageWarningsRes("Need setup date for payment", payment))
                         }
                         !paymentsMapByDay.contains(payment.date) -> {
-                            val tempPaymentsList = mutableListOf<PaymentDto>()
+                            val tempPaymentsList = mutableListOf<PaymentModel>()
                             tempPaymentsList.add(payment)
                             paymentsMapByDay[payment.date] = tempPaymentsList
                         }
@@ -242,8 +240,8 @@ class PurchasesViewModel @Inject constructor(
     }
 
     @RequiresApi(VERSION_CODES.O)
-    private fun getSortedMapPaymentsByDay(paymentsByDayMap: HashMap<String, MutableList<PaymentDto>>)
-            : SortedMap<String, MutableList<PaymentDto>> = paymentsByDayMap
+    private fun getSortedMapPaymentsByDay(paymentsByDayMap: HashMap<String, MutableList<PaymentModel>>)
+            : SortedMap<String, MutableList<PaymentModel>> = paymentsByDayMap
         .toSortedMap(Comparator { o1, o2 ->
             val formatter = DateTimeFormatter.ofPattern(DATE_FORMAT)
             try {

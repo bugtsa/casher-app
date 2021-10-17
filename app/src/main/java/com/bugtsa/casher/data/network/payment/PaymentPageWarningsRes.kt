@@ -1,6 +1,6 @@
 package com.bugtsa.casher.data.network.payment
 
-import com.bugtsa.casher.data.dto.PaymentDto
+import com.bugtsa.casher.domain.models.PaymentModel
 import com.google.gson.annotations.SerializedName
 
 data class PaymentPageWarningsRes(
@@ -8,7 +8,7 @@ data class PaymentPageWarningsRes(
     val title: String,
 
     @field:SerializedName("warnings")
-    val warning: PaymentDto
+    val warning: PaymentModel
 ) {
 
     override fun toString(): String {

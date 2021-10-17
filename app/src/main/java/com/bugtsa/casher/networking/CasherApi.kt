@@ -1,10 +1,8 @@
 package com.bugtsa.casher.networking
 
 import com.bugtsa.casher.data.dto.CategoryDto
-import com.bugtsa.casher.data.dto.PaymentDto
 import com.bugtsa.casher.data.network.CategoryRes
 import com.bugtsa.casher.data.network.payment.PaymentRes
-import com.bugtsa.casher.data.network.payment.PaymentsByDayRes
 import com.bugtsa.casher.data.network.chart.ChartDataRes
 import com.bugtsa.casher.data.network.payment.PaymentPageRes
 import com.bugtsa.casher.utils.ConstantManager.CategoryNetwork.CATEGORIZED_NAME_METHOD

@@ -1,8 +1,7 @@
 package com.bugtsa.casher.data.local.database.entity.payment
 
-import com.bugtsa.casher.data.dto.PaymentDto
-import com.bugtsa.casher.data.dto.PaymentDto.Companion
-import com.bugtsa.casher.data.dto.PaymentDto.Companion.INT_EMPTY_PAYMENT_FIELD
+import com.bugtsa.casher.domain.models.PaymentModel
+import com.bugtsa.casher.domain.models.PaymentModel.Companion.INT_EMPTY_PAYMENT_FIELD
 import com.bugtsa.casher.data.network.payment.PaymentPageRes
 import io.reactivex.Flowable
 import io.reactivex.Single
@@ -11,7 +10,7 @@ import javax.inject.Inject
 class PaymentDataStore @Inject constructor(private val paymentDao: PaymentDao) :
     PaymentRepository {
 
-    override fun add(payment: PaymentDto): Single<PaymentDto> {
+    override fun add(payment: PaymentModel): Single<PaymentModel> {
         return Single.fromCallable {
             paymentDao.add(
                 PaymentEntity(
@@ -32,7 +31,7 @@ class PaymentDataStore @Inject constructor(private val paymentDao: PaymentDao) :
         pageRes: PaymentPageRes
     ): Single<PaymentPageRes> {
         return Single.fromCallable {
-            val paymentList = pageRes.page.map { it.payment ?: PaymentDto.paymentEmptyDto() }
+            val paymentList = pageRes.page.map { it.payment ?: PaymentModel.paymentEmptyDto() }
             val entityList = paymentList
                 .filter { it.id != INT_EMPTY_PAYMENT_FIELD }
                 .map { payment ->
@@ -51,12 +50,12 @@ class PaymentDataStore @Inject constructor(private val paymentDao: PaymentDao) :
         }
     }
 
-    override fun getPaymentsList(): Flowable<List<PaymentDto>> {
+    override fun getPaymentsList(): Flowable<List<PaymentModel>> {
         return paymentDao.getPayments()
             .flatMap { list ->
                 when (list.isEmpty()) {
                     true -> Flowable.just(listOf())
-                    false -> Flowable.just(list.map { PaymentDto(it) })
+                    false -> Flowable.just(list.map { PaymentModel(it) })
                 }
             }
             .firstElement().toFlowable()

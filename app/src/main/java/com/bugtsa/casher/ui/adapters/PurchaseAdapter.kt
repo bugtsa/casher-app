@@ -6,7 +6,7 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.core.view.isVisible
 import com.bugtsa.casher.R
-import com.bugtsa.casher.data.dto.PaymentDto
+import com.bugtsa.casher.domain.models.PaymentModel
 import com.bugtsa.casher.data.network.payment.PaymentsByDayRes
 import com.bugtsa.casher.ui.OnChangePosition
 import com.bugtsa.casher.utils.autoNotify
@@ -62,7 +62,7 @@ class PurchaseAdapter(private val onChangePosition: OnChangePosition)
 
     //region ================= private Functions =================
 
-    private fun showPayment(holder: ViewHolder?, payment: PaymentDto) {
+    private fun showPayment(holder: ViewHolder?, payment: PaymentModel) {
         holder?.date?.isVisible = false
 
         setupPaymentVisibility(holder, true)

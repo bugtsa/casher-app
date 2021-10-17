@@ -1,6 +1,6 @@
 package com.bugtsa.casher.data.network.payment
 
-import com.bugtsa.casher.data.dto.PaymentDto
+import com.bugtsa.casher.domain.models.PaymentModel
 import com.google.gson.annotations.SerializedName
 
 data class PaymentPageRes(
@@ -18,7 +18,7 @@ data class PaymentPageRes(
         fun returnWarning(titleWarning: String): PaymentPageRes {
             return PaymentPageRes(
                 hasWarning = true,
-                warningsList = listOf(PaymentPageWarningsRes(titleWarning, PaymentDto.paymentEmptyDto())),
+                warningsList = listOf(PaymentPageWarningsRes(titleWarning, PaymentModel.paymentEmptyDto())),
                 page = listOf()
             )
         }

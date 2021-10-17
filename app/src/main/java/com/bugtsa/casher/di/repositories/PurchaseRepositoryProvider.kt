@@ -1,6 +1,6 @@
 package com.bugtsa.casher.di.repositories
 
-import com.bugtsa.casher.data.models.PurchaseRemoteRepository
+import com.bugtsa.casher.data.repositories.PurchaseRemoteRepository
 import com.bugtsa.casher.networking.CasherApi
 import javax.inject.Provider
 import javax.inject.Singleton

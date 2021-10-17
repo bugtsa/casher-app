@@ -1,7 +1,5 @@
 package com.bugtsa.casher.utils
 
-import java.util.concurrent.TimeUnit
-
 class ConstantManager {
 
     object User {

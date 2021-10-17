@@ -124,12 +124,6 @@ class AddPurchaseFragment : BaseFragment(), AddPurchaseView,
             requireContext().getString(R.string.current_date_and_time) + dateAndTime
     }
 
-//    @SuppressLint("SetTextI18n")
-//    override fun setupCustomDateAndTime(date: String, time: String) {
-//        date_purchase.text =
-//            requireContext().getString(R.string.changed_date_and_time) + "$date $time"
-//    }
-
     //endregion
 
     //region ================= Calendar And Time Picker =================

@@ -1,8 +1,8 @@
-package com.bugtsa.casher.data.dto
+package com.bugtsa.casher.domain.models
 
 import com.bugtsa.casher.data.local.database.entity.payment.PaymentEntity
 
-class PaymentDto {
+class PaymentModel {
 
     val id: Int
     val cost: String
@@ -43,8 +43,8 @@ class PaymentDto {
     }
 
     companion object {
-        fun paymentEmptyDto(): PaymentDto {
-            return PaymentDto(
+        fun paymentEmptyDto(): PaymentModel {
+            return PaymentModel(
                 id = INT_EMPTY_PAYMENT_FIELD,
                 cost = STRING_EMPTY_PAYMENT_FIELD,
                 balance = STRING_EMPTY_PAYMENT_FIELD,

@@ -1,6 +1,6 @@
 package com.bugtsa.casher.data.network.payment
 
-import com.bugtsa.casher.data.dto.PaymentDto
+import com.bugtsa.casher.domain.models.PaymentModel
 import com.bugtsa.casher.utils.DiffItem
 import com.google.gson.annotations.SerializedName
 
@@ -13,7 +13,7 @@ data class PaymentsByDayRes(
         val date: String?,
 
         @field:SerializedName("payment")
-        val payment: PaymentDto?
+        val payment: PaymentModel?
 ) : DiffItem {
     override fun getItemId(): String {
         return id

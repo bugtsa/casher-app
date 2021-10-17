@@ -6,23 +6,16 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.bugtsa.casher.data.dto.CategoryDto
-import com.bugtsa.casher.data.dto.PaymentDto
-import com.bugtsa.casher.data.dto.PaymentDto.Companion.INT_EMPTY_PAYMENT_FIELD
-import com.bugtsa.casher.data.dto.PaymentDto.Companion.STRING_EMPTY_PAYMENT_FIELD
-import com.bugtsa.casher.data.dto.PaymentDto.Companion.getDateTimePair
+import com.bugtsa.casher.domain.models.PaymentModel
 import com.bugtsa.casher.data.local.database.entity.category.CategoryDataStore
-import com.bugtsa.casher.data.local.database.entity.payment.PaymentDataStore
-import com.bugtsa.casher.data.models.PurchaseRemoteRepository
+import com.bugtsa.casher.data.repositories.PurchaseRemoteRepository
+import com.bugtsa.casher.domain.interactors.AddPurchaseInteractor
 import com.bugtsa.casher.presentation.optional.RxViewModel
 import com.bugtsa.casher.utils.ConstantManager.CategoryNetwork.NAME_CATEGORY_PARAMETER
-import com.bugtsa.casher.utils.ConstantManager.Network.CATEGORY_PARAMETER
-import com.bugtsa.casher.utils.ConstantManager.Network.COST_PARAMETER
-import com.bugtsa.casher.utils.ConstantManager.Network.DATE_PARAMETER
-import com.bugtsa.casher.utils.ConstantManager.Network.USER_ID_PARAMETER
-import com.bugtsa.casher.utils.ConstantManager.User.DEFAULT_USER_ID
 import com.bugtsa.casher.utils.SoftwareUtils
 import com.bugtsa.casher.utils.SoftwareUtils.Companion.getCurrentTimeStamp
 import io.reactivex.Flowable
+import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import okhttp3.FormBody
@@ -44,14 +37,10 @@ class AddPurchaseViewModelFactory @Inject constructor(
 }
 
 class AddPurchaseViewModel @Inject constructor(
-    injectPurchaseRepository: PurchaseRemoteRepository,
-    injectCategoryDataStore: CategoryDataStore,
-    injectPaymentDataStore: PaymentDataStore
+    private val remotePurchaseRepo: PurchaseRemoteRepository,
+    private val categoryDataStore: CategoryDataStore,
+    private val interactor: AddPurchaseInteractor
 ) : RxViewModel() {
-
-    private val remotePurchaseRepo: PurchaseRemoteRepository = injectPurchaseRepository
-    private val categoryDataStore: CategoryDataStore = injectCategoryDataStore
-    private val localPaymentRepo: PaymentDataStore = injectPaymentDataStore
 
     private var checkedCustomDateTime: Boolean = false
 
@@ -96,36 +85,13 @@ class AddPurchaseViewModel @Inject constructor(
 
     //region ================= Request to add purchase =================
 
+    private fun addDomainPurchase(pricePurchase: String, nameCategory: String): Single<PaymentModel> {
+        return interactor.addPurchase(pricePurchase, nameCategory, getActualDateAndTime())
+    }
+
     private fun addPurchase(pricePurchase: String, nameCategory: String) {
         showProgressLiveData.value = true
-        val partFormBody = FormBody.Builder()
-            .add(USER_ID_PARAMETER, DEFAULT_USER_ID)
-            .add(COST_PARAMETER, pricePurchase)
-            .add(CATEGORY_PARAMETER, nameCategory)
-            .add(DATE_PARAMETER, getActualDateAndTime())
-            .build()
-        remotePurchaseRepo.addPayment(partFormBody)
-            .flatMap { payment ->
-                val (date, time) = payment.date?.let {
-                    payment.time?.let {
-                        payment.date to it
-                    } ?: getDateTimePair(payment.date)
-
-                } ?: STRING_EMPTY_PAYMENT_FIELD to STRING_EMPTY_PAYMENT_FIELD
-                localPaymentRepo.add(
-                    PaymentDto(
-                        id = payment.id ?: INT_EMPTY_PAYMENT_FIELD,
-                        cost = payment.cost ?: STRING_EMPTY_PAYMENT_FIELD,
-                        balance = payment.balance ?: STRING_EMPTY_PAYMENT_FIELD,
-                        date = date,
-                        time = time,
-                        category = payment.category ?: STRING_EMPTY_PAYMENT_FIELD,
-                        categoryId = payment.categoryId ?: INT_EMPTY_PAYMENT_FIELD
-                    )
-                )
-            }
-            .subscribeOn(Schedulers.newThread())
-            .observeOn(AndroidSchedulers.mainThread())
+        addDomainPurchase(pricePurchase, nameCategory)
             .subscribe({ payment ->
                 showProgressLiveData.value = false
                 payment?.also {
@@ -146,7 +112,7 @@ class AddPurchaseViewModel @Inject constructor(
         categoryDataStore.getCategoriesList()
             .subscribeOn(Schedulers.io())
             .map { list ->
-                list.mapNotNull { it.name }
+                list.map { it.name }
             }
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({ storageCategoriesList: List<String> ->
